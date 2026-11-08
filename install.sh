@@ -28,7 +28,7 @@ done
 
 # The current release. docs/releasing.md bumps it with every release, so the
 # installer needs no GitHub API call (which can be rate-limited or down).
-current="0.1.0"
+current="0.2.0"
 version="${SAPU_VERSION:-$current}"
 version=${version#v}
 

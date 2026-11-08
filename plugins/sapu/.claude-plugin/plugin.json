@@ -1,6 +1,6 @@
 {
   "name": "sapu",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Ask your agent where your Mac's disk space went and get a safe cleanup plan. Read-only: you run the plan yourself.",
   "author": {
     "name": "Khairul Muhtadin",

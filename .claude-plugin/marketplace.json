@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Sapu, a macOS cleaner that never loses your data, for AI agents.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "sapu",
       "source": "./plugins/sapu",
       "description": "Ask your agent where your Mac's disk space went and get a safe cleanup plan. Read-only: you run the plan yourself.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": {
         "name": "Khairul Muhtadin",
         "url": "https://khmuhtadin.com"

@@ -1,6 +1,6 @@
 {
   "name": "@khmuhtadin/sapu",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A Mac cleaner for the command line that never deletes anything you can't undo. Includes a read-only MCP server for AI agents.",
   "bin": {
     "sapu": "sapu"

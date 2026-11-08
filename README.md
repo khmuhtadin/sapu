@@ -96,7 +96,7 @@ explains what that means.
 binary for Apple Silicon and Intel), verify it, and put `sapu` on your `PATH`:
 
 ```sh
-VERSION=0.1.0
+VERSION=0.2.0
 BASE=https://github.com/khmuhtadin/sapu/releases/download/v$VERSION
 cd "$(mktemp -d)"
 curl -fsSLO $BASE/sapu_${VERSION}_darwin_universal.tar.gz
@@ -126,7 +126,7 @@ verifying: `xattr -d com.apple.quarantine sapu`. More in
 **With Go 1.25 or later:**
 
 ```sh
-go install github.com/khmuhtadin/sapu/cmd/sapu@v0.1.0
+go install github.com/khmuhtadin/sapu/cmd/sapu@v0.2.0
 ```
 
 This builds Sapu on your Mac and puts it in `$(go env GOPATH)/bin`. It skips
