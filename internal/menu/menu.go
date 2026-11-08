@@ -133,6 +133,7 @@ func runLaunched(ctx context.Context, b Backend, m *model) (again bool, err erro
 		return true, b.Analyze(ctx)
 	case launchTool:
 		return true, b.RunTool(ctx, m.run.id, m.run.dirs, m.run.app)
+	case launchNone:
 	}
 	return false, nil
 }
