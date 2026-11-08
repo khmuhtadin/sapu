@@ -23,13 +23,20 @@ Sapu's command-line tool is distributed only through:
 
 - the GitHub repository, [github.com/khmuhtadin/sapu](https://github.com/khmuhtadin/sapu),
   and its [Releases page](https://github.com/khmuhtadin/sapu/releases);
+- the Homebrew tap [khmuhtadin/homebrew-sapu](https://github.com/khmuhtadin/homebrew-sapu)
+  (`brew install khmuhtadin/sapu/sapu`), which installs the release archive and
+  checks its SHA-256;
+- the installer `https://sapu.khaisa.studio/install.sh`, which downloads the
+  release archive and checks its SHA-256 against `checksums.txt` (it does not
+  check the cosign signature; do that by hand as below if you want it);
+- the npm package [`@khmuhtadin/sapu`](https://www.npmjs.com/package/@khmuhtadin/sapu) (`npx @khmuhtadin/sapu`),
+  which carries the same binary as the release archive;
 - `go install github.com/khmuhtadin/sapu/cmd/sapu@vX.Y.Z`, which builds from
   that repository.
 
 The website is [sapu.khaisa.studio](https://sapu.khaisa.studio). Sites with
 similar names, ads for "Sapu cleaner", and files sent to you in chat are not
-ours. If a download did not come from the Releases page, do not run it. (There
-is no Homebrew tap yet.)
+ours. If a download did not come from one of these, do not run it.
 
 Every release has these files:
 

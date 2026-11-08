@@ -7,7 +7,9 @@ something else and say it is based on Sapu.
 
 Official downloads of the command-line tool come only from the GitHub
 repository [github.com/khmuhtadin/sapu](https://github.com/khmuhtadin/sapu) and
-its [Releases page](https://github.com/khmuhtadin/sapu/releases). The official
-website is [sapu.khaisa.studio](https://sapu.khaisa.studio). Anything else that
+its [Releases page](https://github.com/khmuhtadin/sapu/releases), the Homebrew
+tap `khmuhtadin/sapu`, the npm package `@khmuhtadin/sapu` and the installer at
+`https://sapu.khaisa.studio/install.sh`. The official website is
+[sapu.khaisa.studio](https://sapu.khaisa.studio). Anything else that
 offers "Sapu" is not from the Sapu authors. How to check a download:
 [docs/verify.md](docs/verify.md).

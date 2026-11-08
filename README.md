@@ -10,6 +10,58 @@ and answer `n` if you are not sure. Nothing moves until you say yes. The 0.x
 downloads are not signed with an Apple Developer ID or notarized; see
 [docs/verify.md](docs/verify.md).
 
+## Quick start
+
+**Homebrew**
+
+```sh
+brew install khmuhtadin/sapu/sapu
+```
+
+**One-line install.** Checks the download's SHA-256, puts `sapu` in
+`~/.local/bin`, never uses sudo. [Read the script](install.sh) first if you
+like.
+
+```sh
+curl -fsSL https://sapu.khaisa.studio/install.sh | sh
+```
+
+**Run it once with npx.** Needs Node.js; installs nothing permanently.
+
+```sh
+npx @khmuhtadin/sapu
+```
+
+**With an AI agent.** Paste this into Claude Code, Codex, Cursor or another
+coding agent:
+
+```text
+Install Sapu (https://github.com/khmuhtadin/sapu) with
+`brew install khmuhtadin/sapu/sapu`, add it to yourself as an MCP server
+(`sapu mcp`), then tell me where my disk space went and prepare a safe
+cleanup plan. Do not apply the plan: show me the `sapu apply` command so I can
+review and run it myself.
+```
+
+The MCP server is read-only: an agent can look and prepare a plan, never move
+or delete anything. Setup for each agent: [docs/mcp.md](docs/mcp.md).
+
+**As a Claude Code plugin.** Adds the MCP server and a skill that teaches the
+agent to clean safely:
+
+```text
+/plugin marketplace add khmuhtadin/sapu
+/plugin install sapu@sapu
+```
+
+**Then:**
+
+```sh
+sapu              # the menu: summary, cleanup, quarantine, history
+sapu clean        # review what can go; nothing moves until you say yes
+sapu undo --last  # put the last cleanup back
+```
+
 ## What it does
 
 Sapu finds caches, logs and build leftovers that are safe to remove, shows you
@@ -32,7 +84,7 @@ Three promises:
 
 How it works in detail: [docs/safety.md](docs/safety.md).
 
-## Install
+## Install and verify
 
 Sapu needs macOS 13 or later. 0.x releases are developer previews: they are
 checked with SHA-256 checksums and a cosign signature, and are **not** signed
@@ -83,17 +135,20 @@ checksum database.
 
 **From a checkout:** `make build` writes `bin/sapu`.
 
-**Homebrew:** a tap is planned for a later release. There is no `brew install`
-yet.
+**Homebrew** uses the tap
+[khmuhtadin/homebrew-sapu](https://github.com/khmuhtadin/homebrew-sapu), which
+installs the same release archive and checks its SHA-256.
 
-**Official sources.** The GitHub repository
-[github.com/khmuhtadin/sapu](https://github.com/khmuhtadin/sapu) and its
-[Releases page](https://github.com/khmuhtadin/sapu/releases) are the only
-places that distribute the Sapu command-line tool. The website is
+**Official sources.** The Sapu command-line tool comes only from the
+[Releases page](https://github.com/khmuhtadin/sapu/releases) of
+[github.com/khmuhtadin/sapu](https://github.com/khmuhtadin/sapu), and from
+three channels that install those same files: the Homebrew tap
+`khmuhtadin/sapu`, the npm package [`@khmuhtadin/sapu`](https://www.npmjs.com/package/@khmuhtadin/sapu),
+and the installer at `https://sapu.khaisa.studio/install.sh`. The website is
 [sapu.khaisa.studio](https://sapu.khaisa.studio). Other sites, ads and files
 sent to you in chat that offer "Sapu" are not ours.
 
-## Quick start
+## Using sapu
 
 ```sh
 sapu                       # the menu on a terminal; a summary in a script or pipe

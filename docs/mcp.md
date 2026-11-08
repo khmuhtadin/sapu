@@ -10,26 +10,31 @@ command yourself.
 
 ## Add Sapu to your agent
 
-Install Sapu first, so that `sapu` is on your `PATH`.
+There are three ways. All of them run the same read-only server.
+
+### With npx (nothing to install first)
+
+Needs Node.js. `npx` fetches the `sapu` package, which holds the released binary and nothing else
+(no install scripts, no download at run time).
 
 **Claude Code**
 
 ```sh
-claude mcp add sapu -- sapu mcp
+claude mcp add sapu -- npx -y @khmuhtadin/sapu mcp
 ```
 
 **Codex**
 
 ```sh
-codex mcp add sapu -- sapu mcp
+codex mcp add sapu -- npx -y @khmuhtadin/sapu mcp
 ```
 
 or in `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.sapu]
-command = "sapu"
-args = ["mcp"]
+command = "npx"
+args = ["-y", "@khmuhtadin/sapu", "mcp"]
 ```
 
 **Cursor**
@@ -39,12 +44,58 @@ Add this to `~/.cursor/mcp.json` (all projects) or `.cursor/mcp.json` (one proje
 ```json
 {
   "mcpServers": {
-    "sapu": { "command": "sapu", "args": ["mcp"] }
+    "sapu": { "command": "npx", "args": ["-y", "@khmuhtadin/sapu", "mcp"] }
   }
 }
 ```
 
+A plan's result ends with `sapu apply <plan>`. If you only use `npx`, run it as `npx -y @khmuhtadin/sapu apply <plan>`.
+
+### With Sapu on your `PATH`
+
+Install Sapu first (see the README), so that `sapu` is on your `PATH`.
+
+```sh
+claude mcp add sapu -- sapu mcp     # Claude Code
+codex mcp add sapu -- sapu mcp      # Codex
+```
+
+For Codex's `config.toml` use `command = "sapu"` and `args = ["mcp"]`. For Cursor use
+`{ "command": "sapu", "args": ["mcp"] }`.
+
+### As a Claude Code plugin
+
+```
+/plugin marketplace add khmuhtadin/sapu
+/plugin install sapu@sapu
+```
+
+The plugin adds the server (it runs `npx -y @khmuhtadin/sapu mcp`) and a skill. The skill teaches Claude which tool
+answers which question, never to run `sapu apply`, `sapu undo`, `sapu quarantine empty` or anything with
+`--yes`, and to hand you the `sapu apply <plan>` command to run yourself.
+
 Then ask your agent something like "where did my disk space go?" or "prepare a safe cleanup plan".
+
+## Ask your agent
+
+Copy this into Claude Code. It connects Sapu and keeps you in charge. For Codex or Cursor, change the
+first command to the one in the section above.
+
+```text
+Set up Sapu (https://github.com/khmuhtadin/sapu), a macOS cleaner, as an MCP
+server: run `claude mcp add sapu -- npx -y @khmuhtadin/sapu mcp`, then reload so its tools
+show up. Sapu's server is read-only.
+
+Use only the Sapu MCP tools. Call summary and explain, then analyze the biggest
+folders, and tell me where my disk space went. Then prepare a safe cleanup plan
+with plan_clean (safe only), and plan_purge for my project folders if I name
+them. Tell me what is in each plan, in sizes, and what was left alone.
+
+Do not apply the plan. Never run `sapu apply`, `sapu undo`,
+`sapu quarantine empty` or anything with --yes, and do not delete files
+yourself. Finish by giving me the exact `sapu apply <plan>` command to run in
+my own terminal. Everything goes to a quarantine that `sapu undo` restores.
+```
 
 ## Tools
 

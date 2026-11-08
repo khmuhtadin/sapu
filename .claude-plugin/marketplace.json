@@ -1,0 +1,27 @@
+{
+  "name": "sapu",
+  "owner": {
+    "name": "Khairul Muhtadin",
+    "url": "https://khmuhtadin.com"
+  },
+  "metadata": {
+    "description": "Sapu, a macOS cleaner that never loses your data, for AI agents.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "sapu",
+      "source": "./plugins/sapu",
+      "description": "Ask your agent where your Mac's disk space went and get a safe cleanup plan. Read-only: you run the plan yourself.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Khairul Muhtadin",
+        "url": "https://khmuhtadin.com"
+      },
+      "homepage": "https://github.com/khmuhtadin/sapu",
+      "repository": "https://github.com/khmuhtadin/sapu",
+      "license": "Apache-2.0",
+      "keywords": ["macos", "disk-space", "cleaner", "mcp"]
+    }
+  ]
+}

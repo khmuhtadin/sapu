@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "sapu": {
+      "command": "npx",
+      "args": ["-y", "@khmuhtadin/sapu", "mcp"]
+    }
+  }
+}

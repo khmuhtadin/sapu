@@ -132,21 +132,50 @@ Only the owner. At most once every two weeks.
    `go install github.com/khmuhtadin/sapu/cmd/sapu@v0.1.0`, and run
    `sapu version`.
 
-### Homebrew (later)
+### Homebrew
 
-There is no tap yet, and the README says so. When you add one, create the
-repository `khmuhtadin/homebrew-sapu` and copy `packaging/homebrew/sapu.rb` to
-`Formula/sapu.rb` there. Replace `<VERSION>`, `<SHA256>` (the line for the
-`.tar.gz` in `checksums.txt`) and the homepage, then:
+The tap is [khmuhtadin/homebrew-sapu](https://github.com/khmuhtadin/homebrew-sapu);
+users run `brew install khmuhtadin/sapu/sapu`. After each release (betas
+excepted), update `packaging/homebrew/sapu.rb` here and copy it to
+`Formula/sapu.rb` in the tap:
 
-```sh
-brew install --build-from-source ./Formula/sapu.rb
-brew test sapu
-```
+1. Set the version in `url` (twice: the tag and the file name).
+2. Set `sha256` to the line for `sapu_<VERSION>_darwin_universal.tar.gz` in
+   the release's `checksums.txt`.
+3. Push the tap. Its CI installs the formula on a GitHub Mac the way a user
+   would, runs `brew test`, `brew style` and `brew audit --strict --online`.
+   Do not install it on your own Mac to test it.
 
-and push. (`brews` in GoReleaser is deprecated, so the formula is not
-generated.) Then change the Homebrew paragraph in the README's Install section
-and in `docs/verify.md`.
+(`brews` in GoReleaser is deprecated and a cask would quarantine the unsigned
+binary, so the formula is written by hand.)
+
+### After the release: npm and the plugin
+
+Do this once the GitHub release is out and verified. Only the owner publishes.
+
+1. Build the npm package from the release (it downloads the archive, checks its SHA-256 against
+   `checksums.txt`, and refuses on a mismatch):
+   ```sh
+   packaging/npm/build.sh 0.1.0 packaging/npm/dist
+   ```
+   `packaging/npm/dist/` is git-ignored. The script sets the version in `package.json` and prints the
+   publish command. Check the package first: `cd packaging/npm/dist && npm pack --dry-run`, then
+   `npm install -g --prefix "$(mktemp -d)" $(npm pack)` and run `bin/sapu version` and an `initialize`
+   request through `bin/sapu mcp`.
+2. Publish:
+   ```sh
+   npm publish packaging/npm/dist
+   ```
+   The first publish needs `npm login`. Then `npx -y @khmuhtadin/sapu version` must print the new version.
+3. Bump the plugin version to the same number in `.claude-plugin/marketplace.json` (the plugin
+   entry and `metadata.version`) and `plugins/sapu/.claude-plugin/plugin.json`. Claude Code only updates
+   an installed plugin when this version changes. Run `claude plugin validate .` and
+   `claude plugin validate plugins/sapu`, commit, and push to `main`.
+4. In `packaging/npm/package.json`, set `version` to the new number too, so the source matches what
+   was published.
+
+The plugin runs `npx -y @khmuhtadin/sapu mcp`, so it uses the newest published package. Publish to npm before you
+tell anyone to update the plugin.
 
 ## Try a build locally
 

@@ -1,0 +1,43 @@
+{
+  "name": "@khmuhtadin/sapu",
+  "version": "0.1.0",
+  "description": "A Mac cleaner for the command line that never deletes anything you can't undo. Includes a read-only MCP server for AI agents.",
+  "bin": {
+    "sapu": "sapu"
+  },
+  "os": [
+    "darwin"
+  ],
+  "files": [
+    "sapu",
+    "LICENSE",
+    "NOTICE",
+    "README.md",
+    "THIRD_PARTY_LICENSES",
+    "THIRD_PARTY_NOTICES"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "Apache-2.0",
+  "author": "Khairul Muhtadin (https://khmuhtadin.com)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khmuhtadin/sapu.git"
+  },
+  "homepage": "https://github.com/khmuhtadin/sapu",
+  "bugs": {
+    "url": "https://github.com/khmuhtadin/sapu/issues"
+  },
+  "keywords": [
+    "macos",
+    "cleaner",
+    "disk-space",
+    "cache",
+    "cli",
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "claude-code"
+  ]
+}
