@@ -23,6 +23,9 @@ type explainData struct {
 	Reconcile *explain.Reconciliation `json:"reconcile,omitempty"`
 }
 
+// explainRows measures the System Data rows. Tests replace it.
+var explainRows = explain.Explain
+
 func newExplainCmd() *cobra.Command {
 	return &cobra.Command{
 		Use:   "explain",
@@ -42,7 +45,7 @@ func runExplain(cmd *cobra.Command, args []string) error {
 	}
 	p := newProgress(cmd)
 	p.Status("explain", "Measuring System Data (a folder can take up to 20 seconds)…")
-	rows, err := explain.Explain(cmd.Context(), e)
+	rows, err := explainRows(cmd.Context(), e)
 	p.Done()
 	if err != nil {
 		return err

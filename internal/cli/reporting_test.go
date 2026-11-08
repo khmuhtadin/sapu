@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -207,6 +208,24 @@ func TestDiffRecordWritesOnlyOneSnapshotADay(t *testing.T) {
 func TestExplainReconcileAddsUp(t *testing.T) {
 	e := env.New(t.TempDir())
 	fakeDiskSpace(t, 500*gb, 120*gb) // used 380
+	// The real rows outside home must not decide the sum: a CI Mac with
+	// Xcode has more system assets than this fake disk has used.
+	measure := explainRows
+	t.Cleanup(func() { explainRows = measure })
+	explainRows = func(ctx context.Context, e env.Env) ([]explain.Row, error) {
+		rows, err := measure(ctx, e)
+		for i := range rows {
+			switch rows[i].ID {
+			case "spotlight":
+				rows[i].Bytes = 2 * gb
+			case "system_assets":
+				rows[i].Bytes = 30 * gb
+			case "swap":
+				rows[i].Bytes, rows[i].Unmeasured = -1, "needs admin"
+			}
+		}
+		return rows, err
+	}
 	saveSnapshot(t, e, trends.Date(time.Now()), time.Now().Add(-3*time.Hour), 300*gb)
 
 	out, errOut, code := sapu(t, e, "", "explain", "--json")
