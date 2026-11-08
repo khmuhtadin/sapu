@@ -50,6 +50,7 @@ func menuBackend(cmd *cobra.Command) menu.Backend {
 		Settings:   settingsText,
 		Quarantine: menuQuarantine,
 		Restore:    menuRestore,
+		Delete:     menuDelete,
 	}
 }
 
@@ -136,4 +137,26 @@ func menuRestore(runID string) (string, error) {
 		text += fmt.Sprintf("\n%s was already at the original place, so it was restored next to the original.", plural(conflicts, "item"))
 	}
 	return text, err
+}
+
+// menuDelete deletes runs from quarantine for good, the way
+// `sapu quarantine empty RUN_ID` does for each.
+func menuDelete(runIDs []string) (string, error) {
+	e, err := loadEnv()
+	if err != nil {
+		return "", err
+	}
+	var total int64
+	for i, id := range runIDs {
+		freed, err := fsop.Empty(e, id)
+		total += freed
+		if err != nil {
+			return fmt.Sprintf("Deleted %s of %s for good (%s).", plural(i, "run"), plural(len(runIDs), "run"), output.Bytes(total)),
+				fmt.Errorf("run %s: %w", id, err)
+		}
+	}
+	if len(runIDs) == 1 {
+		return fmt.Sprintf("Deleted run %s for good. Freed %s.", runIDs[0], output.Bytes(total)), nil
+	}
+	return fmt.Sprintf("Deleted %s for good. Freed %s.", plural(len(runIDs), "run"), output.Bytes(total)), nil
 }

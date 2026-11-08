@@ -5,8 +5,9 @@
 //   - No choice moves or deletes anything by itself. Scan & review and the
 //     folder explorer open the existing screens, which ask for their own
 //     confirmation. Every other choice only shows information.
-//   - The only change the menu can make is restoring a quarantined run, and
-//     only after y on its own confirmation. Enter never confirms.
+//   - The only changes the menu can make are on the quarantine screen:
+//     restoring a run, or deleting one run or all runs for good. Each needs
+//     y on its own confirmation. Enter never confirms.
 //
 // The menu does not know the commands. The CLI hands it a Backend.
 package menu
@@ -19,7 +20,7 @@ import (
 )
 
 // Backend is what the menu needs from the CLI. Every function but Restore
-// only reads.
+// and Delete only reads.
 type Backend struct {
 	Review     func(ctx context.Context) error           // the review screen of `sapu clean`
 	Analyze    func(ctx context.Context) error           // the folder explorer of `sapu analyze`
@@ -29,6 +30,7 @@ type Backend struct {
 	Settings   func(ctx context.Context) (string, error) // whitelist and settings, as text
 	Quarantine func() (Quarantine, error)                // runs held in quarantine
 	Restore    func(runID string) (string, error)        // like `sapu undo RUN_ID`; returns what to tell the user
+	Delete     func(runIDs []string) (string, error)     // like `sapu quarantine empty RUN_ID`, for each run; returns what to tell the user
 }
 
 // Quarantine is what the quarantine screen shows.

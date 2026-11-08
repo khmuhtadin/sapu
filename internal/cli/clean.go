@@ -19,6 +19,7 @@ import (
 	"github.com/khmuhtadin/sapu/internal/config"
 	"github.com/khmuhtadin/sapu/internal/engine"
 	"github.com/khmuhtadin/sapu/internal/env"
+	"github.com/khmuhtadin/sapu/internal/fsop"
 	"github.com/khmuhtadin/sapu/internal/optimize"
 	"github.com/khmuhtadin/sapu/internal/output"
 	"github.com/khmuhtadin/sapu/internal/plan"
@@ -237,7 +238,7 @@ func runReview(cmd *cobra.Command, e env.Env, planFn review.PlanFunc) error {
 func finishReview(w io.Writer, home string, cfg config.Config, res review.Outcome, err error) error {
 	switch {
 	case res.Result != nil:
-		writeResult(w, home, res.Result, cfg, res.Start, false, false)
+		writeResult(w, home, res.Result, cfg, res.Start, res.Deleted, false)
 	case err == nil:
 		fmt.Fprintln(w, "Nothing was changed.")
 	}
@@ -396,7 +397,9 @@ func runPlan(cmd *cobra.Command, name string, e env.Env, p *plan.Plan, f cleanup
 		return err
 	}
 
-	deleted := f.permanent && err == nil && len(res.Moved) > 0
+	// The engine keeps the run in quarantine when a move failed, so ask the
+	// quarantine rather than trust --permanent.
+	deleted := f.permanent && err == nil && len(res.Moved) > 0 && !inQuarantine(e, res.RunID)
 	data := runData{Summary: sum, Result: res, Deleted: deleted, Cancelled: cmd.Context().Err() != nil, Notes: f.notes, Admin: f.admin}
 	if len(res.Moved) > 0 && !deleted {
 		t := start.Add(opts.MaxAge)
@@ -499,4 +502,15 @@ func savePlan(cmd *cobra.Command, name string, p *plan.Plan, f cleanupFlags) err
 	}
 	writeNotes(out, f.notes)
 	return printData(cmd, name, runData{PlanFile: abs, Summary: sum, Notes: f.notes, Admin: f.admin})
+}
+
+// inQuarantine reports whether run still holds items in quarantine. A
+// quarantine that cannot be read counts as holding them.
+func inQuarantine(e env.Env, run string) bool {
+	sizes, err := fsop.QuarantineSize(e)
+	if err != nil {
+		return true
+	}
+	_, ok := sizes[run]
+	return ok
 }

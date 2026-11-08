@@ -832,3 +832,58 @@ func TestQuarantineSettingsReachApplyAndTexts(t *testing.T) {
 		t.Errorf("receipt still names the built-in 20.0 GB:\n%s", view)
 	}
 }
+
+// d on the confirm screen asks about deleting for good; only y after it
+// applies with Permanent, and n or esc forgets the choice.
+func TestDeleteForGoodNeedsItsOwnQuestion(t *testing.T) {
+	m, f := listed(t)
+	press(m, "enter", "d")
+	view := strings.Join(strings.Fields(m.View()), " ")
+	for _, want := range []string{"for good?", "There is no undo", "[y] Delete for good", "[n] Keep reviewing"} {
+		if !strings.Contains(view, want) {
+			t.Errorf("question lacks %q:\n%s", want, m.View())
+		}
+	}
+	press(m, "enter", "space", "a", "q", "x")
+	if f.count() != 0 || m.screen != screenConfirm {
+		t.Fatalf("only y may delete: calls %d, screen %d", f.count(), m.screen)
+	}
+
+	press(m, "esc", "enter")
+	if m.permanent || strings.Contains(m.View(), "for good?") {
+		t.Fatal("esc should forget the delete choice")
+	}
+	finish(t, m, press(m, "y"))
+	if f.count() != 1 || f.opts[0].Permanent {
+		t.Fatalf("y alone must move to quarantine, not delete: %+v", f.opts)
+	}
+
+	m, f = listed(t)
+	press(m, "enter", "d")
+	finish(t, m, press(m, "y"))
+	if f.count() != 1 || !f.opts[0].Permanent {
+		t.Fatalf("d then y should apply with Permanent: %+v", f.opts)
+	}
+	view = strings.Join(strings.Fields(m.View()), " ")
+	if !m.deleted() || !strings.Contains(view, "for good.") || !strings.Contains(view, "cannot be restored") || strings.Contains(view, "sapu undo") {
+		t.Errorf("receipt after a delete:\n%s", m.View())
+	}
+}
+
+// When a move fails the engine keeps the run in quarantine, and the receipt
+// must not claim it was deleted.
+func TestDeleteForGoodWithAFailureKeepsTheRun(t *testing.T) {
+	m, f := listed(t)
+	f.result = func(_ context.Context, p *plan.Plan, _ engine.Options) (*engine.Result, error) {
+		r := movedAll(p)
+		r.Failed = append(r.Failed, engine.Failure{Item: r.Moved[0], Error: "busy"})
+		r.Moved = r.Moved[1:]
+		return r, nil
+	}
+	press(m, "enter", "d")
+	finish(t, m, press(m, "y"))
+	view := strings.Join(strings.Fields(m.View()), " ")
+	if m.deleted() || strings.Contains(view, "for good.") || !strings.Contains(view, "kept the run in quarantine") || !strings.Contains(view, "sapu undo") {
+		t.Errorf("receipt after a failed delete:\n%s", m.View())
+	}
+}

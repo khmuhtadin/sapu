@@ -17,6 +17,7 @@ import (
 // fake is a Backend that records what the menu asks for.
 type fake struct {
 	restored []string
+	deleted  [][]string
 	runs     []Held
 }
 
@@ -37,6 +38,10 @@ func (f *fake) backend() Backend {
 		Restore: func(id string) (string, error) {
 			f.restored = append(f.restored, id)
 			return "Restored 2 items from run " + id + ".", nil
+		},
+		Delete: func(ids []string) (string, error) {
+			f.deleted = append(f.deleted, ids)
+			return fmt.Sprintf("Deleted %d runs for good.", len(ids)), nil
 		},
 	}
 }
@@ -341,8 +346,7 @@ func TestPageScrolls(t *testing.T) {
 	}
 }
 
-// The quarantine restore is the only change the menu can make, and it takes
-// its own confirmation: y.
+// The quarantine restore takes its own confirmation: y.
 func TestRestoreNeedsItsOwnConfirmation(t *testing.T) {
 	f := newFake()
 	m := newTestModel(f, 80, 24, false)
@@ -384,8 +388,69 @@ func TestRestoreNeedsItsOwnConfirmation(t *testing.T) {
 	if len(f.restored) != 1 || f.restored[0] != "20261107-0900-demo" {
 		t.Fatalf("y should restore the run under the cursor once: %v", f.restored)
 	}
+	if len(f.deleted) != 0 {
+		t.Fatalf("a restore deleted something: %v", f.deleted)
+	}
 	if v := m.View(); !strings.Contains(v, "Restored 2 items from run 20261107-0900-demo.") {
 		t.Errorf("the result should show:\n%s", v)
+	}
+}
+
+// Deleting for good takes its own confirmation too: d asks for the run under
+// the cursor, D for every run, and only y deletes.
+func TestDeleteNeedsItsOwnConfirmation(t *testing.T) {
+	f := newFake()
+	m := newTestModel(f, 80, 24, false)
+	press(m, "4", "down", "d")
+	if !m.confirming || len(f.deleted) != 0 {
+		t.Fatal("d should ask, not delete")
+	}
+	v := m.View()
+	for _, want := range []string{"Delete run 20261107-0900-demo for good?", "There is no undo", "[n] Keep in quarantine", "[y] Delete for good"} {
+		if !strings.Contains(strings.Join(strings.Fields(v), " "), want) {
+			t.Errorf("confirmation lacks %q:\n%s", want, v)
+		}
+	}
+	press(m, "enter", "space", "q", "d", "D", "x", "down")
+	if len(f.deleted) != 0 || len(f.restored) != 0 || !m.confirming {
+		t.Fatalf("only y may delete: %v %v", f.deleted, f.restored)
+	}
+	press(m, "n")
+	if m.confirming || len(f.deleted) != 0 {
+		t.Fatal("n should keep the run in quarantine")
+	}
+	press(m, "d", "esc")
+	if m.confirming || len(f.deleted) != 0 {
+		t.Fatal("esc should keep the run in quarantine")
+	}
+
+	press(m, "d", "y")
+	if len(f.deleted) != 1 || fmt.Sprint(f.deleted[0]) != "[20261107-0900-demo]" || len(f.restored) != 0 {
+		t.Fatalf("y should delete the run under the cursor once: %v %v", f.deleted, f.restored)
+	}
+	if v := m.View(); !strings.Contains(v, "Deleted 1 runs for good.") {
+		t.Errorf("the result should show:\n%s", v)
+	}
+
+	press(m, "D")
+	v = m.View()
+	if !m.confirming || !strings.Contains(v, "Delete all 2 runs for good?") || !strings.Contains(strings.Join(strings.Fields(v), " "), "frees 1.4 GB") {
+		t.Fatalf("D should ask about every run:\n%s", v)
+	}
+	press(m, "y")
+	if len(f.deleted) != 2 || fmt.Sprint(f.deleted[1]) != "[20261108-1500-demo 20261107-0900-demo]" {
+		t.Fatalf("y should delete every run once: %v", f.deleted)
+	}
+}
+
+func TestDeleteErrorShows(t *testing.T) {
+	f := newFake()
+	b := f.backend()
+	b.Delete = func([]string) (string, error) { return "", errors.New("another sapu is working") }
+	m := newModel(context.Background(), b, false)
+	press(m, "4", "d", "y")
+	if v := m.View(); !strings.Contains(v, "Could not finish: another sapu is working") {
+		t.Errorf("a failed delete should say so:\n%s", v)
 	}
 }
 
@@ -404,8 +469,8 @@ func TestEmptyQuarantine(t *testing.T) {
 	f := newFake()
 	f.runs = nil
 	m := newTestModel(f, 80, 24, false)
-	press(m, "4", "enter", "y")
-	if m.confirming || len(f.restored) != 0 || !strings.Contains(m.View(), "The quarantine is empty") {
+	press(m, "4", "enter", "y", "d", "y", "D", "y")
+	if m.confirming || len(f.restored) != 0 || len(f.deleted) != 0 || !strings.Contains(m.View(), "The quarantine is empty") {
 		t.Errorf("nothing to restore:\n%s", m.View())
 	}
 }

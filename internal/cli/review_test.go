@@ -131,6 +131,7 @@ func TestFinishReviewExitCodes(t *testing.T) {
 			"`sapu quarantine empty 20261108-111500-a3f9`",
 			"Undo: `sapu undo 20261108-111500-a3f9`",
 		}},
+		{"deleted for good", review.Outcome{Result: result(0, 0), Start: start, Deleted: true}, nil, 0, []string{"for good. There is no undo."}},
 		{"something skipped", review.Outcome{Result: result(1, 0), Start: start}, nil, 3, []string{"Skipped while applying"}},
 		{"something failed", review.Outcome{Result: result(0, 1), Start: start}, nil, 3, []string{"Failed (1)"}},
 		{"stopped with ctrl-c", review.Outcome{Result: result(0, 0), Start: start, Err: context.Canceled, Cancelled: true}, nil, 130, []string{"Moved 1 item"}},

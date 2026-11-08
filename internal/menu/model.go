@@ -44,11 +44,20 @@ type (
 		q   Quarantine
 		err error
 	}
-	restoredMsg struct {
+	doneMsg struct { // a restore or a delete finished
 		seq  int
 		text string
 		err  error
 	}
+)
+
+// ask is what the quarantine confirmation asks about.
+type ask int
+
+const (
+	askRestore   ask = iota // put q.Runs[sub] back
+	askDelete               // delete q.Runs[sub] for good
+	askDeleteAll            // delete every run for good
 )
 
 type model struct {
@@ -71,9 +80,10 @@ type model struct {
 
 	// quarantine
 	q          Quarantine
-	confirming bool // asking whether to restore q.Runs[sub]
-	restoring  bool
-	note       string // what the last restore did
+	confirming bool // asking the question in ask
+	ask        ask
+	busy       bool   // a restore or delete is running
+	note       string // what the last restore or delete did
 
 	launch launch
 	notice string // shown on the menu: what the last screen said
@@ -98,9 +108,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.loading, m.q, m.err = false, msg.q, msg.err
 			m.sub = min(m.sub, max(len(m.q.Runs)-1, 0))
 		}
-	case restoredMsg:
+	case doneMsg:
 		if msg.seq == m.seq && m.screen == screenQuarantine {
-			m.restoring, m.note = false, msg.text
+			m.busy, m.note = false, msg.text
 			if msg.err != nil {
 				m.note += "\nCould not finish: " + msg.err.Error()
 			}
@@ -114,7 +124,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *model) key(msg tea.KeyMsg) tea.Cmd {
 	k := msg.String()
-	if k == "ctrl+c" && !m.restoring {
+	if k == "ctrl+c" && !m.busy {
 		return tea.Quit
 	}
 	switch m.screen {
@@ -261,15 +271,16 @@ func (m *model) loadQuarantine() tea.Cmd {
 	}
 }
 
-// quarantineKey: enter asks, y restores. Nothing else restores.
+// quarantineKey: enter asks to restore, d to delete the run for good, D to
+// delete every run for good. Only y on that question does it.
 func (m *model) quarantineKey(k string) tea.Cmd {
-	if m.restoring {
+	if m.busy {
 		return nil
 	}
 	if m.confirming {
 		switch k {
 		case "y", "Y":
-			return m.restore()
+			return m.do()
 		case "n", "N", "esc":
 			m.confirming = false
 		}
@@ -283,23 +294,44 @@ func (m *model) quarantineKey(k string) tea.Cmd {
 	case "down", "j":
 		m.sub = min(m.sub+1, max(len(m.q.Runs)-1, 0))
 	case "enter":
-		if len(m.q.Runs) > 0 && !m.loading {
-			m.confirming = true
-			m.note = ""
-		}
+		m.askAbout(askRestore)
+	case "d":
+		m.askAbout(askDelete)
+	case "D":
+		m.askAbout(askDeleteAll)
 	}
 	return nil
 }
 
-// restore starts the restore of the run under the cursor. It is reached only
-// from y on the confirmation.
-func (m *model) restore() tea.Cmd {
-	id := m.q.Runs[m.sub].ID
-	m.confirming, m.restoring = false, true
+func (m *model) askAbout(a ask) {
+	if len(m.q.Runs) > 0 && !m.loading && m.err == nil {
+		m.confirming, m.ask, m.note = true, a, ""
+	}
+}
+
+// do restores or deletes what the confirmation asked about. It is reached
+// only from y on the confirmation.
+func (m *model) do() tea.Cmd {
+	var ids []string
+	if m.ask == askDeleteAll {
+		for _, r := range m.q.Runs {
+			ids = append(ids, r.ID)
+		}
+	} else {
+		ids = []string{m.q.Runs[m.sub].ID}
+	}
+	a := m.ask
+	m.confirming, m.busy = false, true
 	seq := m.seq
 	return func() tea.Msg {
-		text, err := m.b.Restore(id)
-		return restoredMsg{seq: seq, text: text, err: err}
+		var text string
+		var err error
+		if a == askRestore {
+			text, err = m.b.Restore(ids[0])
+		} else {
+			text, err = m.b.Delete(ids)
+		}
+		return doneMsg{seq: seq, text: text, err: err}
 	}
 }
 

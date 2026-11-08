@@ -1,7 +1,8 @@
 // Package review is the interactive review screen of `sapu clean`: a
 // bubbletea TUI that scans, lists the plan grouped by risk (SAFE, MODERATE,
 // RISKY), lets the user change the selection, asks once on a confirm screen,
-// moves the selected items to quarantine with engine.Apply and shows a
+// moves the selected items to quarantine with engine.Apply (or deletes them
+// for good, when the user chose that on the confirm screen) and shows a
 // receipt.
 //
 // The screens are: scanning, list, confirm, applying, receipt.
@@ -10,7 +11,8 @@
 //   - Only y on the confirm screen starts a move. Nothing else does.
 //   - Apply gets a copy of the plan that holds only the selected quarantine
 //     items, with the default engine options (and the quarantine settings of sapu.toml):
-//     no --permanent, no commands.
+//     no commands, and no --permanent unless the user pressed d on the
+//     confirm screen, read the "for good" question it shows, and then y.
 //   - RISKY items start collapsed. `a` and a group toggle never select them;
 //     space on one shows why it is risky first and selects it only when
 //     pressed a second time.
@@ -45,6 +47,7 @@ type Outcome struct {
 	Start     time.Time      // when the move began
 	Err       error          // what engine.Apply returned
 	Cancelled bool           // Ctrl-C or a signal stopped the screen or the move
+	Deleted   bool           // the user chose delete for good and the engine emptied the run
 }
 
 // Run shows the screen until the user quits. The quarantine settings of cfg
@@ -64,6 +67,7 @@ func Run(ctx context.Context, e env.Env, cfg config.Config, planFn PlanFunc, why
 		m.run.cancel()
 		<-m.run.done
 		out.Result, out.Err, out.Start = m.run.result, m.run.err, m.run.start
+		out.Deleted = m.deleted()
 	}
 	switch {
 	case errors.Is(err, tea.ErrInterrupted), errors.Is(err, tea.ErrProgramKilled):

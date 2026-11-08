@@ -156,3 +156,32 @@ func TestQuarantineExpire(t *testing.T) {
 		t.Errorf("extra argument: exit %d, want 2", code)
 	}
 }
+
+// The menu's delete empties each run it is given, like `sapu quarantine empty`.
+func TestMenuDelete(t *testing.T) {
+	e := newHome(t)
+	out, _, _ := sapu(t, e, "", "clean", "--yes")
+	first := runIDOf(t, out)
+	for rel, data := range junk {
+		writeFile(t, filepath.Join(e.Home, rel), data)
+	}
+	out, _, _ = sapu(t, e, "", "clean", "--yes")
+	second := runIDOf(t, out)
+
+	text, err := menuDelete([]string{first})
+	if err != nil || !strings.Contains(text, "Deleted run "+first+" for good") {
+		t.Fatalf("%q %v", text, err)
+	}
+	list, _, _ := sapu(t, e, "", "quarantine", "list")
+	if strings.Contains(list, first) || !strings.Contains(list, second) {
+		t.Fatalf("only the first run should be gone:\n%s", list)
+	}
+
+	text, err = menuDelete([]string{second})
+	if err != nil || !strings.Contains(text, "Freed") {
+		t.Fatalf("%q %v", text, err)
+	}
+	if list, _, _ := sapu(t, e, "", "quarantine", "list"); !strings.Contains(list, "quarantine is empty") {
+		t.Fatalf("the quarantine should be empty:\n%s", list)
+	}
+}

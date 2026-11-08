@@ -133,6 +133,8 @@ type model struct {
 	run      *applyRun
 	stopping bool
 	elapsed  time.Duration
+
+	permanent bool // d on the confirm screen: delete for good instead of keeping in quarantine
 }
 
 func newModel(ctx context.Context, e env.Env, planFn PlanFunc, applyFn applyFunc, why func(string) string) *model {
@@ -610,12 +612,17 @@ func (m *model) toConfirm() {
 
 // ---- confirm and apply ----
 
+// confirmKey: y moves to quarantine. d turns the question into "delete for
+// good?", and then y deletes. n or esc goes back to the list.
 func (m *model) confirmKey(k string) tea.Cmd {
 	switch k {
 	case "y", "Y":
 		return m.apply()
+	case "d", "D":
+		m.permanent = true
 	case "n", "N", "esc":
 		m.screen = screenList
+		m.permanent = false
 	}
 	return nil
 }
@@ -653,6 +660,7 @@ func (m *model) apply() tea.Cmd {
 
 	opts := engine.DefaultOptions()
 	opts.MaxAge, opts.MaxBytes = m.cfg.MaxAge, m.cfg.MaxBytes
+	opts.Permanent = m.permanent
 	opts.Progress = func(done, total int, _ plan.Item) {
 		select {
 		case m.progCh <- progressMsg{done: done}:
@@ -682,6 +690,17 @@ func (m *model) applied() {
 		m.done = len(r.Moved) + len(r.Skipped) + len(r.Failed)
 	}
 	m.screen = screenReceipt
+}
+
+// deleted reports whether the run was deleted for good. The engine empties
+// the run only when nothing failed or stopped; the review never runs
+// commands, so every failure is a move that failed.
+func (m *model) deleted() bool {
+	if !m.permanent || m.run == nil || m.run.err != nil {
+		return false
+	}
+	r := m.run.result
+	return r != nil && len(r.Moved) > 0 && len(r.Failed) == 0
 }
 
 // ---- helpers ----

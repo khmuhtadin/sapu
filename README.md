@@ -173,16 +173,18 @@ lists the keys, `q` quits.
 | 1 Scan & review | The review screen below, the same as interactive `sapu clean` |
 | 2 Explore storage | The folder explorer (`sapu analyze`), or the System Data explanation (`sapu explain`) |
 | 3 Apps & build files | The commands that need an app or a folder (`sapu uninstall APP`, `sapu purge DIR`, `sapu dupes`, `sapu installer`, `sapu large`), each with what it does |
-| 4 Quarantine | The runs Sapu holds, when each can expire, and a restore |
+| 4 Quarantine | The runs Sapu holds, when each can expire, a restore, and delete for good |
 | 5 History | Your past runs (`sapu history`) |
 | 6 System check | The checks of `sapu doctor` |
 | 7 Settings | The whitelist and the settings in effect, with the commands that change them |
 
 No choice moves or deletes anything by itself. The review screen and the folder
-explorer ask on their own confirmation screens. The only change the menu can
-make is a restore from the Quarantine screen: `enter` asks, and only `y`
-restores, the same way `sapu undo RUN_ID` does. Leaving a screen returns to the
-menu.
+explorer ask on their own confirmation screens. The only changes the menu can
+make are on the Quarantine screen. `enter` asks to restore the run under the
+cursor, the same way `sapu undo RUN_ID` does. `d` asks to delete that run for
+good, and `D` to delete every run, the same way `sapu quarantine empty` does,
+to free the space now. Only `y` on the question does it; there is no undo after
+a delete. Leaving a screen returns to the menu.
 
 The menu opens only when stdin and stdout are terminals, `--json` is not set and
 `SAPU_NO_TUI` is unset. Otherwise `sapu` prints a summary and the next steps.
@@ -224,8 +226,11 @@ why it is risky, and selects it only when you press `space` again. `--risk`,
 Nothing moves until the confirm screen. It says that Sapu rechecks the exact
 items before moving them, and that protected, changed and open files are
 skipped. It names the quarantine retention from `sapu.toml`. `y` moves the
-selected items to quarantine; `n` or `esc` goes back to the list, and no other
-key chooses. While items move, the screen shows a count and the current item,
+selected items to quarantine; `n` or `esc` goes back to the list. To free the
+space right away, press `d`: the question becomes "Delete N items for good?",
+says there is no undo, and `y` then deletes them (the same as `--permanent`).
+No other key chooses. If an item fails or you stop the run, nothing is deleted
+for good and the run stays in quarantine. While items move, the screen shows a count and the current item,
 and Ctrl-C stops after the current item; what already moved can be undone. The
 receipt shows the Moved, Skipped and Failed counts, the reason for each skipped
 or failed item, and the `sapu undo` and `sapu quarantine` commands for the run.

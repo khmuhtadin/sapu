@@ -41,7 +41,7 @@ const helpText = `  up/down  j/k   move
   esc            go back
   ctrl-c         quit
 
-Menu choices open a review or inspection screen. They do not move or delete files by themselves. Moving files to quarantine always needs its own confirmation.`
+Menu choices open a review or inspection screen. They do not move or delete files by themselves. Moving files to quarantine, and deleting them for good, always needs its own confirmation.`
 
 func (m *model) View() string {
 	var out []string
@@ -240,7 +240,7 @@ func (m *model) textPageView() []string {
 }
 
 func (m *model) quarantineView() []string {
-	keys := "up/down move   enter restore   esc back"
+	keys := "up/down move   enter restore   d delete   D delete all   esc back"
 	var body []string
 	switch {
 	case m.loading:
@@ -250,7 +250,7 @@ func (m *model) quarantineView() []string {
 	case len(m.q.Runs) == 0:
 		body = []string{"  The quarantine is empty. There is nothing to restore."}
 	default:
-		body = []string{"  Runs held in quarantine. Restoring puts a run back where it was.", ""}
+		body = []string{"  Runs held in quarantine. Restoring puts a run back where it was.", "  Deleting frees the space now, for good.", ""}
 	}
 	focus := -1
 	for i, r := range m.q.Runs {
@@ -266,9 +266,9 @@ func (m *model) quarantineView() []string {
 	if m.q.Retention != "" {
 		body = append(body, "", "  "+m.q.Retention)
 	}
-	if m.restoring {
-		body = append(body, "", "  Restoring...")
-		keys = "restoring, please wait"
+	if m.busy {
+		body = append(body, "", "  Working...")
+		keys = "please wait"
 	}
 	if m.note != "" {
 		body = append(body, "")
@@ -282,24 +282,47 @@ func (m *model) quarantineView() []string {
 	return m.frame("quarantine", body, focus, keys)
 }
 
-// confirmView asks before a restore. n is the safe default: only y restores.
+// confirmView asks before a restore or a delete. n is the safe default: only
+// y does it.
 func (m *model) confirmView() []string {
 	r := m.q.Runs[m.sub]
 	w := min(m.w()-2, 72)
 	inner := w - 4
+	var text []string
+	choice, short := "[n] Keep in quarantine   [y] Restore this run", "[n] Keep   [y] Restore"
+	switch m.ask {
+	case askRestore:
+		text = []string{
+			"Restore run " + r.ID + "?",
+			"",
+			output.Bytes(r.Bytes) + " go back to where they were.",
+			"If something is already at an original path, the item is restored next to it. Nothing is overwritten.",
+		}
+	case askDelete:
+		text = []string{
+			"Delete run " + r.ID + " for good?",
+			"",
+			"This frees " + output.Bytes(r.Bytes) + " now. There is no undo: the run can no longer be restored.",
+		}
+		choice, short = "[n] Keep in quarantine   [y] Delete for good", "[n] Keep   [y] Delete"
+	case askDeleteAll:
+		var total int64
+		for _, h := range m.q.Runs {
+			total += h.Bytes
+		}
+		text = []string{
+			fmt.Sprintf("Delete all %d runs for good?", len(m.q.Runs)),
+			"",
+			"This empties the quarantine and frees " + output.Bytes(total) + " now. There is no undo: none of these runs can be restored.",
+		}
+		choice, short = "[n] Keep in quarantine   [y] Delete all for good", "[n] Keep   [y] Delete all"
+	}
 	var body []string
-	for _, l := range []string{
-		"Restore run " + r.ID + "?",
-		"",
-		output.Bytes(r.Bytes) + " go back to where they were.",
-		"If something is already at an original path, the item is restored next to it. Nothing is overwritten.",
-		"",
-	} {
+	for _, l := range append(text, "") {
 		body = append(body, wrapLine(l, inner)...)
 	}
-	choice := "[n] Keep in quarantine   [y] Restore this run"
 	if len(choice) > inner {
-		choice = "[n] Keep   [y] Restore"
+		choice = short
 	}
 	body = append(body, choice)
 

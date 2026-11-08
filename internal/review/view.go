@@ -585,7 +585,7 @@ func (m *model) retention() string {
 }
 
 // confirmView is design 06. The safe default is n: it comes first, and
-// nothing but y moves anything.
+// nothing but y moves anything. After d it asks about deleting for good.
 func (m *model) confirmView() []string {
 	n, bytes, byRisk := m.selection()
 	boxW := min(m.width-4, 76)
@@ -593,7 +593,11 @@ func (m *model) confirmView() []string {
 
 	var body []string
 	add := func(text string) { body = append(body, wrap(text, textW)...) }
-	body = append(body, bold.Render(truncateEnd(fmt.Sprintf("Move %s to quarantine?", plural(n, "item")), textW)), "")
+	question := fmt.Sprintf("Move %s to quarantine?", plural(n, "item"))
+	if m.permanent {
+		question = fmt.Sprintf("Delete %s for good?", plural(n, "item"))
+	}
+	body = append(body, bold.Render(truncateEnd(question, textW)), "")
 	counts := fmt.Sprintf("%s selected / %s %d / %s %d / %s %d", output.Bytes(bytes),
 		riskStyle[rules.RiskSafe].Render("SAFE"), byRisk[rules.RiskSafe],
 		riskStyle[rules.RiskModerate].Render("MODERATE"), byRisk[rules.RiskModerate],
@@ -612,9 +616,16 @@ func (m *model) confirmView() []string {
 	add("Sapu rechecks these exact items before moving them.")
 	add("Protected, changed and open files are skipped.")
 	body = append(body, "")
-	add(m.retention())
-	body = append(body, "")
 	keep, move := bold.Render("[n]")+" Keep reviewing", "[y] Move to quarantine"
+	if m.permanent {
+		for _, l := range wrap("This frees the space now. There is no undo: the items cannot be restored.", textW) {
+			body = append(body, riskStyle[rules.RiskRisky].Render(l))
+		}
+		move = "[y] Delete for good"
+	} else {
+		add(m.retention())
+	}
+	body = append(body, "")
 	if gap := textW - width(keep) - width(move); gap >= 2 {
 		body = append(body, keep+spaces(gap)+move)
 	} else {
@@ -622,7 +633,10 @@ func (m *model) confirmView() []string {
 	}
 
 	lines := append([]string{""}, box(body, boxW)...)
-	return append(lines, "", dim.Render("  Only y moves anything. n or esc goes back."))
+	if m.permanent {
+		return append(lines, "", dim.Render("  Only y deletes anything. n or esc goes back."))
+	}
+	return append(lines, "", dim.Render("  Only y moves anything. d deletes for good instead. n or esc goes back."))
 }
 
 // box draws an ASCII box boxW cells wide, two cells in from the left edge.
@@ -641,8 +655,12 @@ func (m *model) applyingView() []string {
 	total := len(m.todo)
 	done := min(m.done, total)
 	counter := fmt.Sprintf("%d / %d items", done, total)
-	lines := []string{m.title("moving to quarantine", ""), m.rule(), ""}
-	for _, l := range wrap("Moving selected items. You can stop after the current item.", m.width-3) {
+	title, what := "moving to quarantine", "Moving selected items. You can stop after the current item."
+	if m.permanent {
+		title, what = "deleting for good", "Moving selected items to quarantine, then deleting them for good. You can stop after the current item."
+	}
+	lines := []string{m.title(title, ""), m.rule(), ""}
+	for _, l := range wrap(what, m.width-3) {
 		lines = append(lines, "  "+l)
 	}
 	lines = append(lines, "")
@@ -734,8 +752,12 @@ func (m *model) receiptView() []string {
 		headline("REVIEW", "Nothing was moved.")
 	case stopped:
 		headline("STOPPED", fmt.Sprintf("Moved %d of %d items / %s to quarantine.", moved, len(m.todo), output.Bytes(r.Bytes)))
+	case skipped+failed > 0 && m.deleted():
+		headline("REVIEW", fmt.Sprintf("%d deleted / %d skipped / %d failed", moved, skipped, failed))
 	case skipped+failed > 0:
 		headline("REVIEW", fmt.Sprintf("%d moved / %d skipped / %d failed", moved, skipped, failed))
+	case m.deleted():
+		headline("OK", fmt.Sprintf("Deleted %s / %s for good.", plural(moved, "item"), output.Bytes(r.Bytes)))
 	default:
 		headline("OK", fmt.Sprintf("Moved %s / %s to quarantine.", plural(moved, "item"), output.Bytes(r.Bytes)))
 	}
@@ -763,8 +785,14 @@ func (m *model) receiptView() []string {
 		}
 	}
 
-	if r != nil && moved > 0 {
+	if m.deleted() {
 		lines = append(lines, "")
+		para("  ", "The space is free now. These items cannot be restored.")
+	} else if r != nil && moved > 0 {
+		lines = append(lines, "")
+		if m.permanent {
+			para("  ", "Nothing was deleted for good: the run stopped or an item failed, so Sapu kept the run in quarantine.")
+		}
 		if skipped+failed > 0 || stopped {
 			para("  ", fmt.Sprintf("The %s completed are in quarantine.", plural(moved, "item")))
 		}
@@ -776,7 +804,7 @@ func (m *model) receiptView() []string {
 		lines = append(lines, m.commandPair("Inspect held runs:", "sapu quarantine list")...)
 		lines = append(lines, m.commandPair("Free the space now:", "sapu quarantine empty "+r.RunID)...)
 	}
-	if r != nil && r.Freed > 0 {
+	if r != nil && r.Freed > 0 && !m.deleted() {
 		lines = append(lines, "")
 		para("  ", "Also deleted "+output.Bytes(r.Freed)+" from older runs whose quarantine had expired.")
 	}
