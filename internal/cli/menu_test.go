@@ -257,7 +257,7 @@ func TestMenuChoicesChangeNothing(t *testing.T) {
 	for choice, want := range map[string]string{
 		"1": "",                        // opens the review screen: the CLI runs it
 		"2": "Folder explorer",         // explore
-		"3": "sapu uninstall APP",      // apps
+		"3": "Build folders",           // tools
 		"4": id,                        // quarantine lists the run
 		"5": id,                        // history shows it
 		"6": "Full Disk Access",        // doctor

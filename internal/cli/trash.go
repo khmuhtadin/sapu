@@ -1,11 +1,16 @@
 package cli
 
 import (
+	"context"
+
 	"github.com/spf13/cobra"
 
 	"github.com/khmuhtadin/sapu/internal/engine"
+	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/finders"
 	"github.com/khmuhtadin/sapu/internal/plan"
+	"github.com/khmuhtadin/sapu/internal/review"
+	"github.com/khmuhtadin/sapu/internal/walk"
 )
 
 const trashLong = `Moves everything in ~/.Trash (hidden files too) and in the Trash of every
@@ -39,14 +44,29 @@ func runTrash(cmd *cobra.Command, f *cleanupFlags) error {
 	if err != nil {
 		return err
 	}
-	ctx := cmd.Context()
-	items, err := finders.Trash(ctx, e)
-	if err != nil {
-		return err
+	if useReview(cmd, f) {
+		return runReview(cmd, e, trashTool(e, nil, ""))
 	}
-	p, err := engine.Plan(ctx, e, plan.KindTrash, items)
+	p, err := planTrash(cmd.Context(), e)
 	if err != nil {
 		return err
 	}
 	return runPlan(cmd, "trash", e, p, *f)
+}
+
+// planTrash plans everything in the Trash; it is moderate, so it starts
+// selected. sapu trash and the trash tool share it.
+func planTrash(ctx context.Context, e env.Env) (*plan.Plan, error) {
+	items, err := finders.Trash(ctx, e)
+	if err != nil {
+		return nil, err
+	}
+	return engine.Plan(ctx, e, plan.KindTrash, items)
+}
+
+// trashTool is the plan of the trash tool. It has no folders.
+func trashTool(e env.Env, _ []string, _ string) review.PlanFunc {
+	return func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+		return planTrash(ctx, e)
+	}
 }

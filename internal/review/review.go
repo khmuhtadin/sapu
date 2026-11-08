@@ -1,5 +1,5 @@
-// Package review is the interactive review screen of `sapu clean`: a
-// bubbletea TUI that scans, lists the plan grouped by risk (SAFE, MODERATE,
+// Package review is the interactive review screen of `sapu clean` and of the
+// menu's tools: a bubbletea TUI that scans, lists the plan grouped by risk (SAFE, MODERATE,
 // RISKY), lets the user change the selection, asks once on a confirm screen,
 // moves the selected items to quarantine with engine.Apply (or deletes them
 // for good, when the user chose that on the confirm screen) and shows a
@@ -57,6 +57,19 @@ type Outcome struct {
 func Run(ctx context.Context, e env.Env, cfg config.Config, planFn PlanFunc, why func(detail string) string) (Outcome, error) {
 	m := newModel(ctx, e, planFn, engine.Apply, why)
 	m.cfg = cfg
+	return run(ctx, m)
+}
+
+// RunTitled is Run for a plan that is not `sapu clean`'s: the header names
+// it ("sapu / build folders") and the scan line does not talk of caches.
+func RunTitled(ctx context.Context, e env.Env, cfg config.Config, title string, planFn PlanFunc, why func(detail string) string) (Outcome, error) {
+	m := newModel(ctx, e, planFn, engine.Apply, why)
+	m.cfg = cfg
+	m.titled(title)
+	return run(ctx, m)
+}
+
+func run(ctx context.Context, m *model) (Outcome, error) {
 	_, err := tea.NewProgram(m, tea.WithAltScreen()).Run()
 	m.stopScan()
 

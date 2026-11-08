@@ -143,6 +143,7 @@ func newRootCmd() *cobra.Command {
 		groups[name].GroupID = group
 		root.AddCommand(groups[name])
 	}
+	root.AddCommand(newToolsCmd()) // in the "look" group, set in newToolsCmd
 	root.AddCommand(newAgentCmd()) // hidden: what the launchd agent runs
 	return root
 }

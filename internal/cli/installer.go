@@ -2,6 +2,7 @@ package cli
 
 import (
 	"cmp"
+	"context"
 	"fmt"
 	"path/filepath"
 	"slices"
@@ -10,8 +11,11 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/khmuhtadin/sapu/internal/engine"
+	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/finders"
 	"github.com/khmuhtadin/sapu/internal/plan"
+	"github.com/khmuhtadin/sapu/internal/review"
+	"github.com/khmuhtadin/sapu/internal/walk"
 )
 
 const installerLong = `Finds .dmg, .pkg, .mpkg, .iso and .xip files that were not changed for
@@ -21,6 +25,9 @@ your projects are left alone.
 
 Installers can be downloaded again, so they are selected. A disk image that
 is mounted right now is left alone.`
+
+// installerOlderThan is the default of --older-than, which the tool uses too.
+const installerOlderThan = "30d"
 
 func newInstallerCmd() *cobra.Command {
 	var f cleanupFlags
@@ -35,7 +42,7 @@ func newInstallerCmd() *cobra.Command {
 	}
 	f.addPlanFlag(cmd)
 	f.addApplyFlags(cmd)
-	cmd.Flags().StringVar(&olderThan, "older-than", "30d", "only installers not changed for this long, e.g. 30d, 8w, 1y")
+	cmd.Flags().StringVar(&olderThan, "older-than", installerOlderThan, "only installers not changed for this long, e.g. 30d, 8w, 1y")
 	return cmd
 }
 
@@ -57,19 +64,54 @@ func runInstaller(cmd *cobra.Command, args []string, f *cleanupFlags, olderThan 
 	}
 	roots := args
 	if len(roots) == 0 {
-		roots = []string{filepath.Join(e.Home, "Downloads"), filepath.Join(e.Home, "Desktop")}
+		roots = installerDefaultDirs(e)
 	}
-
-	ctx := cmd.Context()
-	items, mounted, err := finders.Installers(ctx, e, roots, opts)
+	if useReview(cmd, f) {
+		return runReview(cmd, e, func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+			return planInstaller(ctx, e, roots, opts)
+		})
+	}
+	p, err := planInstaller(cmd.Context(), e, roots, opts)
 	if err != nil {
 		return err
+	}
+	return runPlan(cmd, "installer", e, p, *f)
+}
+
+// installerDefaultDirs are the folders sapu installer looks in without DIR.
+func installerDefaultDirs(e env.Env) []string {
+	return []string{filepath.Join(e.Home, "Downloads"), filepath.Join(e.Home, "Desktop")}
+}
+
+// planInstaller finds the old installers in roots and plans them; they are
+// moderate, so they start selected. sapu installer and its tool share it.
+func planInstaller(ctx context.Context, e env.Env, roots []string, opts finders.InstallerOptions) (*plan.Plan, error) {
+	items, mounted, err := finders.Installers(ctx, e, roots, opts)
+	if err != nil {
+		return nil, err
 	}
 	p, err := engine.Plan(ctx, e, plan.KindInstaller, items)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	p.Skipped = append(p.Skipped, mounted...)
 	slices.SortStableFunc(p.Skipped, func(a, b plan.Skip) int { return cmp.Compare(a.Path, b.Path) })
-	return runPlan(cmd, "installer", e, p, *f)
+	return p, nil
+}
+
+// installerTool is the plan of the installer tool: sapu installer with its
+// defaults (--older-than 30d).
+func installerTool(e env.Env, dirs []string, _ string) review.PlanFunc {
+	return func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+		opts := finders.InstallerOptions{Now: time.Now()}
+		var err error
+		if opts.OlderThan, err = finders.ParseAge(installerOlderThan); err != nil {
+			return nil, err
+		}
+		roots := dirs
+		if len(roots) == 0 {
+			roots = installerDefaultDirs(e)
+		}
+		return planInstaller(ctx, e, roots, opts)
+	}
 }

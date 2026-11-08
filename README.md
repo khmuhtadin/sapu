@@ -174,11 +174,20 @@ lists the keys, `q` quits.
 |---|---|
 | 1 Scan & review | The review screen below, the same as interactive `sapu clean` |
 | 2 Explore storage | The folder explorer (`sapu analyze`), or the System Data explanation (`sapu explain`) |
-| 3 Apps & build files | The commands that need an app or a folder (`sapu uninstall APP`, `sapu purge DIR`, `sapu dupes`, `sapu installer`, `sapu large`), each with what it does |
+| 3 Tools | A list of tools to pick from: uninstall an app, build folders, large old files, duplicate files, similar photos, old installers, empty folders and broken links, empty the Trash, iPhone and iPad backups, login items |
 | 4 Quarantine | The runs Sapu holds, when each can expire, a restore, and delete for good |
 | 5 History | Your past runs (`sapu history`) |
 | 6 System check | The checks of `sapu doctor` |
 | 7 Settings | The whitelist and the settings in effect, with the commands that change them |
+
+On the Tools screen, move with `↑` `↓` and open a tool with `enter` or its
+number (`1` to `9`, `0` for the tenth). A tool that looks in folders first says
+where ("Looks in: ~/Developer, ~/Projects"): `enter` looks there, `f` lets you
+type one folder instead (`~` is your home folder; Sapu says so if it is not a
+folder). Uninstall lists your installed apps, without Apple's; type to filter
+and press `enter` on one. The other tools look at once. Each tool then opens the
+review screen below, with the tool's name in its header, and you come back to
+the menu after it. `esc` goes back from any of these screens and runs nothing.
 
 No choice moves or deletes anything by itself. The review screen and the folder
 explorer ask on their own confirmation screens. The only changes the menu can
@@ -201,7 +210,9 @@ it stays still with `NO_COLOR`.
 
 ### The `sapu clean` review screen
 
-In a terminal, `sapu clean` opens a review screen. It lists what it found in
+In a terminal, `sapu clean` opens a review screen. The tools of the menu open
+the same screen with their own plan and name it in the header, for example
+`sapu / build folders`. It lists what it found in
 three groups: SAFE (safe to recreate), MODERATE (needs review) and RISKY (may
 contain personal data). The item under the cursor shows its full path, what it
 is and whether it regenerates. Below the groups, SKIPPED lists what Sapu leaves
@@ -268,17 +279,20 @@ one finishes.
 | `sapu whitelist add ENTRY` | Never touch this path (it may use `*` globs) |
 | `sapu whitelist remove ENTRY` | Allow Sapu to touch this path again |
 | `sapu whitelist list` | Show the whitelist |
-| `sapu purge [DIR...]` | Build artifacts in projects (`node_modules`, `target`, ...). Default: the current folder |
+| `sapu purge [DIR...]` | Build artifacts in projects (`node_modules`, `target`, ...). Default: the current folder (from the menu: the `[purge]` roots of `sapu.toml`, else `~/Developer`, `~/Projects`, `~/code` and the like) |
 | `sapu analyze [PATH]` | Explore what takes space on disk. Default: your home folder |
 | `sapu uninstall APP` | Remove an app and the files it left in your Library. `--leftovers BUNDLE_ID` finds what an app you already removed left behind. Needs Full Disk Access to see some of those files |
 | `sapu login-items` | List what starts at login, flag leftovers, and turn items off |
 | `sapu login-items disable [LABEL...]` | Stop your login items from starting; undo turns them back on. `--orphans` takes every item whose program is gone |
-| `sapu large [DIR...]` | Find big files you have not opened in a long time. Lists them; `--pick` moves the ones you choose |
-| `sapu backups` | List iPhone and iPad backups and remove the ones you pick with `--pick`. Needs Full Disk Access |
+| `sapu large [DIR...]` | Find big files you have not opened in a long time. On a terminal you pick them on the review screen; else it lists them and `--pick` moves the ones you choose |
+| `sapu backups` | List iPhone and iPad backups and remove the ones you pick, on the review screen or with `--pick`. Needs Full Disk Access |
 | `sapu messages` | Find large Messages attachments. Read-only: it points to Apple's own way to free the space. Needs Full Disk Access |
 | `sapu trash` | Empty the Trash through quarantine, hidden files included. Needs Full Disk Access |
 | `sapu installer [DIR...]` | Find old installers (`.dmg`, `.pkg`, `.iso`) you no longer need. Default: Downloads and Desktop |
 | `sapu dupes [DIR...]` | Find duplicate files and move the extra copies to quarantine. `--keep` says which copy stays |
+| `sapu similar [DIR...]` | Find photos that look alike and keep the best one. You pick the others, on the review screen or with `--pick` |
+| `sapu tidy [DIR...]` | Find empty folders, broken links and empty files. You pick them, on the review screen or with `--pick` |
+| `sapu tools` | List the tools you can also run by picking them in the menu, with the folders they look in. `sapu tools apps` lists the apps `uninstall` can remove; `sapu tools plan ID [DIR...] [--app APP]` prints a tool's plan as JSON, like `clean --plan -`, for `sapu apply -` |
 | `sapu packages` | Clean package manager caches with each tool's own command, and list old Node, Python and Ruby versions. The commands are not undoable |
 | `sapu optimize` | Clear caches macOS rebuilds, to fix previews, fonts or DNS. Shows, and never runs, anything that needs admin rights |
 | `sapu explain` | Break down System Data and the official way to reclaim each part |
@@ -303,6 +317,7 @@ Flags, by command:
 | `dupes` | `--keep oldest\|newest\|shortest-path`, `--min-size 1MB`, `--plan FILE`, `--yes` |
 | `packages` | `--risk`, `--plan FILE`, `--yes` |
 | `optimize` | `--plan FILE`, `--yes` |
+| `tools plan ID` | `DIR...` (tools with folders), `--app APP` (uninstall: a path, a name or a bundle id) |
 | `undo` | `--last` |
 | `quarantine empty` | `--all`, `--yes` |
 | `analyze` | `--top N` (default 20), `--depth N` |
@@ -313,8 +328,13 @@ Flags, by command:
 `--permanent` still quarantines first, then deletes that run's quarantine at
 once; it asks you to type `delete`. Run `sapu COMMAND --help` for the details.
 
-`large` and `backups` choose nothing for you: they list, and only `--pick`
-moves. Official cleanup commands (`brew cleanup`, `docker system prune`, ...)
+`uninstall`, `purge`, `large`, `dupes`, `similar`, `installer`, `tidy`,
+`trash`, `backups` and `login-items disable` open the same review screen as
+`sapu clean` on a terminal, unless a flag asks for the text flow (`--pick`,
+`--pick-all`, `--plan`, `--yes`, `--json`, `--permanent`, `--run-commands`,
+`--reset-permissions`, `--replace-with-clone`). `large`, `backups`, `similar`
+and `tidy` choose nothing for you: you pick on the screen, or they list and
+only `--pick` moves. Official cleanup commands (`brew cleanup`, `docker system prune`, ...)
 run only with `--run-commands` on `clean`, `purge` and `apply`, or inside
 `packages` and `optimize`, after a confirmation that says they are not
 undoable. Details: [docs/safety.md](docs/safety.md).

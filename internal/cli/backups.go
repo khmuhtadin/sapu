@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"time"
@@ -8,9 +9,12 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/khmuhtadin/sapu/internal/engine"
+	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/finders"
 	"github.com/khmuhtadin/sapu/internal/output"
 	"github.com/khmuhtadin/sapu/internal/plan"
+	"github.com/khmuhtadin/sapu/internal/review"
+	"github.com/khmuhtadin/sapu/internal/walk"
 )
 
 const backupsLong = `Lists the iPhone and iPad backups in
@@ -53,20 +57,13 @@ func runBackups(cmd *cobra.Command, f *cleanupFlags, pick string) error {
 	if err != nil {
 		return err
 	}
-	ctx := cmd.Context()
-	found, err := finders.Backups(ctx, e)
+	if picks == nil && useReview(cmd, f) {
+		return runReview(cmd, e, backupsTool(e, nil, ""))
+	}
+	p, backups, err := planBackups(cmd.Context(), e)
 	if err != nil {
 		return err
 	}
-	items := make([]plan.Item, len(found))
-	for i, b := range found {
-		items[i] = b.Item
-	}
-	p, err := engine.Plan(ctx, e, plan.KindBackups, items)
-	if err != nil {
-		return err
-	}
-	backups := keepFound(p, found, func(b finders.Backup) string { return b.Item.Path })
 
 	data := foundList[backupJSON]{Items: []backupJSON{}, Skipped: p.Skipped}
 	paths := make([]string, len(backups))
@@ -107,6 +104,36 @@ func runBackups(cmd *cobra.Command, f *cleanupFlags, pick string) error {
 		}
 	}
 	return runFound(cmd, "backups", e, p, paths, picks, *f, show, data)
+}
+
+// planBackups finds the device backups and plans them with nothing
+// selected: a backup cannot be made again. backups are the found backups
+// still in the plan, newest first. sapu backups and its tool share it.
+func planBackups(ctx context.Context, e env.Env) (p *plan.Plan, backups []finders.Backup, err error) {
+	found, err := finders.Backups(ctx, e)
+	if err != nil {
+		return nil, nil, err
+	}
+	items := make([]plan.Item, len(found))
+	for i, b := range found {
+		items[i] = b.Item
+	}
+	p, err = engine.Plan(ctx, e, plan.KindBackups, items)
+	if err != nil {
+		return nil, nil, err
+	}
+	for i := range p.Items {
+		p.Items[i].Selected = false
+	}
+	return p, keepFound(p, found, func(b finders.Backup) string { return b.Item.Path }), nil
+}
+
+// backupsTool is the plan of the backups tool. It has no folders.
+func backupsTool(e env.Env, _ []string, _ string) review.PlanFunc {
+	return func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+		p, _, err := planBackups(ctx, e)
+		return p, err
+	}
 }
 
 // backupJSON is one backup in the list that `sapu backups --json` prints.

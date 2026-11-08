@@ -30,6 +30,8 @@ is in this table, once:
 | `sapu large`, `backups`, `messages`, `trash`, `installer`, `dupes`, `similar`, `tidy`, `slim`, `health`, `updates`, `optimize`, `packages`, `uninstall`, `reset` | the command name | `<command>.json` |
 | `sapu login-items` | `login-items` | `login-items.json` |
 | `sapu login-items disable` | `login-items-disable` | `login-items.json` (the run shape) |
+| `sapu tools` | `tools` | `tools.json` |
+| `sapu tools apps` | `tools-apps` | `tools-apps.json` |
 | `sapu quarantine list` | `quarantine-list` | `quarantine-list.json` |
 | `sapu quarantine empty` | `quarantine-empty` | `quarantine-empty.json` |
 | `sapu quarantine expire` | `quarantine-expire` | `quarantine-expire.json` |
@@ -69,10 +71,10 @@ On failure `ok` is `false`, `data` is absent, and `error.code` is one of:
 
 ## `--plan -`
 
-`sapu clean --plan -` (and `purge --plan -`) writes the plan itself to stdout:
+`sapu clean --plan -` (and `purge --plan -`, and `sapu tools plan ID`) writes the plan itself to stdout:
 the raw document that matches `plan.json`, with no envelope. The same plan is
-what `--plan FILE` saves and `sapu apply` reads. Do not combine `--plan -` with
-`--json`; that is a usage error. With `--plan FILE --json` you get the usual
+what `--plan FILE` saves and `sapu apply` reads. Do not combine `--plan -` (or
+`sapu tools plan`) with `--json`; that is a usage error. With `--plan FILE --json` you get the usual
 envelope, with `data.plan_file` and `data.summary`.
 
 ## Progress events
@@ -84,7 +86,7 @@ not apply:
 
 | `phase` | Sent by | Fields |
 |---|---|---|
-| `scan` | `clean`, `purge`, `analyze`, `dupes`, `packages` | `files`, `bytes`, `path` while scanning; or `text` for a step with no counters ("Measuring ~…") |
+| `scan` | `clean`, `purge`, `analyze`, `dupes`, `packages`, `tools plan dupes` | `files`, `bytes`, `path` while scanning; or `text` for a step with no counters ("Measuring ~…") |
 | `apply` | every command that moves items (`clean`, `purge`, `apply`, `uninstall`, `dupes`, ...) | `done`, `total`, `path` (the item being moved) |
 | `explain` | `explain` | `text` ("Measuring System Data…") |
 | `command` | `clean`, `purge`, `apply`, `packages`, `optimize` | `text` ("Running npm cache clean --force…"), sent right before an official cleanup command starts |

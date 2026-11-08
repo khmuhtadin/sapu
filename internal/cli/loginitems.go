@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -12,9 +13,12 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/khmuhtadin/sapu/internal/engine"
+	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/loginitems"
 	"github.com/khmuhtadin/sapu/internal/plan"
+	"github.com/khmuhtadin/sapu/internal/review"
 	"github.com/khmuhtadin/sapu/internal/rules"
+	"github.com/khmuhtadin/sapu/internal/walk"
 )
 
 const loginItemsLong = `List what starts at login: your agents in ~/Library/LaunchAgents, and the
@@ -206,24 +210,61 @@ func runLoginItemsDisable(cmd *cobra.Command, args []string, f *cleanupFlags, or
 		}
 	}
 
-	var items []plan.Item
-	for _, it := range chosen {
-		item, err := uninstallItem(ctx, plan.KindLoginItems, it.Path, rules.RiskModerate, loginItemExplain(e.Home, it), nil)
-		if err != nil {
-			return err
-		}
-		items = append(items, item)
-	}
-	p, err := engine.Plan(ctx, e, plan.KindLoginItems, items)
+	p, err := planLoginItems(ctx, e, chosen, nil)
 	if err != nil {
 		return err
 	}
-	for i := range p.Items {
-		p.Items[i].Selected = true
+	if useReview(cmd, f) {
+		err = runReview(cmd, e, planned(p))
+	} else {
+		err = runPlan(cmd, "login-items-disable", e, p, *f)
 	}
-	err = runPlan(cmd, "login-items-disable", e, p, *f)
 	writeStopNow(humanOut(cmd), chosen)
 	return err
+}
+
+// planLoginItems plans moving the login items to quarantine, which stops
+// them from starting at login. When selected is nil every item starts
+// selected; else only those it returns true for. sapu login-items disable
+// and the login-items tool share it.
+func planLoginItems(ctx context.Context, e env.Env, chosen []loginitems.Item, selected func(loginitems.Item) bool) (*plan.Plan, error) {
+	var items []plan.Item
+	byPath := map[string]loginitems.Item{}
+	for _, it := range chosen {
+		item, err := uninstallItem(ctx, plan.KindLoginItems, it.Path, rules.RiskModerate, loginItemExplain(e.Home, it), nil)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, item)
+		byPath[it.Path] = it
+	}
+	p, err := engine.Plan(ctx, e, plan.KindLoginItems, items)
+	if err != nil {
+		return nil, err
+	}
+	for i := range p.Items {
+		p.Items[i].Selected = selected == nil || selected(byPath[p.Items[i].Path])
+	}
+	return p, nil
+}
+
+// loginItemsTool is the plan of the login-items tool: every login item of
+// the user (~/Library/LaunchAgents), with the orphans selected, as sapu
+// login-items disable --orphans selects them. It has no folders.
+func loginItemsTool(e env.Env, _ []string, _ string) review.PlanFunc {
+	return func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+		all, err := loginitems.List(ctx, e)
+		if err != nil {
+			return nil, err
+		}
+		var mine []loginitems.Item
+		for _, it := range all {
+			if it.Scope == loginitems.ScopeUser {
+				mine = append(mine, it)
+			}
+		}
+		return planLoginItems(ctx, e, mine, func(it loginitems.Item) bool { return it.Orphan })
+	}
 }
 
 func loginItemExplain(home string, it loginitems.Item) string {

@@ -13,15 +13,18 @@ const (
 	screenMenu screen = iota
 	screenHelp
 	screenExplore
-	screenPage // a text page: apps, history, system check, settings, System Data
+	screenPage // a text page: history, system check, settings, System Data
 	screenQuarantine
+	screenTools   // the list of tools
+	screenFolders // a tool that looks in folders: where it looks
+	screenApps    // uninstall: pick the app
 )
 
 // choices are the menu entries, in order. Keys 1 to 7 open them.
 var choices = []string{
 	"Scan & review",
 	"Explore storage",
-	"Apps & build files",
+	"Tools",
 	"Quarantine",
 	"History",
 	"System check",
@@ -47,6 +50,11 @@ type (
 	doneMsg struct { // a restore or a delete finished
 		seq  int
 		text string
+		err  error
+	}
+	appsMsg struct {
+		seq  int
+		apps []App
 		err  error
 	}
 )
@@ -85,8 +93,20 @@ type model struct {
 	busy       bool   // a restore or delete is running
 	note       string // what the last restore or delete did
 
+	// tools
+	tools      []Tool
+	toolCursor int    // the tool under the cursor on the Tools screen
+	folder     string // the folder the user chose, as typed; "" for the defaults
+	folderPath string // that folder, ~ expanded
+	editing    bool   // typing a folder
+	input      string // what is typed so far
+	inputErr   string // why the typed folder cannot be used
+	apps       []App
+	appFilter  string
+
 	launch launch
-	notice string // shown on the menu: what the last screen said
+	run    toolRun // the tool to run, with launchTool
+	notice string  // shown on the menu: what the last screen said
 }
 
 func newModel(ctx context.Context, b Backend, color bool) *model {
@@ -108,6 +128,10 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.loading, m.q, m.err = false, msg.q, msg.err
 			m.sub = min(m.sub, max(len(m.q.Runs)-1, 0))
 		}
+	case appsMsg:
+		if msg.seq == m.seq && m.screen == screenApps {
+			m.loading, m.apps, m.err = false, msg.apps, msg.err
+		}
 	case doneMsg:
 		if msg.seq == m.seq && m.screen == screenQuarantine {
 			m.busy, m.note = false, msg.text
@@ -124,6 +148,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m *model) key(msg tea.KeyMsg) tea.Cmd {
 	k := msg.String()
+	if msg.Paste {
+		k = string(msg.Runes) // pasted text, without the brackets String adds
+	}
 	if k == "ctrl+c" && !m.busy {
 		return tea.Quit
 	}
@@ -138,6 +165,12 @@ func (m *model) key(msg tea.KeyMsg) tea.Cmd {
 		m.pageKey(k)
 	case screenQuarantine:
 		return m.quarantineKey(k)
+	case screenTools:
+		return m.toolsKey(k)
+	case screenFolders:
+		return m.foldersKey(msg, k)
+	case screenApps:
+		return m.appsKey(msg, k)
 	}
 	return nil
 }
@@ -184,7 +217,9 @@ func (m *model) open(i int) tea.Cmd {
 	case 1:
 		m.screen = screenExplore
 	case 2:
-		return m.showPage("apps & build files", appsText, nil)
+		m.screen = screenTools
+		m.tools, m.err = m.b.Tools()
+		m.toolCursor = min(m.toolCursor, max(len(m.tools)-1, 0))
 	case 3:
 		m.screen = screenQuarantine
 		m.loading = true
@@ -333,6 +368,173 @@ func (m *model) do() tea.Cmd {
 		}
 		return doneMsg{seq: seq, text: text, err: err}
 	}
+}
+
+// ---- tools ----
+
+// toolKeys are the keys that open a tool directly: 1 to 9, then 0.
+const toolKeys = "1234567890"
+
+func (m *model) toolsKey(k string) tea.Cmd {
+	switch k {
+	case "esc", "q", "left", "h":
+		m.back()
+	case "up", "k":
+		m.toolCursor = max(m.toolCursor-1, 0)
+	case "down", "j":
+		m.toolCursor = min(m.toolCursor+1, max(len(m.tools)-1, 0))
+	case "enter":
+		return m.openTool()
+	default:
+		if i := strings.Index(toolKeys, k); len(k) == 1 && i >= 0 && i < len(m.tools) {
+			m.toolCursor = i
+			return m.openTool()
+		}
+	}
+	return nil
+}
+
+// openTool opens the tool under the cursor: where it looks, the app picker,
+// or, for a tool with nothing to choose, the review screen.
+func (m *model) openTool() tea.Cmd {
+	if len(m.tools) == 0 {
+		return nil
+	}
+	t := m.tools[m.toolCursor]
+	m.seq++
+	m.offset, m.err = 0, nil
+	switch {
+	case t.Folders:
+		m.screen = screenFolders
+		m.folder, m.folderPath = "", ""
+		m.editing, m.input, m.inputErr = false, "", ""
+		return nil
+	case t.App:
+		m.screen = screenApps
+		m.apps, m.appFilter, m.sub = nil, "", 0
+		m.loading = true
+		seq := m.seq
+		return func() tea.Msg {
+			apps, err := m.b.Apps(m.ctx)
+			return appsMsg{seq: seq, apps: apps, err: err}
+		}
+	}
+	return m.runTool(nil, "")
+}
+
+// runTool leaves the menu to run the tool under the cursor. The review
+// screen it opens asks before anything moves.
+func (m *model) runTool(dirs []string, app string) tea.Cmd {
+	m.launch = launchTool
+	m.run = toolRun{id: m.tools[m.toolCursor].ID, dirs: dirs, app: app}
+	return tea.Quit
+}
+
+// backToTools leaves a tool's screen for the list. Answers still on their
+// way are dropped.
+func (m *model) backToTools() {
+	m.screen = screenTools
+	m.seq++
+	m.offset, m.sub, m.err = 0, 0, nil
+	m.loading, m.editing, m.input, m.inputErr = false, false, "", ""
+}
+
+// foldersKey: enter looks, f types another folder, esc goes back.
+func (m *model) foldersKey(msg tea.KeyMsg, k string) tea.Cmd {
+	if m.editing {
+		switch k {
+		case "esc":
+			m.editing, m.input, m.inputErr = false, "", ""
+		case "enter":
+			m.useFolder()
+		case "backspace":
+			r := []rune(m.input)
+			m.input = string(r[:max(len(r)-1, 0)])
+			m.inputErr = ""
+		case "ctrl+u":
+			m.input, m.inputErr = "", ""
+		default:
+			if msg.Type == tea.KeyRunes || msg.Type == tea.KeySpace {
+				m.input += string(msg.Runes)
+				m.inputErr = ""
+			}
+		}
+		return nil
+	}
+	switch k {
+	case "esc", "q", "left", "h":
+		m.backToTools()
+	case "f":
+		m.editing, m.input, m.inputErr = true, m.folder, ""
+	case "enter":
+		if m.folderPath == "" {
+			return m.runTool(nil, "")
+		}
+		return m.runTool([]string{m.folderPath}, "")
+	}
+	return nil
+}
+
+// useFolder checks the typed folder. A folder that is not there stays in
+// the input with the reason.
+func (m *model) useFolder() {
+	typed := strings.TrimSpace(m.input)
+	if typed == "" {
+		m.inputErr = "Type the path of a folder, or press esc to keep the default folders."
+		return
+	}
+	p, err := m.b.Folder(typed)
+	if err != nil {
+		m.inputErr = "Cannot use " + typed + ": " + err.Error() + "."
+		return
+	}
+	m.folder, m.folderPath = typed, p
+	m.editing, m.input, m.inputErr = false, "", ""
+}
+
+// appsKey: typing filters the list, up/down moves, enter picks, esc clears
+// the filter and then goes back.
+func (m *model) appsKey(msg tea.KeyMsg, k string) tea.Cmd {
+	shown := m.shownApps()
+	switch k {
+	case "esc":
+		if m.appFilter != "" {
+			m.appFilter, m.sub = "", 0
+			return nil
+		}
+		m.backToTools()
+	case "up":
+		m.sub = max(m.sub-1, 0)
+	case "down":
+		m.sub = min(m.sub+1, max(len(shown)-1, 0))
+	case "enter":
+		if len(shown) > 0 && !m.loading {
+			return m.runTool(nil, shown[m.sub].Path)
+		}
+	case "backspace":
+		r := []rune(m.appFilter)
+		m.appFilter, m.sub = string(r[:max(len(r)-1, 0)]), 0
+	case "/":
+		// The list filters as you type; / is only a habit from other screens.
+	default:
+		if msg.Type == tea.KeyRunes || msg.Type == tea.KeySpace {
+			m.appFilter += string(msg.Runes)
+			m.sub = 0
+		}
+	}
+	return nil
+}
+
+// shownApps are the apps that match the filter, in name or path.
+func (m *model) shownApps() []App {
+	f := strings.ToLower(strings.TrimSpace(m.appFilter))
+	var out []App
+	for _, a := range m.apps {
+		if f == "" || strings.Contains(strings.ToLower(a.Name), f) || strings.Contains(strings.ToLower(a.Path), f) {
+			out = append(out, a)
+		}
+	}
+	return out
 }
 
 // bodyHeight is the lines a page shows between its header and footer.

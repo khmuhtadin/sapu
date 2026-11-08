@@ -1,14 +1,18 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"io"
 
 	"github.com/spf13/cobra"
 
 	"github.com/khmuhtadin/sapu/internal/engine"
+	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/plan"
+	"github.com/khmuhtadin/sapu/internal/review"
 	"github.com/khmuhtadin/sapu/internal/tidy"
+	"github.com/khmuhtadin/sapu/internal/walk"
 )
 
 const tidyLong = `Lists empty folders, symlinks whose target is gone and files with nothing in
@@ -61,12 +65,10 @@ func runTidy(cmd *cobra.Command, args []string, f *cleanupFlags, pick string, pi
 	if len(roots) == 0 {
 		roots = tidy.DefaultRoots(e)
 	}
-	ctx := cmd.Context()
-	found, err := tidy.Find(ctx, e, roots)
-	if err != nil {
-		return err
+	if picks == nil && useReview(cmd, f) {
+		return runReview(cmd, e, tidyTool(e, roots, ""))
 	}
-	p, err := engine.Plan(ctx, e, plan.KindTidy, tidy.Items(found))
+	p, found, err := planTidy(cmd.Context(), e, roots)
 	if err != nil {
 		return err
 	}
@@ -103,6 +105,36 @@ func runTidy(cmd *cobra.Command, args []string, f *cleanupFlags, pick string, pi
 			plural(counts[tidy.EmptyFolder], "empty folder"), plural(counts[tidy.BrokenLink], "broken link"), plural(counts[tidy.EmptyFile], "empty file"))
 	}
 	return runListed(cmd, "tidy", e, p, paths, picks, pickAll, *f, show, data)
+}
+
+// planTidy finds empty folders, broken links and empty files in roots and
+// plans them with nothing selected: an app may expect a folder or a marker
+// file. sapu tidy and the tidy tool share it.
+func planTidy(ctx context.Context, e env.Env, roots []string) (*plan.Plan, []tidy.Entry, error) {
+	found, err := tidy.Find(ctx, e, roots)
+	if err != nil {
+		return nil, nil, err
+	}
+	p, err := engine.Plan(ctx, e, plan.KindTidy, tidy.Items(found))
+	if err != nil {
+		return nil, nil, err
+	}
+	for i := range p.Items {
+		p.Items[i].Selected = false
+	}
+	return p, found, nil
+}
+
+// tidyTool is the plan of the tidy tool, in dirs or tidy's default folders.
+func tidyTool(e env.Env, dirs []string, _ string) review.PlanFunc {
+	return func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+		roots := dirs
+		if len(roots) == 0 {
+			roots = tidy.DefaultRoots(e)
+		}
+		p, _, err := planTidy(ctx, e, roots)
+		return p, err
+	}
 }
 
 var tidyKindName = map[tidy.Kind]string{

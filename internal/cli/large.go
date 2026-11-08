@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -14,6 +15,8 @@ import (
 	"github.com/khmuhtadin/sapu/internal/finders"
 	"github.com/khmuhtadin/sapu/internal/output"
 	"github.com/khmuhtadin/sapu/internal/plan"
+	"github.com/khmuhtadin/sapu/internal/review"
+	"github.com/khmuhtadin/sapu/internal/walk"
 )
 
 const largeLong = `Lists files of at least --min-size that were not opened or changed for
@@ -23,6 +26,12 @@ Photos libraries or git repositories. With no DIR it looks in your home folder.
 Nothing is chosen for you: files are risky, because only you know whether you
 still need them. Pick numbers from the list with --pick, e.g. --pick 1,3,5 or
 --pick 2-4; Sapu then asks before it moves them to quarantine.`
+
+// The defaults of --min-size and --older-than, which the tool uses too.
+const (
+	largeMinSize   = "500MB"
+	largeOlderThan = "90d"
+)
 
 func newLargeCmd() *cobra.Command {
 	var f cleanupFlags
@@ -37,8 +46,8 @@ func newLargeCmd() *cobra.Command {
 	}
 	f.addPlanFlag(cmd)
 	f.addApplyFlags(cmd)
-	cmd.Flags().StringVar(&minSize, "min-size", "500MB", "smallest file to list, e.g. 200MB, 2GB")
-	cmd.Flags().StringVar(&olderThan, "older-than", "90d", "not opened or changed for this long, e.g. 90d, 26w, 1y")
+	cmd.Flags().StringVar(&minSize, "min-size", largeMinSize, "smallest file to list, e.g. 200MB, 2GB")
+	cmd.Flags().StringVar(&olderThan, "older-than", largeOlderThan, "not opened or changed for this long, e.g. 90d, 26w, 1y")
 	cmd.Flags().StringVar(&kind, "type", "any", "only "+finders.LargeTypes)
 	cmd.Flags().StringVar(&pick, "pick", "", "move these numbers from the list, e.g. 1,3,5 or 2-4")
 	return cmd
@@ -74,20 +83,16 @@ func runLarge(cmd *cobra.Command, args []string, f *cleanupFlags, minSize, older
 	if len(roots) == 0 {
 		roots = []string{e.Home}
 	}
-	ctx := cmd.Context()
-	found, err := finders.Large(ctx, e, roots, opts)
+	if picks == nil && useReview(cmd, f) {
+		return runReview(cmd, e, func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+			p, _, err := planLarge(ctx, e, roots, opts)
+			return p, err
+		})
+	}
+	p, files, err := planLarge(cmd.Context(), e, roots, opts)
 	if err != nil {
 		return err
 	}
-	items := make([]plan.Item, len(found))
-	for i, file := range found {
-		items[i] = file.Item
-	}
-	p, err := engine.Plan(ctx, e, plan.KindLarge, items)
-	if err != nil {
-		return err
-	}
-	files := keepFound(p, found, func(f finders.File) string { return f.Item.Path })
 
 	data := foundList[largeJSON]{Items: []largeJSON{}, Skipped: p.Skipped}
 	paths := make([]string, len(files))
@@ -113,6 +118,50 @@ func runLarge(cmd *cobra.Command, args []string, f *cleanupFlags, minSize, older
 		fmt.Fprintf(w, "\n%s, %s.\n", plural(len(files), "file"), output.Bytes(total))
 	}
 	return runFound(cmd, "large", e, p, paths, picks, *f, show, data)
+}
+
+// planLarge finds the large old files in roots and plans them with nothing
+// selected: only the user knows whether a file is still needed. files are
+// the found files still in the plan, biggest first. sapu large and the
+// large tool share it.
+func planLarge(ctx context.Context, e env.Env, roots []string, opts finders.LargeOptions) (p *plan.Plan, files []finders.File, err error) {
+	found, err := finders.Large(ctx, e, roots, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+	items := make([]plan.Item, len(found))
+	for i, file := range found {
+		items[i] = file.Item
+	}
+	p, err = engine.Plan(ctx, e, plan.KindLarge, items)
+	if err != nil {
+		return nil, nil, err
+	}
+	for i := range p.Items {
+		p.Items[i].Selected = false
+	}
+	return p, keepFound(p, found, func(f finders.File) string { return f.Item.Path }), nil
+}
+
+// largeTool is the plan of the large tool: sapu large with its defaults
+// (--min-size 500MB --older-than 90d), in dirs or the home folder.
+func largeTool(e env.Env, dirs []string, _ string) review.PlanFunc {
+	return func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+		opts := finders.LargeOptions{Type: "any", Now: time.Now()}
+		var err error
+		if opts.MinSize, err = finders.ParseSize(largeMinSize); err != nil {
+			return nil, err
+		}
+		if opts.OlderThan, err = finders.ParseAge(largeOlderThan); err != nil {
+			return nil, err
+		}
+		roots := dirs
+		if len(roots) == 0 {
+			roots = []string{e.Home}
+		}
+		p, _, err := planLarge(ctx, e, roots, opts)
+		return p, err
+	}
 }
 
 // largeJSON is one file in the list that `sapu large --json` prints.

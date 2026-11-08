@@ -97,6 +97,9 @@ type model struct {
 	why     func(detail string) string
 	now     func() time.Time
 
+	name    string // the header: "review", or the tool's name
+	looking string // what the scan line says: "Scanning caches", or "Looking"
+
 	width, height int
 	screen        screen
 	help          bool
@@ -146,6 +149,8 @@ func newModel(ctx context.Context, e env.Env, planFn PlanFunc, applyFn applyFunc
 		applyFn:  applyFn,
 		cfg:      config.Defaults(),
 		why:      why,
+		name:     "review",
+		looking:  "Scanning caches",
 		now:      time.Now,
 		width:    80,
 		height:   24,
@@ -160,6 +165,10 @@ func newModel(ctx context.Context, e env.Env, planFn PlanFunc, applyFn applyFunc
 		progCh:   make(chan progressMsg, 64),
 	}
 }
+
+// titled names the screen after a tool: the header says title, and the scan
+// line does not talk of caches.
+func (m *model) titled(title string) { m.name, m.looking = title, "Looking" }
 
 // cue is the progress cue: dots that fill in place, three cells wide.
 var cue = spinner.Spinner{Frames: []string{".  ", ".. ", "..."}, FPS: time.Second / 3}
@@ -481,6 +490,31 @@ func (m *model) toggle() {
 	case rowCommand:
 		m.status = "Sapu does not run commands. Type it in Terminal yourself if you want it."
 	}
+	m.dropOrphans()
+}
+
+// required returns the index of the item it requires (uninstall: the app),
+// or -1 when it requires none.
+func (m *model) required(it plan.Item) int {
+	if it.Requires == "" {
+		return -1
+	}
+	for i, other := range m.plan.Items {
+		if other.ID == it.Requires {
+			return i
+		}
+	}
+	return -1
+}
+
+// dropOrphans unselects every item whose required item is not selected:
+// the engine moves such an item only together with the item it requires.
+func (m *model) dropOrphans() {
+	for i, it := range m.plan.Items {
+		if r := m.required(it); it.Selected && (r < 0 && it.Requires != "" || r >= 0 && !m.plan.Items[r].Selected) {
+			m.plan.Items[i].Selected = false
+		}
+	}
 }
 
 func (m *model) toggleItem(i int) {
@@ -493,6 +527,10 @@ func (m *model) toggleItem(i int) {
 		m.armed = i
 		return
 	default:
+		if r := m.required(*it); r >= 0 && !m.plan.Items[r].Selected {
+			m.status = "This goes only with " + itemName(m.plan.Items[r]) + ". Select that first."
+			return
+		}
 		it.Selected = true
 	}
 	m.armed = -1
@@ -533,6 +571,7 @@ func (m *model) selectSafe() {
 		if g.risk == rules.RiskSafe {
 			vis := m.visible(g)
 			m.setSelected(vis, true)
+			m.dropOrphans()
 			m.status = fmt.Sprintf("Selected all %s.", plural(len(vis), "safe item"))
 		}
 	}

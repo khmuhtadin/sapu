@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -11,7 +12,9 @@ import (
 	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/output"
 	"github.com/khmuhtadin/sapu/internal/plan"
+	"github.com/khmuhtadin/sapu/internal/review"
 	"github.com/khmuhtadin/sapu/internal/similar"
+	"github.com/khmuhtadin/sapu/internal/walk"
 )
 
 const similarLong = `Finds photos that look alike (burst shots, edits, screenshots of the same
@@ -68,9 +71,14 @@ func runSimilar(cmd *cobra.Command, args []string, f *cleanupFlags, threshold in
 	if len(roots) == 0 {
 		roots = similar.DefaultRoots(e)
 	}
-	ctx := cmd.Context()
+	if picks == nil && useReview(cmd, f) {
+		return runReview(cmd, e, func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+			p, _, err := planSimilar(ctx, e, roots, similar.Options{Threshold: threshold})
+			return p, err
+		})
+	}
 	prog := newProgress(cmd)
-	found, err := similar.Find(ctx, e, roots, similar.Options{
+	p, found, err := planSimilar(cmd.Context(), e, roots, similar.Options{
 		Threshold: threshold,
 		Status:    func(text string) { prog.Status("similar", text) },
 	})
@@ -79,10 +87,6 @@ func runSimilar(cmd *cobra.Command, args []string, f *cleanupFlags, threshold in
 	if errors.As(err, &tooMany) {
 		return usageErr(err)
 	}
-	if err != nil {
-		return err
-	}
-	p, err := engine.Plan(ctx, e, plan.KindSimilar, similar.Items(found.Groups))
 	if err != nil {
 		return err
 	}
@@ -114,6 +118,37 @@ func runSimilar(cmd *cobra.Command, args []string, f *cleanupFlags, threshold in
 	}
 	show := func(w io.Writer) { writeSimilar(w, e.Home, data) }
 	return runListed(cmd, "similar", e, p, paths, picks, pickAll, *f, show, data)
+}
+
+// planSimilar finds photos that look alike in roots and plans the ones not
+// kept, with nothing selected: similar is not identical. sapu similar and
+// the similar tool share it.
+func planSimilar(ctx context.Context, e env.Env, roots []string, opts similar.Options) (*plan.Plan, similar.Found, error) {
+	found, err := similar.Find(ctx, e, roots, opts)
+	if err != nil {
+		return nil, found, err
+	}
+	p, err := engine.Plan(ctx, e, plan.KindSimilar, similar.Items(found.Groups))
+	if err != nil {
+		return nil, found, err
+	}
+	for i := range p.Items {
+		p.Items[i].Selected = false
+	}
+	return p, found, nil
+}
+
+// similarTool is the plan of the similar tool: sapu similar with its default
+// threshold, in dirs or similar's default folders.
+func similarTool(e env.Env, dirs []string, _ string) review.PlanFunc {
+	return func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+		roots := dirs
+		if len(roots) == 0 {
+			roots = similar.DefaultRoots(e)
+		}
+		p, _, err := planSimilar(ctx, e, roots, similar.Options{Threshold: similar.DefaultThreshold})
+		return p, err
+	}
 }
 
 // similarList is the data of --json when the list is only shown.

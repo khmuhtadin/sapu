@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/tools.json",
+  "title": "data of sapu tools --json: the tools the menu and Sapu for Mac run by picking them",
+  "type": "object",
+  "required": ["tools"],
+  "additionalProperties": false,
+  "properties": {
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "short", "folders", "app", "default_dirs"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "description": "the command name and the ID of sapu tools plan ID" },
+          "title": { "type": "string" },
+          "short": { "type": "string" },
+          "folders": { "type": "boolean", "description": "it looks in folders the user can change (DIR of sapu tools plan)" },
+          "app": { "type": "boolean", "description": "the user picks an app first (--app of sapu tools plan)" },
+          "default_dirs": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "absolute folders it looks in without DIR; empty for a tool without folders"
+          }
+        }
+      }
+    }
+  }
+}

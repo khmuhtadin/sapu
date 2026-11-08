@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/tools-apps.json",
+  "title": "data of sapu tools apps --json: the installed apps sapu uninstall can remove (not Apple's), by name",
+  "type": "object",
+  "required": ["apps"],
+  "additionalProperties": false,
+  "properties": {
+    "apps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "bundle_id", "path"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "bundle_id": { "type": "string", "description": "empty when the app has none" },
+          "path": { "type": "string", "description": "the .app bundle; give it to --app of sapu tools plan uninstall" },
+          "bytes": { "type": "integer", "minimum": 0, "description": "size of the bundle; not given yet" }
+        }
+      }
+    }
+  }
+}

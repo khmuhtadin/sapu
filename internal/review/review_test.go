@@ -887,3 +887,32 @@ func TestDeleteForGoodWithAFailureKeepsTheRun(t *testing.T) {
 		t.Errorf("receipt after a failed delete:\n%s", m.View())
 	}
 }
+
+// An item that requires another (uninstall: a file left by the app) is
+// selected only together with it, so the engine never gets it alone.
+func TestRequiredItemsGoTogether(t *testing.T) {
+	m, f := listed(t)
+	m.plan.Items[9].Requires = m.plan.Items[8].ID // npm cache goes only with homebrew downloads
+	goTo(t, m, rowItem, "homebrew downloads")
+	press(m, "space") // off: npm cache goes off too
+	if m.plan.Items[8].Selected || m.plan.Items[9].Selected {
+		t.Fatal("unselecting the required item should unselect what requires it")
+	}
+	goTo(t, m, rowItem, "npm cache")
+	press(m, "space")
+	if m.plan.Items[9].Selected || !strings.Contains(m.View(), "This goes only with homebrew downloads") {
+		t.Fatalf("an item cannot be selected without the item it requires:\n%s", m.View())
+	}
+	goTo(t, m, rowItem, "homebrew downloads")
+	press(m, "space")
+	goTo(t, m, rowItem, "npm cache")
+	press(m, "space")
+	if !m.plan.Items[8].Selected || !m.plan.Items[9].Selected {
+		t.Fatal("with the required item selected, the other can be selected")
+	}
+	press(m, "enter")
+	finish(t, m, press(m, "y"))
+	if f.count() != 1 {
+		t.Fatalf("calls %d", f.count())
+	}
+}

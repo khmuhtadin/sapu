@@ -15,6 +15,7 @@ import (
 	"github.com/khmuhtadin/sapu/internal/engine"
 	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/plan"
+	"github.com/khmuhtadin/sapu/internal/review"
 	"github.com/khmuhtadin/sapu/internal/rules"
 	"github.com/khmuhtadin/sapu/internal/walk"
 )
@@ -98,20 +99,45 @@ func runUninstall(cmd *cobra.Command, args []string, f *cleanupFlags, risk, left
 }
 
 func uninstallApp(cmd *cobra.Command, e env.Env, installed []apps.App, query string, maxRisk rules.Risk, resetPerms bool, f *cleanupFlags) error {
-	ctx := cmd.Context()
-	t, err := pickApp(e, installed, query, "remove")
+	p, a, notes, err := planUninstall(cmd.Context(), e, installed, query, maxRisk, resetPerms)
 	if err != nil {
 		return err
 	}
+	out := humanOut(cmd)
+	writeAppTitle(out, e.Home, a)
+	why, err := protectWhy(e)
+	if err != nil {
+		return err
+	}
+	writeUninstallNotes(out, e.Home, notes, p.Skipped, why)
+	if useReview(cmd, f) {
+		// The plan is made: the title and notes above stay on the terminal
+		// when the review screen closes.
+		return runReview(cmd, e, planned(p))
+	}
+	return runPlan(cmd, "uninstall", e, p, *f)
+}
+
+// planUninstall plans removing the installed app query names (a name, a
+// path or a bundle id) and the files it left in ~/Library. The app and the
+// files up to maxRisk start selected, and every file requires the app, so
+// nothing of it goes unless the app itself is moved in the same run. notes
+// say what was left out and why. sapu uninstall and the uninstall tool share
+// it.
+func planUninstall(ctx context.Context, e env.Env, installed []apps.App, query string, maxRisk rules.Risk, resetPerms bool) (*plan.Plan, apps.App, []string, error) {
+	t, err := pickApp(e, installed, query, "remove")
+	if err != nil {
+		return nil, apps.App{}, nil, err
+	}
 	a := t.app
 	if resetPerms && a.ID == "" {
-		return fmt.Errorf("%s has no bundle id, so Sapu cannot remove its privacy permissions", a.Name)
+		return nil, a, nil, fmt.Errorf("%s has no bundle id, so Sapu cannot remove its privacy permissions", a.Name)
 	}
 
 	movable := apps.Movable(a.Path)
 	bundle, err := uninstallItem(ctx, plan.KindUninstall, a.Path, rules.RiskModerate, bundleExplain(a.Name, movable), t.running)
 	if err != nil {
-		return err
+		return nil, a, nil, err
 	}
 	var items []plan.Item
 	if resetPerms {
@@ -119,7 +145,7 @@ func uninstallApp(cmd *cobra.Command, e env.Env, installed []apps.App, query str
 		// after the bundle's own item, as covered by it.
 		perms, err := resetPermissionsItem(a, t.running)
 		if err != nil {
-			return err
+			return nil, a, nil, err
 		}
 		items = append(items, perms)
 	}
@@ -127,13 +153,13 @@ func uninstallApp(cmd *cobra.Command, e env.Env, installed []apps.App, query str
 
 	found, notes, err := appFiles(ctx, e, t, false)
 	if err != nil {
-		return err
+		return nil, a, nil, err
 	}
 	items = append(items, found...)
 
 	p, err := engine.Plan(ctx, e, plan.KindUninstall, items)
 	if err != nil {
-		return err
+		return nil, a, nil, err
 	}
 	bundleID := ""
 	for _, it := range p.Items {
@@ -153,7 +179,7 @@ func uninstallApp(cmd *cobra.Command, e env.Env, installed []apps.App, query str
 	}
 	for _, s := range p.Skipped {
 		if s.Path == a.Path && s.Reason == plan.ReasonInUse {
-			return fmt.Errorf("quit %s first: it is in use (%s). Then run sapu uninstall again", a.Name, s.Detail)
+			return nil, a, nil, fmt.Errorf("quit %s first: it is in use (%s). Then run sapu uninstall again", a.Name, s.Detail)
 		}
 	}
 	switch {
@@ -172,15 +198,23 @@ func uninstallApp(cmd *cobra.Command, e env.Env, installed []apps.App, query str
 		it := &p.Items[i]
 		it.Selected = bundleMoves && riskRank(it.Risk) <= riskRank(maxRisk)
 	}
+	return p, a, notes, nil
+}
 
-	out := humanOut(cmd)
-	writeAppTitle(out, e.Home, a)
-	why, err := protectWhy(e)
-	if err != nil {
-		return err
+// uninstallTool is the plan of the uninstall tool: sapu uninstall APP with
+// its default risk (moderate). app is the query sapu uninstall takes.
+func uninstallTool(e env.Env, _ []string, app string) review.PlanFunc {
+	return func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+		if app == "" {
+			return nil, usageErr(errors.New("pick the app to remove"))
+		}
+		installed, err := apps.List(ctx, e)
+		if err != nil {
+			return nil, err
+		}
+		p, _, _, err := planUninstall(ctx, e, installed, app, rules.RiskModerate, false)
+		return p, err
 	}
-	writeUninstallNotes(out, e.Home, notes, p.Skipped, why)
-	return runPlan(cmd, "uninstall", e, p, *f)
 }
 
 // appTarget is the installed app sapu uninstall or sapu reset works on.
@@ -319,6 +353,9 @@ func uninstallLeftovers(cmd *cobra.Command, e env.Env, installed []apps.App, id 
 		return err
 	}
 	writeUninstallNotes(out, e.Home, notes, p.Skipped, why)
+	if useReview(cmd, f) {
+		return runReview(cmd, e, planned(p))
+	}
 	return runPlan(cmd, "uninstall", e, p, *f)
 }
 

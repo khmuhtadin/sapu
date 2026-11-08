@@ -77,7 +77,7 @@ func (m *model) View() string {
 
 func (m *model) rule() string { return dim.Render(strings.Repeat("-", max(m.width-4, 0))) }
 
-// title is "sapu / review" with a note at the right edge.
+// title is "sapu / review" (or the tool's name) with a note at the right edge.
 func (m *model) title(screen, right string) string {
 	left := bold.Render("sapu / " + screen)
 	if right == "" {
@@ -100,9 +100,9 @@ func (m *model) cue() string {
 
 func (m *model) scanView() []string {
 	ev := m.scanned
-	status := "  Scanning caches" + m.cue()
+	status := "  " + m.looking + m.cue()
 	counts := commas(ev.Files) + " files checked / " + output.Bytes(ev.Bytes) + " measured"
-	lines := []string{m.title("review", ""), m.rule(), ""}
+	lines := []string{m.title(m.name, ""), m.rule(), ""}
 	if width(status+"  "+counts) <= m.width {
 		lines = append(lines, status+"  "+counts)
 	} else {
@@ -150,7 +150,7 @@ func (m *model) listView() []string {
 		listed += len(g.items)
 	}
 	lines := []string{
-		m.title("review", fmt.Sprintf("%d found / %d skipped", listed, len(m.plan.Skipped))),
+		m.title(m.name, fmt.Sprintf("%d found / %d skipped", listed, len(m.plan.Skipped))),
 		m.rule(),
 	}
 	lines = append(lines, m.intro()...)

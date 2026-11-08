@@ -2,6 +2,7 @@ package cli
 
 import (
 	"cmp"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -19,6 +20,8 @@ import (
 	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/output"
 	"github.com/khmuhtadin/sapu/internal/plan"
+	"github.com/khmuhtadin/sapu/internal/review"
+	"github.com/khmuhtadin/sapu/internal/walk"
 )
 
 // maxDupeGroups is how many groups the table lists unless --verbose.
@@ -28,6 +31,9 @@ const dupesCloneNote = "APFS clones share storage with the file they were copied
 
 // dupesReplaceNote explains --replace-with-clone, in the table and before the question.
 const dupesReplaceNote = "Each extra copy is replaced by an APFS clone of the kept file. The file stays where it is and opens the same, but the duplicate space is shared. Changing one copy later does not change the other."
+
+// dupesMinSize is the default of --min-size, which the tool uses too.
+const dupesMinSize = "1MB"
 
 func newDupesCmd() *cobra.Command {
 	var f cleanupFlags
@@ -51,7 +57,7 @@ func newDupesCmd() *cobra.Command {
 	cmd.Flags().BoolVar(&f.yes, "yes", false, "do not ask for confirmation")
 	cmd.Flags().BoolVarP(&f.verbose, "verbose", "v", false, "list every group")
 	cmd.Flags().StringVar(&keep, "keep", "oldest", "which copy stays: oldest, newest or shortest-path")
-	cmd.Flags().StringVar(&minSize, "min-size", "1MB", "ignore files smaller than this, e.g. 500KB, 10MB, 1GB")
+	cmd.Flags().StringVar(&minSize, "min-size", dupesMinSize, "ignore files smaller than this, e.g. 500KB, 10MB, 1GB")
 	cmd.Flags().BoolVar(&clone, "replace-with-clone", false, "replace each extra copy by an APFS clone of the kept file instead of only moving it")
 	return cmd
 }
@@ -80,28 +86,20 @@ func runDupes(cmd *cobra.Command, args []string, f *cleanupFlags, keep, minSize 
 		roots = dupes.DefaultRoots(e)
 	}
 
-	ctx := cmd.Context()
+	opts := dupes.Options{MinSize: min, Keep: policy}
+	if !clone && useReview(cmd, f) {
+		return runReview(cmd, e, func(ctx context.Context, progress func(walk.Event)) (*plan.Plan, error) {
+			opts.Scan = progress
+			return planDupes(ctx, e, roots, opts, false)
+		})
+	}
 	prog := newProgress(cmd)
-	found, err := dupes.Find(ctx, e, roots, dupes.Options{
-		MinSize: min,
-		Keep:    policy,
-		Scan:    prog.Scan,
-		Status:  func(text string) { prog.Status("scan", text) },
-	})
+	opts.Scan = prog.Scan
+	opts.Status = func(text string) { prog.Status("scan", text) }
+	p, err := planDupes(cmd.Context(), e, roots, opts, clone)
 	prog.Done()
 	if err != nil {
 		return err
-	}
-	p, err := engine.Plan(ctx, e, plan.KindDupes, dupes.Items(found))
-	if err != nil {
-		return err
-	}
-	for i := range p.Items { // the user asked for duplicates, so all extras are selected
-		p.Items[i].Selected = true
-		if clone && p.Items[i].KeepCopy != nil {
-			p.Items[i].CloneFrom = p.Items[i].KeepCopy.Path
-			p.Items[i].Explain = fmt.Sprintf("Same content as %s. It is replaced by an APFS clone of that file, and this copy goes to quarantine.", p.Items[i].KeepCopy.Path)
-		}
 	}
 	groups := dupeGroupsOf(p)
 
@@ -131,6 +129,46 @@ func runDupes(cmd *cobra.Command, args []string, f *cleanupFlags, keep, minSize 
 		}
 	}
 	return applyDupes(cmd, e, p, groups, f.verbose)
+}
+
+// planDupes finds the duplicates in roots and plans every extra copy,
+// selected: the user asked for duplicates. The copy that stays is never an
+// item, only each extra's KeepCopy, which Apply checks before it moves the
+// extra. With clone each extra is replaced by an APFS clone of the kept
+// file. sapu dupes and the dupes tool share it.
+func planDupes(ctx context.Context, e env.Env, roots []string, opts dupes.Options, clone bool) (*plan.Plan, error) {
+	found, err := dupes.Find(ctx, e, roots, opts)
+	if err != nil {
+		return nil, err
+	}
+	p, err := engine.Plan(ctx, e, plan.KindDupes, dupes.Items(found))
+	if err != nil {
+		return nil, err
+	}
+	for i := range p.Items {
+		p.Items[i].Selected = true
+		if clone && p.Items[i].KeepCopy != nil {
+			p.Items[i].CloneFrom = p.Items[i].KeepCopy.Path
+			p.Items[i].Explain = fmt.Sprintf("Same content as %s. It is replaced by an APFS clone of that file, and this copy goes to quarantine.", p.Items[i].KeepCopy.Path)
+		}
+	}
+	return p, nil
+}
+
+// dupesTool is the plan of the dupes tool: sapu dupes with its defaults
+// (--keep oldest --min-size 1MB), in dirs or dupes' default folders.
+func dupesTool(e env.Env, dirs []string, _ string) review.PlanFunc {
+	return func(ctx context.Context, progress func(walk.Event)) (*plan.Plan, error) {
+		min, err := parseDupesMinSize(dupesMinSize)
+		if err != nil {
+			return nil, err
+		}
+		roots := dirs
+		if len(roots) == 0 {
+			roots = dupes.DefaultRoots(e)
+		}
+		return planDupes(ctx, e, roots, dupes.Options{MinSize: min, Keep: dupes.KeepOldest, Scan: progress}, false)
+	}
 }
 
 // applyDupes moves the selected extras and reports. It is what runPlan does

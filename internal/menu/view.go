@@ -3,6 +3,7 @@ package menu
 import (
 	"fmt"
 	"strings"
+	"unicode"
 
 	"github.com/charmbracelet/lipgloss"
 
@@ -12,15 +13,6 @@ import (
 
 // maxWidth is the widest the menu is drawn: the 80 columns of the design.
 const maxWidth = 80
-
-const appsText = `These commands need an app name or a folder, so the menu cannot run them. Type them in your shell. Each one lists what it found and asks before it moves anything to quarantine. Add --plan FILE to only save the plan.
-
-  sapu uninstall APP    Remove an app and the files it left behind
-  sapu purge DIR        Find build folders (node_modules, target, ...)
-  sapu dupes            Move extra copies of duplicate files to quarantine
-  sapu installer        Find old installers (.dmg, .pkg, .iso)
-  sapu large            Find big files you have not opened in a long time
-`
 
 // settingsCommands follows the settings text: the commands that change what
 // the screen shows. This screen only reads.
@@ -41,7 +33,7 @@ const helpText = `  up/down  j/k   move
   esc            go back
   ctrl-c         quit
 
-Menu choices open a review or inspection screen. They do not move or delete files by themselves. Moving files to quarantine, and deleting them for good, always needs its own confirmation.`
+Menu choices open a review or inspection screen. They do not move or delete files by themselves. A tool only looks, then opens the review screen. Moving files to quarantine, and deleting them for good, always needs its own confirmation.`
 
 func (m *model) View() string {
 	var out []string
@@ -56,6 +48,12 @@ func (m *model) View() string {
 		out = m.textPageView()
 	case screenQuarantine:
 		out = m.quarantineView()
+	case screenTools:
+		out = m.toolsView()
+	case screenFolders:
+		out = m.foldersView()
+	case screenApps:
+		out = m.appsView()
 	}
 	return strings.Join(out, "\n")
 }
@@ -334,7 +332,124 @@ func (m *model) confirmView() []string {
 	return append(out, border)
 }
 
+// ---- tools ----
+
+func (m *model) toolsView() []string {
+	if m.err != nil {
+		return m.pageView("tools", []string{"  Could not read the tools: " + m.err.Error()}, "esc back")
+	}
+	body := []string{
+		"  Each tool looks first, then opens the review screen.",
+		"  Nothing moves until you confirm there.",
+		"",
+	}
+	focus := -1
+	for i, t := range m.tools {
+		mark := " "
+		if i == m.toolCursor {
+			mark = ">"
+			focus = len(body)
+		}
+		n := " "
+		if i < len(toolKeys) {
+			n = toolKeys[i : i+1]
+		}
+		body = append(body, fmt.Sprintf("  %s %s  %s", mark, n, t.Title), "         "+t.Short)
+	}
+	return m.frame("tools", body, focus+1, "up/down move   enter or 1-9, 0 open   esc back")
+}
+
+// tool is the tool whose screen is open.
+func (m *model) tool() Tool {
+	if m.toolCursor < len(m.tools) {
+		return m.tools[m.toolCursor]
+	}
+	return Tool{}
+}
+
+// toolTitle is the tool's title for a header: "Build folders" becomes
+// "build folders", "iPhone and iPad backups" stays as it is.
+func toolTitle(t Tool) string {
+	r := []rune(t.Title)
+	if len(r) > 1 && unicode.IsUpper(r[0]) && unicode.IsLower(r[1]) {
+		r[0] = unicode.ToLower(r[0])
+	}
+	return string(r)
+}
+
+func (m *model) foldersView() []string {
+	t := m.tool()
+	where := "its default folders"
+	if m.folder != "" {
+		where = m.folder
+	} else if len(t.Dirs) > 0 {
+		where = strings.Join(t.Dirs, ", ")
+	}
+	body := []string{"  " + t.Short, "", "  Looks in: " + printable(where), ""}
+	keys := "enter look   f change folder   esc back"
+	if m.editing {
+		body = append(body, "  Folder: "+printable(m.input)+"_")
+		if m.inputErr != "" {
+			body = append(body, "  "+m.inputErr)
+		}
+		body = append(body, "", "  One folder. It replaces the default folders. ~ is your home folder.")
+		keys = "enter use this folder   esc cancel"
+	} else {
+		body = append(body, "  Sapu only looks. The review screen lists what it found.", "  Nothing moves until you confirm there.")
+	}
+	return m.pageView(toolTitle(t), body, keys)
+}
+
+func (m *model) appsView() []string {
+	t := m.tool()
+	body := []string{
+		"  Pick the app to remove.",
+		"  The review screen lists it with the files it left behind.",
+		"  Nothing moves until you confirm there.",
+		"",
+	}
+	filter := "  Filter: " + printable(m.appFilter) + "_"
+	if m.appFilter == "" {
+		filter = "  Type to filter."
+	}
+	body = append(body, filter, "")
+	shown := m.shownApps()
+	focus := -1
+	switch {
+	case m.loading:
+		body = append(body, "  Reading the installed apps...")
+	case m.err != nil:
+		body = append(body, "  Could not read the installed apps: "+m.err.Error())
+	case len(m.apps) == 0:
+		body = append(body, "  No apps that Sapu can remove are installed.")
+	case len(shown) == 0:
+		body = append(body, "  No app matches the filter. esc clears it.")
+	}
+	nameW := min(28, max(m.w()/3, 8))
+	for i, a := range shown {
+		mark := " "
+		if i == m.sub {
+			mark = ">"
+			focus = len(body)
+		}
+		name := truncate(printable(a.Name), nameW)
+		body = append(body, truncate(fmt.Sprintf("  %s %s  %s", mark, name+strings.Repeat(" ", nameW-width(name)), printable(a.Path)), m.w()-2))
+	}
+	return m.frame(toolTitle(t), body, focus, "enter pick   type to filter   esc back   up/down move")
+}
+
 // ---- text ----
+
+// printable replaces control characters, so an app name or a typed path
+// cannot send escape codes to the terminal.
+func printable(s string) string {
+	return strings.Map(func(r rune) rune {
+		if unicode.IsControl(r) {
+			return '?'
+		}
+		return r
+	}, s)
+}
 
 func width(s string) int { return lipgloss.Width(s) }
 

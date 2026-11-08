@@ -1,16 +1,23 @@
 package cli
 
 import (
+	"context"
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/spf13/cobra"
 
 	"github.com/khmuhtadin/sapu/internal/config"
 	"github.com/khmuhtadin/sapu/internal/engine"
+	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/plan"
 	"github.com/khmuhtadin/sapu/internal/purge"
+	"github.com/khmuhtadin/sapu/internal/review"
 	"github.com/khmuhtadin/sapu/internal/rules"
+	"github.com/khmuhtadin/sapu/internal/rulesupdate"
+	"github.com/khmuhtadin/sapu/internal/walk"
 )
 
 func newPurgeCmd() *cobra.Command {
@@ -69,15 +76,83 @@ func runPurge(cmd *cobra.Command, args []string, f *cleanupFlags, risk, profile,
 		roots = []string{"."}
 	}
 
-	ctx := cmd.Context()
-	items, err := purge.Find(ctx, e, roots, opts)
+	if useReview(cmd, f) {
+		return runReview(cmd, e, func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+			return planPurge(ctx, e, roots, opts, maxRisk)
+		})
+	}
+	p, err := planPurge(cmd.Context(), e, roots, opts, maxRisk)
 	if err != nil {
 		return err
+	}
+	return runPlan(cmd, "purge", e, p, *f)
+}
+
+// planPurge finds the build folders under roots and plans them, with the
+// items up to maxRisk selected. sapu purge and the purge tool share it.
+func planPurge(ctx context.Context, e env.Env, roots []string, opts purge.Options, maxRisk rules.Risk) (*plan.Plan, error) {
+	items, err := purge.Find(ctx, e, roots, opts)
+	if err != nil {
+		return nil, err
 	}
 	p, err := engine.Plan(ctx, e, plan.KindPurge, items)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	selectItems(p, maxRisk, nil, nil, nil)
-	return runPlan(cmd, "purge", e, p, *f)
+	return p, nil
+}
+
+// purgeDefaultDirs are the folders the purge tool looks in: the [purge]
+// roots of sapu.toml, else the usual project folders that exist, else home.
+// The typed sapu purge keeps the current folder as its default.
+func purgeDefaultDirs(e env.Env) ([]string, error) {
+	cfg, err := config.Load(e)
+	if err != nil {
+		return nil, err
+	}
+	var dirs []string
+	for _, root := range cfg.PurgeRoots {
+		dirs = append(dirs, e.Expand(root))
+	}
+	if len(dirs) > 0 {
+		return dirs, nil
+	}
+	for _, name := range []string{"Developer", "Projects", "code", "src", "dev", "work", "GitHub", "repos"} {
+		dir := filepath.Join(e.Home, name)
+		if info, err := os.Stat(dir); err == nil && info.IsDir() {
+			dirs = append(dirs, dir)
+		}
+	}
+	if len(dirs) == 0 {
+		dirs = []string{e.Home}
+	}
+	return dirs, nil
+}
+
+// purgeTool is the plan of the purge tool: sapu purge with sapu.toml's
+// settings, in dirs or purgeDefaultDirs.
+func purgeTool(e env.Env, dirs []string, _ string) review.PlanFunc {
+	return func(ctx context.Context, _ func(walk.Event)) (*plan.Plan, error) {
+		cfg, err := config.Load(e)
+		if err != nil {
+			return nil, err
+		}
+		maxRisk, err := maxRiskOf("", "", cfg)
+		if err != nil {
+			return nil, err
+		}
+		r, err := rulesupdate.Active(e)
+		if err != nil {
+			return nil, err
+		}
+		roots := dirs
+		if len(roots) == 0 {
+			if roots, err = purgeDefaultDirs(e); err != nil {
+				return nil, err
+			}
+		}
+		opts := purge.Options{Now: time.Now(), OlderThan: cfg.PurgeOlderThan, Types: r.Purge}
+		return planPurge(ctx, e, roots, opts, maxRisk)
+	}
 }

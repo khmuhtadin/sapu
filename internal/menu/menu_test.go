@@ -19,7 +19,26 @@ type fake struct {
 	restored []string
 	deleted  [][]string
 	runs     []Held
+	ran      []toolRun // RunTool calls
+	folders  []string  // Folder calls
 }
+
+// fakeTools are the tools the fake lists: one of each kind.
+var fakeTools = []Tool{
+	{ID: "uninstall", Title: "Uninstall an app", Short: "Remove an app and the files it left behind", App: true},
+	{ID: "purge", Title: "Build folders", Short: "Find build folders in your projects (node_modules, target, ...)", Folders: true, Dirs: []string{"~/Developer", "~/Projects"}},
+	{ID: "large", Title: "Large old files", Short: "Find big files you have not opened in a long time", Folders: true, Dirs: []string{"~"}},
+	{ID: "dupes", Title: "Duplicate files", Short: "Find extra copies of the same file", Folders: true},
+	{ID: "similar", Title: "Similar photos", Short: "Find photos that look alike and keep the best one", Folders: true},
+	{ID: "installer", Title: "Old installers", Short: "Find old .dmg, .pkg and .iso files", Folders: true},
+	{ID: "tidy", Title: "Empty folders and broken links", Short: "Find empty folders, broken links and empty files", Folders: true},
+	{ID: "trash", Title: "Empty the Trash", Short: "Empty the Trash through quarantine, hidden files included"},
+	{ID: "backups", Title: "iPhone and iPad backups", Short: "Find old device backups"},
+	{ID: "login-items", Title: "Login items", Short: "Stop things from starting at login"},
+}
+
+// fakeFolders are the folders the fake's Folder accepts, typed and expanded.
+var fakeFolders = map[string]string{"~/Code": "/nonexistent/home/Code", "/tmp/work": "/tmp/work"}
 
 func (f *fake) backend() Backend {
 	text := func(s string) func(context.Context) (string, error) {
@@ -42,6 +61,29 @@ func (f *fake) backend() Backend {
 		Delete: func(ids []string) (string, error) {
 			f.deleted = append(f.deleted, ids)
 			return fmt.Sprintf("Deleted %d runs for good.", len(ids)), nil
+		},
+		Tools: func() ([]Tool, error) { return fakeTools, nil },
+		Folder: func(p string) (string, error) {
+			f.folders = append(f.folders, p)
+			if p == "/etc/hosts" {
+				return "", errors.New("it is a file, not a folder")
+			}
+			if full, ok := fakeFolders[p]; ok {
+				return full, nil
+			}
+			return "", errors.New("it does not exist")
+		},
+		Apps: func(context.Context) ([]App, error) {
+			return []App{
+				{Name: "Docker", Path: "/Applications/Docker.app"},
+				{Name: "Slack", Path: "/Applications/Slack.app"},
+				{Name: "Slack Beta", Path: "/nonexistent/home/Applications/Slack Beta.app"},
+				{Name: "Zoom", Path: "/Applications/zoom.us.app"},
+			}, nil
+		},
+		RunTool: func(_ context.Context, id string, dirs []string, app string) error {
+			f.ran = append(f.ran, toolRun{id: id, dirs: dirs, app: app})
+			return nil
 		},
 	}
 }
@@ -74,8 +116,19 @@ func key(k string) tea.KeyMsg {
 		return tea.KeyMsg{Type: tea.KeyCtrlC}
 	case "space":
 		return tea.KeyMsg{Type: tea.KeySpace, Runes: []rune(" ")}
+	case "left":
+		return tea.KeyMsg{Type: tea.KeyLeft}
+	case "backspace":
+		return tea.KeyMsg{Type: tea.KeyBackspace}
+	case "ctrl+u":
+		return tea.KeyMsg{Type: tea.KeyCtrlU}
 	}
 	return tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune(k)}
+}
+
+// pasteKey is text pasted into the terminal.
+func pasteKey(text string) tea.KeyMsg {
+	return tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune(text), Paste: true}
 }
 
 // press sends the keys, answers every command they start (a screen that
@@ -100,7 +153,7 @@ func TestMenuMatchesTheDesign(t *testing.T) {
 	view := m.View()
 	for _, want := range []string{
 		"|  sapu ", "CLI / OPEN SOURCE", "A careful Mac cleanup.", "MENU",
-		"> 1  Scan & review", "  2  Explore storage", "  3  Apps & build files", "  4  Quarantine",
+		"> 1  Scan & review", "  2  Explore storage", "  3  Tools", "  4  Quarantine",
 		"  5  History", "  6  System check", "  7  Settings", "  q  Quit",
 		"Review before moving files.", "up/down move   enter open   ? help   q quit",
 	} {
@@ -141,8 +194,24 @@ func TestMenuRendersFitTheirWidth(t *testing.T) {
 				press(m, "2")
 				check("system data")
 				press(m, "esc", "3")
-				check("apps")
-				press(m, "q", "4")
+				check("tools")
+				for range 12 {
+					press(m, "down")
+					check("tools, down")
+				}
+				press(m, "2")
+				check("folders")
+				press(m, "f")
+				check("folder input")
+				press(m, "/", "n", "o", "p", "e", "enter")
+				check("folder error")
+				press(m, "esc", "esc", "1")
+				check("app picker")
+				press(m, "s", "l")
+				check("app filter")
+				press(m, "z", "z")
+				check("app filter, no match")
+				press(m, "esc", "esc", "esc", "4")
 				check("quarantine")
 				press(m, "enter")
 				check("restore confirmation")
@@ -235,7 +304,7 @@ func TestEveryChoiceOpensAndReturns(t *testing.T) {
 	}{
 		{"Scan & review", launchReview, screenMenu, ""},
 		{"Explore storage", launchNone, screenExplore, "Folder explorer"},
-		{"Apps & build files", launchNone, screenPage, "sapu uninstall APP"},
+		{"Tools", launchNone, screenTools, "Build folders"},
 		{"Quarantine", launchNone, screenQuarantine, "20261108-1500-demo"},
 		{"History", launchNone, screenPage, "2026-11-08 15:00"},
 		{"System check", launchNone, screenPage, "Full Disk Access"},
@@ -283,21 +352,6 @@ func TestExploreOffersTheExplorerAndSystemData(t *testing.T) {
 	press(m, "2", "1")
 	if m.launch != launchAnalyze {
 		t.Error("Folder explorer should open the analyze screen")
-	}
-}
-
-func TestAppsListsTheCommands(t *testing.T) {
-	m := newTestModel(newFake(), 80, 24, false)
-	press(m, "3")
-	view := m.View()
-	for _, want := range []string{
-		"sapu uninstall APP", "sapu purge DIR", "sapu dupes", "sapu installer", "sapu large",
-		"Remove an app and the files it left behind",
-		"asks before it moves anything",
-	} {
-		if !strings.Contains(strings.Join(strings.Fields(view), " "), want) {
-			t.Errorf("apps screen lacks %q:\n%s", want, view)
-		}
 	}
 }
 
@@ -480,10 +534,23 @@ func TestEmptyQuarantine(t *testing.T) {
 // range [:-2].
 func TestViewAtAnySizeDoesNotPanic(t *testing.T) {
 	for _, size := range [][2]int{{0, 0}, {1, 1}, {10, 5}, {0, 40}, {23, 30}} {
-		for _, s := range []screen{screenMenu, screenPage, screenQuarantine} {
+		for _, s := range []screen{screenMenu, screenPage, screenQuarantine, screenTools, screenFolders, screenApps} {
 			m := newModel(context.Background(), newFake().backend(), false)
 			m.width, m.height = size[0], size[1]
 			m.screen = s
+			_ = m.View()
+			// The same screens with something in them.
+			m = newModel(context.Background(), newFake().backend(), false)
+			press(m, "3", "2", "f", "x")
+			m.width, m.height = size[0], size[1]
+			_ = m.View()
+			m = newModel(context.Background(), newFake().backend(), false)
+			press(m, "3", "1", "s")
+			m.width, m.height = size[0], size[1]
+			_ = m.View()
+			m = newModel(context.Background(), newFake().backend(), false)
+			press(m, "3", "down", "down", "down", "down", "down", "down", "down", "down", "down")
+			m.width, m.height = size[0], size[1]
 			_ = m.View()
 		}
 	}

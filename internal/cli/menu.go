@@ -2,19 +2,27 @@ package cli
 
 import (
 	"bytes"
+	"cmp"
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
+	"unicode"
 
 	"github.com/spf13/cobra"
 
+	"github.com/khmuhtadin/sapu/internal/apps"
 	"github.com/khmuhtadin/sapu/internal/config"
+	"github.com/khmuhtadin/sapu/internal/env"
 	"github.com/khmuhtadin/sapu/internal/fsop"
 	"github.com/khmuhtadin/sapu/internal/menu"
 	"github.com/khmuhtadin/sapu/internal/output"
+	"github.com/khmuhtadin/sapu/internal/review"
 )
 
 // useMenu says whether plain `sapu` opens the menu: a person at a terminal,
@@ -51,7 +59,129 @@ func menuBackend(cmd *cobra.Command) menu.Backend {
 		Quarantine: menuQuarantine,
 		Restore:    menuRestore,
 		Delete:     menuDelete,
+		Tools:      menuTools,
+		Folder:     menuFolder,
+		Apps:       menuApps,
+		RunTool: func(ctx context.Context, id string, dirs []string, app string) error {
+			return menuError(runTool(cmd, id, dirs, app))
+		},
 	}
+}
+
+// menuTools lists the tools for the menu, with the folders each looks in.
+func menuTools() ([]menu.Tool, error) {
+	e, err := loadEnv()
+	if err != nil {
+		return nil, err
+	}
+	var out []menu.Tool
+	for _, t := range tools {
+		mt := menu.Tool{ID: t.ID, Title: t.Title, Short: t.Short, Folders: t.Folders, App: t.App}
+		if t.DefaultDirs != nil {
+			dirs, err := t.DefaultDirs(e)
+			if err != nil {
+				return nil, fmt.Errorf("%s: %w", t.Title, err)
+			}
+			for _, d := range dirs {
+				mt.Dirs = append(mt.Dirs, tilde(e.Home, d))
+			}
+		}
+		out = append(out, mt)
+	}
+	return out, nil
+}
+
+// menuFolder is the folder a user typed, ~ expanded, when it is a folder.
+// The error says why it is not one.
+func menuFolder(path string) (string, error) {
+	e, err := loadEnv()
+	if err != nil {
+		return "", err
+	}
+	p, err := filepath.Abs(e.Expand(path))
+	if err != nil {
+		return "", err
+	}
+	info, err := os.Stat(p)
+	switch {
+	case errors.Is(err, fs.ErrNotExist):
+		return "", errors.New("it does not exist")
+	case err != nil:
+		return "", fmt.Errorf("cannot open it: %w", err)
+	case !info.IsDir():
+		return "", errors.New("it is a file, not a folder")
+	}
+	return p, nil
+}
+
+// menuApps lists the installed apps uninstall may remove: not Apple's (the
+// rule pickApp keeps), by name.
+func menuApps(ctx context.Context) ([]menu.App, error) {
+	e, err := loadEnv()
+	if err != nil {
+		return nil, err
+	}
+	installed, err := apps.List(ctx, e)
+	if err != nil {
+		return nil, err
+	}
+	var out []menu.App
+	for _, a := range installed {
+		if !apps.IsApple(a.ID) {
+			out = append(out, menu.App{Name: a.Name, Path: a.Path})
+		}
+	}
+	slices.SortFunc(out, func(a, b menu.App) int {
+		return cmp.Or(cmp.Compare(strings.ToLower(a.Name), strings.ToLower(b.Name)), cmp.Compare(a.Path, b.Path))
+	})
+	return out, nil
+}
+
+// runTool runs the review screen of a tool, the way runReview does for
+// clean, with the tool's name in the header. dirs nil means the tool's
+// default folders; app is what `sapu uninstall APP` would get.
+func runTool(cmd *cobra.Command, id string, dirs []string, app string) error {
+	e, err := loadEnv()
+	if err != nil {
+		return err
+	}
+	title, planFn, err := toolScreen(e, id, dirs, app)
+	if err != nil {
+		return err
+	}
+	why, err := protectWhy(e)
+	if err != nil {
+		return err
+	}
+	cfg, err := config.Load(e)
+	if err != nil {
+		return err
+	}
+	res, err := review.RunTitled(cmd.Context(), e, cfg, title, planFn, why)
+	return finishReview(cmd.OutOrStdout(), e.Home, cfg, res, err)
+}
+
+// toolScreen is the header and the plan of a tool's review screen.
+func toolScreen(e env.Env, id string, dirs []string, app string) (string, review.PlanFunc, error) {
+	t, ok := toolByID(id)
+	if !ok {
+		return "", nil, fmt.Errorf("no tool %q", id)
+	}
+	title := lowerFirst(t.Title)
+	if t.App && app != "" {
+		title = "uninstall " + strings.TrimSuffix(filepath.Base(app), ".app")
+	}
+	return title, t.Plan(e, dirs, app), nil
+}
+
+// lowerFirst makes "Build folders" "build folders" for a header, and leaves
+// "iPhone and iPad backups" as it is.
+func lowerFirst(s string) string {
+	r := []rune(s)
+	if len(r) > 1 && unicode.IsUpper(r[0]) && unicode.IsLower(r[1]) {
+		r[0] = unicode.ToLower(r[0])
+	}
+	return string(r)
 }
 
 // menuError drops what the screen already told the user: a run that moved
