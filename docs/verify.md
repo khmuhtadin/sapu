@@ -3,17 +3,17 @@
 Sapu can move your files, so check that the binary you downloaded is the one we
 built. This takes a minute.
 
-## What a 0.x download is
+## What a download is
 
-Sapu 0.x releases are **developer previews**. Each one has:
+Each Sapu release has:
 
 - a SHA-256 checksum of the archive, in `checksums.txt`;
 - a [cosign](https://docs.sigstore.dev/cosign/) (Sigstore) signature of
   `checksums.txt`, which proves that GitHub Actions built it from this
   repository.
 
-A 0.x download is **not** signed with an Apple Developer ID and **not**
-notarized by Apple. Apple cannot vouch for it. Steps 1 and 2 below are how you
+A download is **not** signed with an Apple Developer ID and **not**
+notarized by Apple yet. Apple cannot vouch for it. Steps 1 and 2 below are how you
 check it yourself. Developer ID signing and notarization are planned for a
 later release; this page will say so when a release has them.
 
@@ -104,7 +104,7 @@ How macOS treats `sapu` depends on how you downloaded it.
   flag is there (`com.apple.quarantine`); if it prints nothing, there is
   nothing to remove.
 
-What you will see with `codesign` on a 0.x binary:
+What you will see with `codesign` on a sapu binary:
 
 ```sh
 codesign -dv --verbose=2 sapu

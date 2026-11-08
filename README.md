@@ -5,10 +5,9 @@
 A Mac cleaner for the command line that never deletes anything you can't undo,
 and explains where your disk went. *Sapu* is Indonesian for "broom".
 
-**Status: developer preview (0.x).** Run `sapu clean`, read the list it shows,
-and answer `n` if you are not sure. Nothing moves until you say yes. The 0.x
-downloads are not signed with an Apple Developer ID or notarized; see
-[docs/verify.md](docs/verify.md).
+Run `sapu clean`, read the list it shows, and answer `n` if you are not sure.
+Nothing moves until you say yes. The downloads are not signed with an Apple
+Developer ID or notarized yet; see [docs/verify.md](docs/verify.md).
 
 ## Quick start
 
@@ -86,9 +85,9 @@ How it works in detail: [docs/safety.md](docs/safety.md).
 
 ## Install and verify
 
-Sapu needs macOS 13 or later. 0.x releases are developer previews: they are
-checked with SHA-256 checksums and a cosign signature, and are **not** signed
-with an Apple Developer ID or notarized. [docs/verify.md](docs/verify.md)
+Sapu needs macOS 13 or later. Releases are checked with SHA-256 checksums and
+a cosign signature, and are **not** signed with an Apple Developer ID or
+notarized yet. [docs/verify.md](docs/verify.md)
 explains what that means.
 
 **From GitHub Releases.** Download the archive for your Mac (one universal

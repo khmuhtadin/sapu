@@ -1,11 +1,11 @@
 # GoReleaser v2 config for Sapu. See docs/releasing.md.
 #
 # Releases are tags vX.Y.Z (and vX.Y.Z-beta.N for betas). They are cut by
-# .github/workflows/release.yml. Every release is published as a GitHub
-# pre-release while the version is 0.x (`release.prerelease` below).
+# .github/workflows/release.yml. Betas are published as GitHub pre-releases
+# (`release.prerelease` below).
 #
-# v0.x releases are unsigned developer releases: checksums plus a cosign
-# signature of checksums.txt, no Apple Developer ID, no notarization.
+# Until the Apple secrets are set, releases are unsigned: checksums plus a
+# cosign signature of checksums.txt, no Apple Developer ID, no notarization.
 # docs/verify.md says exactly what that means.
 version: 2
 
@@ -81,8 +81,8 @@ signs:
       - "${artifact}"
       - "--yes"
 
-# Apple codesign and notarization, driven by CI secrets. Not used yet: v0.x is
-# released unsigned. When MACOS_SIGN_P12 is not set (or empty, which is what
+# Apple codesign and notarization, driven by CI secrets. Not used yet: releases
+# are unsigned. When MACOS_SIGN_P12 is not set (or empty, which is what
 # GitHub passes for a missing secret) the step is skipped and the binary stays
 # unsigned. Set the five secrets in docs/releasing.md and it starts working.
 notarize:
@@ -100,19 +100,17 @@ notarize:
         wait: true
         timeout: 20m
 
-# Every 0.x release, betas included, is created as a pre-release, so it is
-# never public as a stable release. At 1.0 change this to `auto`, which marks
-# only tags with a pre-release part (vX.Y.Z-beta.N).
+# `auto` marks only tags with a pre-release part (vX.Y.Z-beta.N) as GitHub
+# pre-releases.
 release:
   github:
     owner: khmuhtadin
     name: sapu
-  prerelease: true
+  prerelease: auto
   header: |
-    **Developer preview (0.x).** This download is checked by SHA-256
-    checksums and a cosign (Sigstore) signature of `checksums.txt`. It is
-    **not** signed with an Apple Developer ID and **not** notarized.
-    Verify it before you run it:
+    This download is checked by SHA-256 checksums and a cosign (Sigstore)
+    signature of `checksums.txt`. It is **not** signed with an Apple
+    Developer ID and **not** notarized. Verify it before you run it:
     https://github.com/khmuhtadin/sapu/blob/main/docs/verify.md
 
 # No `brews` section: GoReleaser v2.20 marks it deprecated (it wants casks, and

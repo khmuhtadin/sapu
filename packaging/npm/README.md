@@ -45,8 +45,7 @@ archive after its SHA-256 was checked against the release's `checksums.txt`.
 The package has no install scripts and downloads nothing, at install time or
 at run time. It does nothing on other systems than macOS.
 
-0.x releases are developer previews: not signed with an Apple Developer ID and
-not notarized. [docs/verify.md](https://github.com/khmuhtadin/sapu/blob/main/docs/verify.md)
+Releases are not signed with an Apple Developer ID or notarized yet. [docs/verify.md](https://github.com/khmuhtadin/sapu/blob/main/docs/verify.md)
 shows how to check the checksum and the cosign signature.
 
 ## Links

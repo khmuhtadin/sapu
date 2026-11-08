@@ -7,23 +7,23 @@ of `checksums.txt`, and a GitHub release with a changelog from the commit
 messages. If the Apple secrets below exist, it also signs and notarizes the
 binary.
 
-## What a 0.x release is
+## What a release is
 
-Sapu 0.x releases are **unsigned developer previews**:
+Until the Apple secrets below are set, Sapu releases are **unsigned**:
 
 - the archive has SHA-256 checksums and a cosign (Sigstore) signature of
   `checksums.txt`;
 - the binary has no Apple Developer ID signature and is not notarized;
-- the release is marked as a pre-release on GitHub, and its notes start with a
-  header that says so (`release.header` in `.goreleaser.yml`);
+- the release notes start with a header that says so (`release.header` in
+  `.goreleaser.yml`);
 - `docs/verify.md` tells users what that means and how macOS treats the binary.
 
-`.goreleaser.yml` sets `release.prerelease: true`, so every 0.x release is
-created as a pre-release and is never public as a stable release. At 1.0,
-change it to `auto`, which marks only tags with a suffix such as `-beta.1`.
+`.goreleaser.yml` sets `release.prerelease: auto`: a tag with a suffix such
+as `-beta.1` is a GitHub pre-release, and a plain `vX.Y.Z` is a normal
+release.
 
 When you start signing with a Developer ID (all five secrets below set), edit
-the `release.header` text in `.goreleaser.yml` and the "What a 0.x download is"
+the `release.header` text in `.goreleaser.yml` and the "What a download is"
 section of `docs/verify.md` in the same change, so they stay true. A tag push
 needs no other change: signing turns on by itself when `MACOS_SIGN_P12` is not
 empty.
@@ -54,7 +54,7 @@ empty.
   pattern in `docs/verify.md` and `README.md` names it too. Change all of them
   together if the repository ever moves.
 - Create the `release` environment as described above.
-- No secret is needed for a 0.x release. Cosign uses the workflow's identity,
+- No secret is needed for an unsigned release. Cosign uses the workflow's identity,
   which is why the release job has `id-token: write`. The job also has
   `contents: write` to create the release. `GITHUB_TOKEN` is provided by
   GitHub.
@@ -124,8 +124,8 @@ Only the owner. At most once every two weeks.
    git tag v0.1.0
    git push origin v0.1.0
    ```
-5. Approve the workflow. When it finishes, the release should be marked
-   "Pre-release" while the version starts with `0.`. Download it and verify as
+5. Approve the workflow. When it finishes, the release should be the latest
+   release, not a pre-release. Download it and verify as
    in `docs/verify.md`: checksum and cosign, and the quarantine behavior for a
    browser download. If Apple signing is on, check `codesign` too.
 6. Install it the way the README says, with the `curl` commands and with
@@ -162,10 +162,8 @@ Homebrew's `brew audit --new` holds a new formula to these rules:
 - **Notability.** The repo needs 75 stars, 30 forks or 30 watchers. When the
   repo owner opens the pull request the bar is three times that (225, 90, 90),
   so it is better sent by a user.
-- **A stable release.** The release must not be a GitHub pre-release. Every
-  0.x release is one today (`prerelease: true` in `.goreleaser.yml`). Change
-  that to `auto` for the first release sent to Homebrew, and update the
-  "developer preview" wording in its header and in this file.
+- **A stable release.** The release must not be a GitHub pre-release. Only
+  betas are (`release.prerelease: auto` in `.goreleaser.yml`).
 - **Source builds.** `packaging/homebrew-core/sapu.rb` builds from source, as
   homebrew-core requires. Its test plans a clean of a made-up home folder, so
   it moves nothing.

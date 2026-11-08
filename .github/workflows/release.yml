@@ -1,6 +1,6 @@
 # Cuts a release when a version tag is pushed. Steps and owner gates:
 # docs/releasing.md.
-#   vX.Y.Z         release (a pre-release while X is 0)
+#   vX.Y.Z         release
 #   vX.Y.Z-beta.N  beta, published as a pre-release
 #
 # The workflow needs no secret to succeed. Apple signing and notarization turn
