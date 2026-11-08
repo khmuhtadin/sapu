@@ -149,6 +149,34 @@ excepted), update `packaging/homebrew/sapu.rb` here and copy it to
 (`brews` in GoReleaser is deprecated and a cask would quarantine the unsigned
 binary, so the formula is written by hand.)
 
+### Plain `brew install sapu`: homebrew-core
+
+A bare `brew install sapu` only works once sapu is in Homebrew's own
+catalogue, [homebrew-core](https://github.com/Homebrew/homebrew-core). A tap
+cannot give the short name: in Homebrew 7, `brew tap` plus `brew install sapu`
+refuses an untrusted tap, so it takes a third command (`brew trust --tap`).
+Homebrew's `brew audit --new` holds a new formula to these rules:
+
+- **Age.** The GitHub repo must be at least 30 days old. That means 8 December
+  2026 or later.
+- **Notability.** The repo needs 75 stars, 30 forks or 30 watchers. When the
+  repo owner opens the pull request the bar is three times that (225, 90, 90),
+  so it is better sent by a user.
+- **A stable release.** The release must not be a GitHub pre-release. Every
+  0.x release is one today (`prerelease: true` in `.goreleaser.yml`). Change
+  that to `auto` for the first release sent to Homebrew, and update the
+  "developer preview" wording in its header and in this file.
+- **Source builds.** `packaging/homebrew-core/sapu.rb` builds from source, as
+  homebrew-core requires. Its test plans a clean of a made-up home folder, so
+  it moves nothing.
+
+To send it, set `url` to the release's source tarball
+(`https://github.com/khmuhtadin/sapu/archive/refs/tags/vX.Y.Z.tar.gz`) and
+`sha256` to its checksum. Copy the formula to `Formula/s/sapu.rb` in a fork of
+Homebrew/homebrew-core, then open a pull request. Homebrew's maintainers decide
+whether it goes in. Once it does, the README and the website switch to
+`brew install sapu`.
+
 ### After the release: the one-line installer
 
 Set `current` in `install.sh` to the new version, commit, and redeploy the
