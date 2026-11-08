@@ -149,6 +149,13 @@ excepted), update `packaging/homebrew/sapu.rb` here and copy it to
 (`brews` in GoReleaser is deprecated and a cask would quarantine the unsigned
 binary, so the formula is written by hand.)
 
+### After the release: the one-line installer
+
+Set `current` in `install.sh` to the new version, commit, and redeploy the
+website (`cd website && npm run deploy`), which serves the file at
+`https://sapu.khaisa.studio/install.sh`. Then check it:
+`curl -fsSL https://sapu.khaisa.studio/install.sh | SAPU_INSTALL_DIR="$(mktemp -d)" sh`.
+
 ### After the release: npm and the plugin
 
 Do this once the GitHub release is out and verified. Only the owner publishes.

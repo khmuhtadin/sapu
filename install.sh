@@ -3,11 +3,11 @@
 #
 #   curl -fsSL https://sapu.khaisa.studio/install.sh | sh
 #
-# It downloads the newest release archive from GitHub, checks its SHA-256
-# checksum against the release's checksums.txt, and puts sapu in
-# ~/.local/bin. It never uses sudo and changes nothing else.
+# It downloads the release archive from GitHub, checks its SHA-256 checksum
+# against the release's checksums.txt, and puts sapu in ~/.local/bin. It
+# never uses sudo and changes nothing else.
 #
-#   SAPU_VERSION=0.1.0       install that version instead of the newest
+#   SAPU_VERSION=0.1.0       install that version instead of the current one
 #   SAPU_INSTALL_DIR=/path   install into that folder instead of ~/.local/bin
 #
 # docs/verify.md shows how to also check the cosign signature by hand.
@@ -26,13 +26,10 @@ for tool in curl shasum tar; do
 	command -v "$tool" >/dev/null 2>&1 || fail "$tool is missing."
 done
 
-version="${SAPU_VERSION:-}"
-if [ -z "$version" ]; then
-	# The newest release, pre-releases included: every 0.x release is one.
-	version=$(curl -fsSL "https://api.github.com/repos/$repo/releases?per_page=1" |
-		sed -n 's/.*"tag_name": *"v\{0,1\}\([^"]*\)".*/\1/p' | head -n 1)
-	[ -n "$version" ] || fail "could not find the newest release on GitHub."
-fi
+# The current release. docs/releasing.md bumps it with every release, so the
+# installer needs no GitHub API call (which can be rate-limited or down).
+current="0.1.0"
+version="${SAPU_VERSION:-$current}"
 version=${version#v}
 
 archive="sapu_${version}_darwin_universal.tar.gz"
