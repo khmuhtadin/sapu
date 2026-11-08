@@ -9,6 +9,8 @@ Run `sapu clean`, read the list it shows, and answer `n` if you are not sure.
 Nothing moves until you say yes. The downloads are not signed with an Apple
 Developer ID or notarized yet; see [docs/verify.md](docs/verify.md).
 
+![sapu clean: review what it found, move it to quarantine, then put it all back with sapu undo](assets/demo.gif)
+
 ## Quick start
 
 **Homebrew**
