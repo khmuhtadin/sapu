@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/quarantine-empty.json",
+  "title": "data of sapu quarantine empty --json",
+  "type": "object",
+  "required": [
+    "runs",
+    "freed"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "freed"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "freed": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "freed": {
+      "type": "integer"
+    }
+  }
+}

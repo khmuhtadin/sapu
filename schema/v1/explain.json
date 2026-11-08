@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/explain.json",
+  "title": "data of sapu explain --json",
+  "type": "object",
+  "required": [
+    "rows",
+    "measured_bytes",
+    "unmeasured"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "bytes",
+          "explain",
+          "action",
+          "needs_admin"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "bytes": {
+            "description": "-1 when it could not be measured; see unmeasured.",
+            "type": "integer",
+            "minimum": -1
+          },
+          "unmeasured": {
+            "description": "Why bytes is -1.",
+            "type": "string"
+          },
+          "explain": {
+            "type": "string"
+          },
+          "action": {
+            "description": "The official safe way to reclaim it, in words.",
+            "type": "string"
+          },
+          "command": {
+            "description": "Shown to the user, never run by Sapu.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "needs_admin": {
+            "description": "The command needs sudo.",
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "measured_bytes": {
+      "description": "Sum of the measured rows: a lower bound.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "unmeasured": {
+      "description": "Number of rows that could not be measured.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "reconcile": {
+      "description": "How this adds up: used space split into home, the System Data parts measured outside home, and the rest. Home comes from a size snapshot less than 24 hours old; without one, home_bytes and rest_bytes are -1.",
+      "type": "object",
+      "required": [
+        "total_bytes",
+        "used_bytes",
+        "home_bytes",
+        "system_bytes",
+        "system_unmeasured",
+        "rest_bytes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_bytes": {
+          "description": "Size of the volume.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "used_bytes": {
+          "description": "Used space as the disk reports it. It counts purgeable space as used, so it can be higher than System Settings says: an estimate.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "home_bytes": {
+          "description": "Size of the home folder from the newest snapshot; -1 when there is none under 24 hours old.",
+          "type": "integer",
+          "minimum": -1
+        },
+        "home_taken": {
+          "description": "When that snapshot was taken.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "system_bytes": {
+          "description": "Rows outside home (Spotlight, system assets, swap and sleep image) that could be measured: a lower bound.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "system_unmeasured": {
+          "description": "Rows outside home that could not be measured.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "rest_bytes": {
+          "description": "used_bytes - home_bytes - system_bytes, never below 0; -1 when home_bytes is -1. An estimate: macOS itself, other users, and areas macOS protects (SIP) that Sapu cannot see or clean.",
+          "type": "integer",
+          "minimum": -1
+        },
+        "note": {
+          "type": "string"
+        },
+        "home_unmeasured": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

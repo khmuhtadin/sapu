@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/history.json",
+  "title": "data of sapu history --json",
+  "type": "object",
+  "required": [
+    "runs"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "started",
+          "items",
+          "bytes"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "done",
+              "interrupted",
+              "undone",
+              "emptied"
+            ]
+          },
+          "started": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "integer"
+          },
+          "bytes": {
+            "type": "integer"
+          }
+        }
+      }
+    }
+  }
+}

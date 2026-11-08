@@ -1,0 +1,3 @@
+Library/Caches/com.apple.Safari/WebKitCache
+Library/Caches/com.apple.Safari/fsCachedData
+Library/Containers/com.apple.Safari/Data/Library/Caches/com.apple.Safari/WebKitCache

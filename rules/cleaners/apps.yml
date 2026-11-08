@@ -1,0 +1,173 @@
+# App caches. Accounts, settings and user data are never targeted.
+
+- id: slack.cache
+  category: apps
+  app: com.tinyspeck.slackmacgap
+  paths:
+    - ~/Library/Application Support/Slack/Cache
+    - ~/Library/Application Support/Slack/Code Cache
+    - ~/Library/Application Support/Slack/GPUCache
+    - ~/Library/Application Support/Slack/Service Worker/CacheStorage
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Slack's web content, script and graphics caches. Safe to remove; Slack reloads them at the next start and may open a little slower once. Your messages live on Slack's servers."
+    zh: "Slack 的网页内容、脚本和图形缓存。可以放心删除；Slack 下次启动时会重新加载，第一次打开可能会稍慢一点。你的消息保存在 Slack 的服务器上。"
+    ja: "Slackのウェブコンテンツ、スクリプト、グラフィックのキャッシュです。安全に削除できます。次回の起動時にSlackが読み込み直すため、一度だけ起動が少し遅くなることがあります。メッセージはSlackのサーバーに保存されています。"
+    id: "Cache konten web, skrip, dan grafis Slack. Aman dihapus; Slack akan memuatnya ulang saat dibuka berikutnya, jadi mungkin sedikit lebih lambat terbuka sekali saja. Pesan kamu tersimpan di server Slack."
+    es: "Cachés de contenido web, scripts y gráficos de Slack. Es seguro eliminarlos; Slack los vuelve a cargar en el próximo inicio y puede abrirse un poco más lento una sola vez. Tus mensajes están en los servidores de Slack."
+    pt: "Caches de conteúdo web, scripts e gráficos do Slack. Pode remover com segurança; o Slack os carrega de novo na próxima vez que for iniciado e pode abrir um pouco mais devagar uma única vez. Suas mensagens ficam nos servidores do Slack."
+    de: "Caches für Webinhalte, Skripte und Grafiken von Slack. Kann gefahrlos entfernt werden; Slack lädt sie beim nächsten Start neu und öffnet sich dabei einmalig etwas langsamer. Nachrichten liegen auf den Servern von Slack."
+  protect_if:
+    - process_running: Slack
+  action: quarantine
+  fixture: slack-cache
+
+- id: discord.cache
+  category: apps
+  app: com.hnc.Discord
+  paths:
+    - ~/Library/Application Support/discord/Cache
+    - ~/Library/Application Support/discord/Code Cache
+    - ~/Library/Application Support/discord/GPUCache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Discord's web content, script and graphics caches. Safe to remove; Discord rebuilds them the next time it starts, so it may open a little slower once."
+    zh: "Discord 的网页内容、脚本和图形缓存。可以放心删除；Discord 下次启动时会重新生成，所以第一次打开可能会稍慢一点。"
+    ja: "Discordのウェブコンテンツ、スクリプト、グラフィックのキャッシュです。安全に削除できます。次回の起動時にDiscordが再作成するため、一度だけ起動が少し遅くなることがあります。"
+    id: "Cache konten web, skrip, dan grafis Discord. Aman dihapus; Discord akan membuatnya lagi saat dibuka berikutnya, jadi mungkin sedikit lebih lambat terbuka sekali saja."
+    es: "Cachés de contenido web, scripts y gráficos de Discord. Es seguro eliminarlos; Discord los recrea la próxima vez que se inicia, así que puede abrirse un poco más lento una sola vez."
+    pt: "Caches de conteúdo web, scripts e gráficos do Discord. Pode remover com segurança; o Discord os recria na próxima vez que for iniciado, então pode abrir um pouco mais devagar uma única vez."
+    de: "Caches für Webinhalte, Skripte und Grafiken von Discord. Kann gefahrlos entfernt werden; Discord erstellt sie beim nächsten Start neu, daher kann das Öffnen einmalig etwas länger dauern."
+  protect_if:
+    - process_running: Discord
+  action: quarantine
+  fixture: discord-cache
+
+- id: notion.cache
+  category: apps
+  app: notion.id
+  paths:
+    - ~/Library/Application Support/Notion/Cache
+    - ~/Library/Application Support/Notion/Code Cache
+    - ~/Library/Application Support/Notion/GPUCache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Notion's web content, script and graphics caches. Safe to remove; Notion rebuilds them the next time it starts, so it may open a little slower once."
+    zh: "Notion 的网页内容、脚本和图形缓存。可以放心删除；Notion 下次启动时会重新生成，所以第一次打开可能会稍慢一点。"
+    ja: "Notionのウェブコンテンツ、スクリプト、グラフィックのキャッシュです。安全に削除できます。次回の起動時にNotionが再作成するため、一度だけ起動が少し遅くなることがあります。"
+    id: "Cache konten web, skrip, dan grafis Notion. Aman dihapus; Notion akan membuatnya lagi saat dibuka berikutnya, jadi mungkin sedikit lebih lambat terbuka sekali saja."
+    es: "Cachés de contenido web, scripts y gráficos de Notion. Es seguro eliminarlos; Notion los recrea la próxima vez que se inicia, así que puede abrirse un poco más lento una sola vez."
+    pt: "Caches de conteúdo web, scripts e gráficos do Notion. Pode remover com segurança; o Notion os recria na próxima vez que for iniciado, então pode abrir um pouco mais devagar uma única vez."
+    de: "Caches für Webinhalte, Skripte und Grafiken von Notion. Kann gefahrlos entfernt werden; Notion erstellt sie beim nächsten Start neu, daher kann das Öffnen einmalig etwas länger dauern."
+  protect_if:
+    - process_running: Notion
+  action: quarantine
+  fixture: notion-cache
+
+- id: obsidian.cache
+  category: apps
+  app: md.obsidian
+  paths:
+    - ~/Library/Application Support/obsidian/Cache
+    - ~/Library/Application Support/obsidian/Code Cache
+    - ~/Library/Application Support/obsidian/GPUCache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Obsidian's web content, script and graphics caches. Safe to remove; Obsidian rebuilds them the next time it starts, so it may open a little slower once."
+    zh: "Obsidian 的网页内容、脚本和图形缓存。可以放心删除；Obsidian 下次启动时会重新生成，所以第一次打开可能会稍慢一点。"
+    ja: "Obsidianのウェブコンテンツ、スクリプト、グラフィックのキャッシュです。安全に削除できます。次回の起動時にObsidianが再作成するため、一度だけ起動が少し遅くなることがあります。"
+    id: "Cache konten web, skrip, dan grafis Obsidian. Aman dihapus; Obsidian akan membuatnya lagi saat dibuka berikutnya, jadi mungkin sedikit lebih lambat terbuka sekali saja."
+    es: "Cachés de contenido web, scripts y gráficos de Obsidian. Es seguro eliminarlos; Obsidian los recrea la próxima vez que se inicia, así que puede abrirse un poco más lento una sola vez."
+    pt: "Caches de conteúdo web, scripts e gráficos do Obsidian. Pode remover com segurança; o Obsidian os recria na próxima vez que for iniciado, então pode abrir um pouco mais devagar uma única vez."
+    de: "Caches für Webinhalte, Skripte und Grafiken von Obsidian. Kann gefahrlos entfernt werden; Obsidian erstellt sie beim nächsten Start neu, daher kann das Öffnen einmalig etwas länger dauern."
+  protect_if:
+    - process_running: Obsidian
+  action: quarantine
+  fixture: obsidian-cache
+
+- id: postman.cache
+  category: apps
+  app: com.postmanlabs.mac
+  paths:
+    - ~/Library/Application Support/Postman/Cache
+    - ~/Library/Application Support/Postman/Code Cache
+    - ~/Library/Application Support/Postman/GPUCache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Postman's web content, script and graphics caches. Safe to remove; Postman rebuilds them the next time it starts, so it may open a little slower once."
+    zh: "Postman 的网页内容、脚本和图形缓存。可以放心删除；Postman 下次启动时会重新生成，所以第一次打开可能会稍慢一点。"
+    ja: "Postmanのウェブコンテンツ、スクリプト、グラフィックのキャッシュです。安全に削除できます。次回の起動時にPostmanが再作成するため、一度だけ起動が少し遅くなることがあります。"
+    id: "Cache konten web, skrip, dan grafis Postman. Aman dihapus; Postman akan membuatnya lagi saat dibuka berikutnya, jadi mungkin sedikit lebih lambat terbuka sekali saja."
+    es: "Cachés de contenido web, scripts y gráficos de Postman. Es seguro eliminarlos; Postman los recrea la próxima vez que se inicia, así que puede abrirse un poco más lento una sola vez."
+    pt: "Caches de conteúdo web, scripts e gráficos do Postman. Pode remover com segurança; o Postman os recria na próxima vez que for iniciado, então pode abrir um pouco mais devagar uma única vez."
+    de: "Caches für Webinhalte, Skripte und Grafiken von Postman. Kann gefahrlos entfernt werden; Postman erstellt sie beim nächsten Start neu, daher kann das Öffnen einmalig etwas länger dauern."
+  protect_if:
+    - process_running: Postman
+  action: quarantine
+  fixture: postman-cache
+
+- id: zoom.cache
+  category: apps
+  app: us.zoom.xos
+  paths:
+    - ~/Library/Caches/us.zoom.xos
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Zoom's cache of thumbnails and web content. Safe to remove; Zoom rebuilds it the next time you open it. Your recordings and chat history are stored elsewhere and are not touched."
+    zh: "Zoom 的缩略图和网页内容缓存。可以放心删除；你下次打开 Zoom 时会重新生成。你的录制内容和聊天记录保存在其他位置，不会被改动。"
+    ja: "Zoomのサムネールとウェブコンテンツのキャッシュです。安全に削除できます。次回Zoomを開いたときに再作成されます。録画やチャット履歴は別の場所に保存されており、変更されません。"
+    id: "Cache thumbnail dan konten web Zoom. Aman dihapus; Zoom akan membuatnya lagi saat kamu membukanya berikutnya. Rekaman dan riwayat chat disimpan di tempat lain dan tidak disentuh."
+    es: "Caché de miniaturas y contenido web de Zoom. Es seguro eliminarla; Zoom la recrea la próxima vez que lo abres. Tus grabaciones y el historial de chat están guardados en otro lugar y no se tocan."
+    pt: "Cache de miniaturas e conteúdo web do Zoom. Pode remover com segurança; o Zoom o recria na próxima vez que você abri-lo. Suas gravações e o histórico de chat ficam armazenados em outro lugar e não são tocados."
+    de: "Cache für Vorschaubilder und Webinhalte von Zoom. Kann gefahrlos entfernt werden; Zoom erstellt ihn beim nächsten Öffnen neu. Aufnahmen und Chatverlauf sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: zoom.us
+  action: quarantine
+  fixture: zoom-cache
+
+- id: teams.cache
+  category: apps
+  app: com.microsoft.teams2
+  paths:
+    - "~/Library/Containers/com.microsoft.teams2/Data/Library/Caches/**"
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Microsoft Teams' web content and image caches. Safe to remove; Teams rebuilds them the next time it starts and may open a little slower once. Your chats and files live in Microsoft 365."
+    zh: "Microsoft Teams 的网页内容和图片缓存。可以放心删除；Teams 下次启动时会重新生成，第一次打开可能会稍慢一点。你的聊天和文件保存在 Microsoft 365 中。"
+    ja: "Microsoft Teamsのウェブコンテンツと画像のキャッシュです。安全に削除できます。次回の起動時にTeamsが再作成するため、一度だけ起動が少し遅くなることがあります。チャットやファイルはMicrosoft 365にあります。"
+    id: "Cache konten web dan gambar Microsoft Teams. Aman dihapus; Teams akan membuatnya lagi saat dibuka berikutnya dan mungkin sedikit lebih lambat terbuka sekali saja. Chat dan file kamu ada di Microsoft 365."
+    es: "Cachés de contenido web e imágenes de Microsoft Teams. Es seguro eliminarlos; Teams los recrea la próxima vez que se inicia y puede abrirse un poco más lento una sola vez. Tus chats y archivos están en Microsoft 365."
+    pt: "Caches de conteúdo web e imagens do Microsoft Teams. Pode remover com segurança; o Teams os recria na próxima vez que for iniciado e pode abrir um pouco mais devagar uma única vez. Seus chats e arquivos ficam no Microsoft 365."
+    de: "Caches für Webinhalte und Bilder von Microsoft Teams. Kann gefahrlos entfernt werden; Teams erstellt sie beim nächsten Start neu und öffnet sich dabei einmalig etwas langsamer. Chats und Dateien liegen in Microsoft 365."
+  protect_if:
+    - process_running: MSTeams
+  action: quarantine
+  fixture: teams-cache
+
+- id: steam.cache
+  category: apps
+  app: com.valvesoftware.steam
+  paths:
+    - ~/Library/Application Support/Steam/appcache/httpcache
+    - ~/Library/Application Support/Steam/htmlcache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Steam's store and web view caches. Safe to remove; Steam rebuilds them the next time it starts. Installed games and saves are stored elsewhere and are not touched."
+    zh: "Steam 的商店和网页视图缓存。可以放心删除；Steam 下次启动时会重新生成。已安装的游戏和存档保存在其他位置，不会被改动。"
+    ja: "Steamのストアとウェブビューのキャッシュです。安全に削除できます。次回の起動時にSteamが再作成します。インストール済みのゲームとセーブデータは別の場所に保存されており、変更されません。"
+    id: "Cache toko dan tampilan web Steam. Aman dihapus; Steam akan membuatnya lagi saat dibuka berikutnya. Game yang terpasang dan data save disimpan di tempat lain dan tidak disentuh."
+    es: "Cachés de la tienda y de las vistas web de Steam. Es seguro eliminarlos; Steam los recrea la próxima vez que se inicia. Los juegos instalados y las partidas guardadas están en otro lugar y no se tocan."
+    pt: "Caches da loja e das visualizações web do Steam. Pode remover com segurança; o Steam os recria na próxima vez que for iniciado. Os jogos instalados e os saves ficam armazenados em outro lugar e não são tocados."
+    de: "Caches des Stores und der Webansichten von Steam. Kann gefahrlos entfernt werden; Steam erstellt sie beim nächsten Start neu. Installierte Spiele und Spielstände sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: steam_osx
+  action: quarantine
+  fixture: steam-cache

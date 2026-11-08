@@ -1,0 +1,122 @@
+# Media app caches and logs. Libraries, projects and downloads are never targeted.
+
+- id: apple.music-cache
+  category: media
+  app: com.apple.Music
+  paths:
+    - ~/Library/Caches/com.apple.Music
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Apple Music streaming and artwork cache. Safe to remove; songs and artwork are fetched again as you play them. Your library and downloaded songs live elsewhere and are not touched."
+    zh: "Apple Music 的流媒体和封面缓存。可以放心删除；你播放歌曲时会重新获取歌曲和封面。你的资料库和已下载的歌曲保存在其他位置，不会被改动。"
+    ja: "Apple Musicのストリーミングとアートワークのキャッシュです。安全に削除できます。曲を再生すると、曲とアートワークが再取得されます。ライブラリとダウンロード済みの曲は別の場所にあり、変更されません。"
+    id: "Cache streaming dan sampul Apple Music. Aman dihapus; lagu dan sampul akan diambil lagi saat kamu memutarnya. Pustaka dan lagu yang diunduh ada di tempat lain dan tidak disentuh."
+    es: "Caché de streaming y de carátulas de Apple Music. Es seguro eliminarla; las canciones y las carátulas se obtienen de nuevo al reproducirlas. Tu biblioteca y las canciones descargadas están en otro lugar y no se tocan."
+    pt: "Cache de streaming e de capas do Apple Music. Pode remover com segurança; as músicas e as capas são buscadas de novo quando você as reproduz. Sua biblioteca e as músicas baixadas ficam em outro lugar e não são tocadas."
+    de: "Streaming- und Cover-Cache von Apple Music. Kann gefahrlos entfernt werden; Titel und Cover werden beim Abspielen erneut geladen. Mediathek und geladene Titel liegen an anderer Stelle und werden nicht angetastet."
+  protect_if:
+    - process_running: Music
+  action: quarantine
+  fixture: apple-music-cache
+
+- id: vlc.cache
+  category: media
+  app: org.videolan.vlc
+  paths:
+    - ~/Library/Caches/org.videolan.vlc
+  risk: safe
+  regenerates: true
+  explain:
+    en: "VLC's thumbnail and artwork cache. Safe to remove; VLC creates it again as you open media."
+    zh: "VLC 的缩略图和封面缓存。可以放心删除；你打开媒体文件时，VLC 会重新生成。"
+    ja: "VLCのサムネールとアートワークのキャッシュです。安全に削除できます。メディアを開くと、VLCが再作成します。"
+    id: "Cache thumbnail dan sampul VLC. Aman dihapus; VLC akan membuatnya lagi saat kamu membuka media."
+    es: "Caché de miniaturas y carátulas de VLC. Es seguro eliminarla; VLC la recrea a medida que abres archivos multimedia."
+    pt: "Cache de miniaturas e capas do VLC. Pode remover com segurança; o VLC o recria conforme você abre mídias."
+    de: "Cache für Vorschaubilder und Cover von VLC. Kann gefahrlos entfernt werden; VLC erstellt ihn beim Öffnen von Medien neu."
+  protect_if:
+    - process_running: VLC
+  action: quarantine
+  fixture: vlc-cache
+
+- id: iina.cache
+  category: media
+  app: com.colliderli.iina
+  paths:
+    - ~/Library/Caches/com.colliderli.iina
+  risk: safe
+  regenerates: true
+  explain:
+    en: "IINA's thumbnail and playback cache. Safe to remove; IINA creates it again as you play videos."
+    zh: "IINA 的缩略图和播放缓存。可以放心删除；你播放视频时，IINA 会重新生成。"
+    ja: "IINAのサムネールと再生のキャッシュです。安全に削除できます。動画を再生すると、IINAが再作成します。"
+    id: "Cache thumbnail dan pemutaran IINA. Aman dihapus; IINA akan membuatnya lagi saat kamu memutar video."
+    es: "Caché de miniaturas y reproducción de IINA. Es seguro eliminarla; IINA la recrea a medida que reproduces vídeos."
+    pt: "Cache de miniaturas e reprodução do IINA. Pode remover com segurança; o IINA o recria conforme você reproduz vídeos."
+    de: "Cache für Vorschaubilder und Wiedergabe von IINA. Kann gefahrlos entfernt werden; IINA erstellt ihn beim Abspielen von Videos neu."
+  protect_if:
+    - process_running: IINA
+  action: quarantine
+  fixture: iina-cache
+
+- id: adobe.media-cache
+  category: media
+  paths:
+    - ~/Library/Application Support/Adobe/Common/Media Cache Files
+    - ~/Library/Application Support/Adobe/Common/Media Cache
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Preview and audio-conform files that Premiere Pro and After Effects keep to play footage smoothly. Safe to remove when no Adobe app is open; projects take longer to open while the cache is rebuilt."
+    zh: "Premiere Pro 和 After Effects 为流畅播放素材而保留的预览和音频匹配文件。没有任何 Adobe 应用打开时可以放心删除；缓存重新生成期间，项目会需要更长时间才能打开。"
+    ja: "Premiere ProとAfter Effectsが素材をスムーズに再生するために保持しているプレビューファイルとオーディオ変換ファイルです。Adobeのアプリが1つも開いていなければ、安全に削除できます。キャッシュが再作成されるまで、プロジェクトを開くのに時間がかかります。"
+    id: "File pratinjau dan penyesuaian audio yang disimpan Premiere Pro dan After Effects agar footage berjalan lancar. Aman dihapus jika tidak ada aplikasi Adobe yang terbuka; proyek butuh waktu lebih lama untuk dibuka selama cache dibuat ulang."
+    es: "Archivos de vista previa y de conformado de audio que Premiere Pro y After Effects conservan para reproducir el metraje con fluidez. Es seguro eliminarlos cuando no hay ninguna app de Adobe abierta; los proyectos tardan más en abrirse mientras se reconstruye la caché."
+    pt: "Arquivos de pré-visualização e de conformação de áudio que o Premiere Pro e o After Effects mantêm para reproduzir o material bruto sem travar. Pode remover com segurança quando nenhum app da Adobe estiver aberto; os projetos demoram mais para abrir enquanto o cache é reconstruído."
+    de: "Vorschau- und Audio-Anpassungsdateien, die Premiere Pro und After Effects für die flüssige Wiedergabe von Filmmaterial behalten. Kann gefahrlos entfernt werden, wenn keine Adobe-App geöffnet ist; Projekte brauchen länger zum Öffnen, solange der Cache neu aufgebaut wird."
+  protect_if:
+    - modified_within: 3d
+  action: quarantine
+  fixture: adobe-media-cache
+
+- id: capcut.cache
+  category: media
+  app: com.lemon.lvoverseas
+  paths:
+    - "~/Movies/CapCut/User Data/Cache/**"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "CapCut render and preview cache. Rebuilt when you reopen a project; first playback is slower."
+    zh: "CapCut 的渲染和预览缓存。重新打开项目时会重新生成；第一次播放会更慢。"
+    ja: "CapCutのレンダリングとプレビューのキャッシュです。プロジェクトを開き直すと再作成されます。最初の再生は遅くなります。"
+    id: "Cache render dan pratinjau CapCut. Dibuat ulang saat kamu membuka proyek lagi; pemutaran pertama lebih lambat."
+    es: "Caché de renderizado y vista previa de CapCut. Se reconstruye cuando vuelves a abrir un proyecto; la primera reproducción es más lenta."
+    pt: "Cache de renderização e pré-visualização do CapCut. É reconstruído quando você reabre um projeto; a primeira reprodução é mais lenta."
+    de: "Render- und Vorschau-Cache von CapCut. Wird neu aufgebaut, sobald ein Projekt wieder geöffnet wird; die erste Wiedergabe ist langsamer."
+  protect_if:
+    - process_running: CapCut
+    - modified_within: 3d
+  action: quarantine
+  fixture: capcut-cache
+
+- id: spotify.cache
+  category: media
+  app: com.spotify.client
+  paths:
+    - ~/Library/Caches/com.spotify.client/Data
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Spotify's streaming cache of recently played songs. Safe to remove; songs stream again when you play them. Offline downloads are stored elsewhere and are not touched."
+    zh: "Spotify 的最近播放歌曲流媒体缓存。可以放心删除；你播放歌曲时会重新串流。离线下载的内容保存在其他位置，不会被改动。"
+    ja: "Spotifyの最近再生した曲のストリーミングキャッシュです。安全に削除できます。曲を再生すると、再びストリーミングされます。オフラインのダウンロードは別の場所に保存されており、変更されません。"
+    id: "Cache streaming Spotify untuk lagu yang baru diputar. Aman dihapus; lagu akan di-stream lagi saat kamu memutarnya. Unduhan offline disimpan di tempat lain dan tidak disentuh."
+    es: "Caché de streaming de Spotify con las canciones reproducidas recientemente. Es seguro eliminarla; las canciones se transmiten de nuevo cuando las reproduces. Las descargas sin conexión están en otro lugar y no se tocan."
+    pt: "Cache de streaming do Spotify com as músicas tocadas recentemente. Pode remover com segurança; as músicas são transmitidas de novo quando você as toca. Os downloads off-line ficam em outro lugar e não são tocados."
+    de: "Streaming-Cache von Spotify mit zuletzt gespielten Titeln. Kann gefahrlos entfernt werden; Titel werden beim Abspielen erneut gestreamt. Offline-Downloads liegen an anderer Stelle und werden nicht angetastet."
+  protect_if:
+    - process_running: Spotify
+  action: quarantine
+  fixture: spotify-cache

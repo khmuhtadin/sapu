@@ -1,0 +1,178 @@
+# Browser caches. Cache folders only: never profiles, history, cookies, passwords or extensions.
+
+- id: chrome.cache
+  category: browsers
+  app: com.google.Chrome
+  paths:
+    - "~/Library/Caches/Google/Chrome/*/Cache"
+    - "~/Library/Application Support/Google/Chrome/*/Code Cache"
+    - "~/Library/Application Support/Google/Chrome/*/GPUCache"
+    - ~/Library/Application Support/Google/Chrome/ShaderCache
+    - ~/Library/Application Support/Google/Chrome/GrShaderCache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Chrome's page, script and graphics caches. Safe to remove; pages load a little slower the first time, then the cache fills again. Bookmarks, history, passwords, cookies and extensions are stored elsewhere and are not touched."
+    zh: "Chrome 的网页、脚本和图形缓存。可以放心删除；页面第一次加载会稍慢一点，之后缓存会重新填充。书签、历史记录、密码、Cookie和扩展程序保存在其他位置，不会被改动。"
+    ja: "Chromeのページ、スクリプト、グラフィックのキャッシュです。安全に削除できます。最初はページの読み込みが少し遅くなりますが、その後キャッシュはまた貯まります。ブックマーク、履歴、パスワード、Cookie、拡張機能は別の場所に保存されており、変更されません。"
+    id: "Cache halaman, skrip, dan grafis Chrome. Aman dihapus; halaman dimuat sedikit lebih lambat pada awalnya, lalu cache terisi lagi. Bookmark, riwayat, kata sandi, cookie, dan ekstensi disimpan di tempat lain dan tidak disentuh."
+    es: "Cachés de páginas, scripts y gráficos de Chrome. Es seguro eliminarlos; las páginas cargan un poco más lento la primera vez y después la caché se vuelve a llenar. Los marcadores, el historial, las contraseñas, las cookies y las extensiones están guardados en otro lugar y no se tocan."
+    pt: "Caches de páginas, scripts e gráficos do Chrome. Pode remover com segurança; as páginas carregam um pouco mais devagar na primeira vez e depois o cache se enche de novo. Favoritos, histórico, senhas, cookies e extensões ficam armazenados em outro lugar e não são tocados."
+    de: "Caches für Seiten, Skripte und Grafiken von Chrome. Kann gefahrlos entfernt werden; Seiten laden beim ersten Mal etwas langsamer, danach füllt sich der Cache wieder. Lesezeichen, Verlauf, Passwörter, Cookies und Erweiterungen sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: Google Chrome
+  action: quarantine
+  fixture: chrome-cache
+
+- id: brave.cache
+  category: browsers
+  app: com.brave.Browser
+  paths:
+    - "~/Library/Caches/BraveSoftware/Brave-Browser/*/Cache"
+    - "~/Library/Application Support/BraveSoftware/Brave-Browser/*/Code Cache"
+    - "~/Library/Application Support/BraveSoftware/Brave-Browser/*/GPUCache"
+    - ~/Library/Application Support/BraveSoftware/Brave-Browser/ShaderCache
+    - ~/Library/Application Support/BraveSoftware/Brave-Browser/GrShaderCache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Brave's page, script and graphics caches. Safe to remove; pages load a little slower the first time, then the cache fills again. Bookmarks, history, passwords, cookies and extensions are stored elsewhere and are not touched."
+    zh: "Brave 的网页、脚本和图形缓存。可以放心删除；页面第一次加载会稍慢一点，之后缓存会重新填充。书签、历史记录、密码、Cookie和扩展程序保存在其他位置，不会被改动。"
+    ja: "Braveのページ、スクリプト、グラフィックのキャッシュです。安全に削除できます。最初はページの読み込みが少し遅くなりますが、その後キャッシュはまた貯まります。ブックマーク、履歴、パスワード、Cookie、拡張機能は別の場所に保存されており、変更されません。"
+    id: "Cache halaman, skrip, dan grafis Brave. Aman dihapus; halaman dimuat sedikit lebih lambat pada awalnya, lalu cache terisi lagi. Bookmark, riwayat, kata sandi, cookie, dan ekstensi disimpan di tempat lain dan tidak disentuh."
+    es: "Cachés de páginas, scripts y gráficos de Brave. Es seguro eliminarlos; las páginas cargan un poco más lento la primera vez y después la caché se vuelve a llenar. Los marcadores, el historial, las contraseñas, las cookies y las extensiones están guardados en otro lugar y no se tocan."
+    pt: "Caches de páginas, scripts e gráficos do Brave. Pode remover com segurança; as páginas carregam um pouco mais devagar na primeira vez e depois o cache se enche de novo. Favoritos, histórico, senhas, cookies e extensões ficam armazenados em outro lugar e não são tocados."
+    de: "Caches für Seiten, Skripte und Grafiken von Brave. Kann gefahrlos entfernt werden; Seiten laden beim ersten Mal etwas langsamer, danach füllt sich der Cache wieder. Lesezeichen, Verlauf, Passwörter, Cookies und Erweiterungen sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: Brave Browser
+  action: quarantine
+  fixture: brave-cache
+
+- id: edge.cache
+  category: browsers
+  app: com.microsoft.edgemac
+  paths:
+    - "~/Library/Caches/Microsoft Edge/*/Cache"
+    - "~/Library/Application Support/Microsoft Edge/*/Code Cache"
+    - "~/Library/Application Support/Microsoft Edge/*/GPUCache"
+    - ~/Library/Application Support/Microsoft Edge/ShaderCache
+    - ~/Library/Application Support/Microsoft Edge/GrShaderCache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Edge's page, script and graphics caches. Safe to remove; pages load a little slower the first time, then the cache fills again. Bookmarks, history, passwords, cookies and extensions are stored elsewhere and are not touched."
+    zh: "Edge 的网页、脚本和图形缓存。可以放心删除；页面第一次加载会稍慢一点，之后缓存会重新填充。书签、历史记录、密码、Cookie和扩展程序保存在其他位置，不会被改动。"
+    ja: "Edgeのページ、スクリプト、グラフィックのキャッシュです。安全に削除できます。最初はページの読み込みが少し遅くなりますが、その後キャッシュはまた貯まります。ブックマーク、履歴、パスワード、Cookie、拡張機能は別の場所に保存されており、変更されません。"
+    id: "Cache halaman, skrip, dan grafis Edge. Aman dihapus; halaman dimuat sedikit lebih lambat pada awalnya, lalu cache terisi lagi. Bookmark, riwayat, kata sandi, cookie, dan ekstensi disimpan di tempat lain dan tidak disentuh."
+    es: "Cachés de páginas, scripts y gráficos de Edge. Es seguro eliminarlos; las páginas cargan un poco más lento la primera vez y después la caché se vuelve a llenar. Los marcadores, el historial, las contraseñas, las cookies y las extensiones están guardados en otro lugar y no se tocan."
+    pt: "Caches de páginas, scripts e gráficos do Edge. Pode remover com segurança; as páginas carregam um pouco mais devagar na primeira vez e depois o cache se enche de novo. Favoritos, histórico, senhas, cookies e extensões ficam armazenados em outro lugar e não são tocados."
+    de: "Caches für Seiten, Skripte und Grafiken von Edge. Kann gefahrlos entfernt werden; Seiten laden beim ersten Mal etwas langsamer, danach füllt sich der Cache wieder. Lesezeichen, Verlauf, Passwörter, Cookies und Erweiterungen sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: Microsoft Edge
+  action: quarantine
+  fixture: edge-cache
+
+- id: arc.cache
+  category: browsers
+  app: company.thebrowser.Browser
+  paths:
+    - ~/Library/Caches/company.thebrowser.Browser
+    - "~/Library/Application Support/Arc/User Data/*/Code Cache"
+    - "~/Library/Application Support/Arc/User Data/*/GPUCache"
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Arc's page, script and graphics caches. Safe to remove; pages load a little slower the first time, then the cache fills again. Your spaces, tabs, history, passwords and extensions are stored elsewhere and are not touched."
+    zh: "Arc 的网页、脚本和图形缓存。可以放心删除；页面第一次加载会稍慢一点，之后缓存会重新填充。空间（Spaces）、标签页、历史记录、密码和扩展程序保存在其他位置，不会被改动。"
+    ja: "Arcのページ、スクリプト、グラフィックのキャッシュです。安全に削除できます。最初はページの読み込みが少し遅くなりますが、その後キャッシュはまた貯まります。スペース、タブ、履歴、パスワード、拡張機能は別の場所に保存されており、変更されません。"
+    id: "Cache halaman, skrip, dan grafis Arc. Aman dihapus; halaman dimuat sedikit lebih lambat pada awalnya, lalu cache terisi lagi. Space, tab, riwayat, kata sandi, dan ekstensi disimpan di tempat lain dan tidak disentuh."
+    es: "Cachés de páginas, scripts y gráficos de Arc. Es seguro eliminarlos; las páginas cargan un poco más lento la primera vez y después la caché se vuelve a llenar. Tus Spaces, las pestañas, el historial, las contraseñas y las extensiones están guardados en otro lugar y no se tocan."
+    pt: "Caches de páginas, scripts e gráficos do Arc. Pode remover com segurança; as páginas carregam um pouco mais devagar na primeira vez e depois o cache se enche de novo. Seus Spaces, abas, histórico, senhas e extensões ficam armazenados em outro lugar e não são tocados."
+    de: "Caches für Seiten, Skripte und Grafiken von Arc. Kann gefahrlos entfernt werden; Seiten laden beim ersten Mal etwas langsamer, danach füllt sich der Cache wieder. Spaces, Tabs, Verlauf, Passwörter und Erweiterungen sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: Arc
+  action: quarantine
+  fixture: arc-cache
+
+- id: firefox.cache
+  category: browsers
+  app: org.mozilla.firefox
+  paths:
+    - "~/Library/Caches/Firefox/Profiles/*/cache2"
+    - "~/Library/Caches/Firefox/Profiles/*/startupCache"
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Firefox's page cache and startup cache. Safe to remove; pages load a little slower the first time, then the cache fills again. Bookmarks, history, passwords, cookies and extensions are in your profile and are not touched."
+    zh: "Firefox 的网页缓存和启动缓存。可以放心删除；页面第一次加载会稍慢一点，之后缓存会重新填充。书签、历史记录、密码、Cookie和扩展程序保存在你的配置文件中，不会被改动。"
+    ja: "Firefoxのページキャッシュと起動キャッシュです。安全に削除できます。最初はページの読み込みが少し遅くなりますが、その後キャッシュはまた貯まります。ブックマーク、履歴、パスワード、Cookie、拡張機能はプロファイルの中に保存されており、変更されません。"
+    id: "Cache halaman dan cache startup Firefox. Aman dihapus; halaman dimuat sedikit lebih lambat pada awalnya, lalu cache terisi lagi. Bookmark, riwayat, kata sandi, cookie, dan ekstensi ada di profil kamu dan tidak disentuh."
+    es: "La caché de páginas y la de inicio de Firefox. Es seguro eliminarlos; las páginas cargan un poco más lento la primera vez y después la caché se vuelve a llenar. Los marcadores, el historial, las contraseñas, las cookies y las extensiones están en tu perfil y no se tocan."
+    pt: "O cache de páginas e o cache de inicialização do Firefox. Pode remover com segurança; as páginas carregam um pouco mais devagar na primeira vez e depois o cache se enche de novo. Favoritos, histórico, senhas, cookies e extensões ficam no seu perfil e não são tocados."
+    de: "Seiten-Cache und Start-Cache von Firefox. Kann gefahrlos entfernt werden; Seiten laden beim ersten Mal etwas langsamer, danach füllt sich der Cache wieder. Lesezeichen, Verlauf, Passwörter, Cookies und Erweiterungen liegen im Profil und werden nicht angetastet."
+  protect_if:
+    - process_running: firefox
+  action: quarantine
+  fixture: firefox-cache
+
+- id: safari.cache
+  category: browsers
+  app: com.apple.Safari
+  paths:
+    - ~/Library/Caches/com.apple.Safari/fsCachedData
+    - ~/Library/Caches/com.apple.Safari/WebKitCache
+    - ~/Library/Containers/com.apple.Safari/Data/Library/Caches/com.apple.Safari/WebKitCache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Safari's page cache. Safe to remove; pages load a little slower the first time, then the cache fills again. Bookmarks, history, passwords, tabs and extensions are stored elsewhere and are not touched."
+    zh: "Safari 的网页缓存。可以放心删除；页面第一次加载会稍慢一点，之后缓存会重新填充。书签、历史记录、密码、标签页和扩展程序保存在其他位置，不会被改动。"
+    ja: "Safariのページキャッシュです。安全に削除できます。最初はページの読み込みが少し遅くなりますが、その後キャッシュはまた貯まります。ブックマーク、履歴、パスワード、タブ、拡張機能は別の場所に保存されており、変更されません。"
+    id: "Cache halaman Safari. Aman dihapus; halaman dimuat sedikit lebih lambat pada awalnya, lalu cache terisi lagi. Bookmark, riwayat, kata sandi, tab, dan ekstensi disimpan di tempat lain dan tidak disentuh."
+    es: "La caché de páginas de Safari. Es seguro eliminarla; las páginas cargan un poco más lento la primera vez y después la caché se vuelve a llenar. Los marcadores, el historial, las contraseñas, las pestañas y las extensiones están guardados en otro lugar y no se tocan."
+    pt: "O cache de páginas do Safari. Pode remover com segurança; as páginas carregam um pouco mais devagar na primeira vez e depois o cache se enche de novo. Favoritos, histórico, senhas, abas e extensões ficam armazenados em outro lugar e não são tocados."
+    de: "Seiten-Cache von Safari. Kann gefahrlos entfernt werden; Seiten laden beim ersten Mal etwas langsamer, danach füllt sich der Cache wieder. Lesezeichen, Verlauf, Passwörter, Tabs und Erweiterungen sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: Safari
+  action: quarantine
+  fixture: safari-cache
+
+- id: opera.cache
+  category: browsers
+  app: com.operasoftware.Opera
+  paths:
+    - ~/Library/Caches/com.operasoftware.Opera
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Opera's page cache. Safe to remove; pages load a little slower the first time, then the cache fills again. Bookmarks, history, passwords and extensions are stored elsewhere and are not touched."
+    zh: "Opera 的网页缓存。可以放心删除；页面第一次加载会稍慢一点，之后缓存会重新填充。书签、历史记录、密码和扩展程序保存在其他位置，不会被改动。"
+    ja: "Operaのページキャッシュです。安全に削除できます。最初はページの読み込みが少し遅くなりますが、その後キャッシュはまた貯まります。ブックマーク、履歴、パスワード、拡張機能は別の場所に保存されており、変更されません。"
+    id: "Cache halaman Opera. Aman dihapus; halaman dimuat sedikit lebih lambat pada awalnya, lalu cache terisi lagi. Bookmark, riwayat, kata sandi, dan ekstensi disimpan di tempat lain dan tidak disentuh."
+    es: "La caché de páginas de Opera. Es seguro eliminarla; las páginas cargan un poco más lento la primera vez y después la caché se vuelve a llenar. Los marcadores, el historial, las contraseñas y las extensiones están guardados en otro lugar y no se tocan."
+    pt: "O cache de páginas do Opera. Pode remover com segurança; as páginas carregam um pouco mais devagar na primeira vez e depois o cache se enche de novo. Favoritos, histórico, senhas e extensões ficam armazenados em outro lugar e não são tocados."
+    de: "Seiten-Cache von Opera. Kann gefahrlos entfernt werden; Seiten laden beim ersten Mal etwas langsamer, danach füllt sich der Cache wieder. Lesezeichen, Verlauf, Passwörter und Erweiterungen sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: Opera
+  action: quarantine
+  fixture: opera-cache
+
+- id: vivaldi.cache
+  category: browsers
+  app: com.vivaldi.Vivaldi
+  paths:
+    - ~/Library/Caches/com.vivaldi.Vivaldi
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Vivaldi's page cache. Safe to remove; pages load a little slower the first time, then the cache fills again. Bookmarks, history, passwords and extensions are stored elsewhere and are not touched."
+    zh: "Vivaldi 的网页缓存。可以放心删除；页面第一次加载会稍慢一点，之后缓存会重新填充。书签、历史记录、密码和扩展程序保存在其他位置，不会被改动。"
+    ja: "Vivaldiのページキャッシュです。安全に削除できます。最初はページの読み込みが少し遅くなりますが、その後キャッシュはまた貯まります。ブックマーク、履歴、パスワード、拡張機能は別の場所に保存されており、変更されません。"
+    id: "Cache halaman Vivaldi. Aman dihapus; halaman dimuat sedikit lebih lambat pada awalnya, lalu cache terisi lagi. Bookmark, riwayat, kata sandi, dan ekstensi disimpan di tempat lain dan tidak disentuh."
+    es: "La caché de páginas de Vivaldi. Es seguro eliminarla; las páginas cargan un poco más lento la primera vez y después la caché se vuelve a llenar. Los marcadores, el historial, las contraseñas y las extensiones están guardados en otro lugar y no se tocan."
+    pt: "O cache de páginas do Vivaldi. Pode remover com segurança; as páginas carregam um pouco mais devagar na primeira vez e depois o cache se enche de novo. Favoritos, histórico, senhas e extensões ficam armazenados em outro lugar e não são tocados."
+    de: "Seiten-Cache von Vivaldi. Kann gefahrlos entfernt werden; Seiten laden beim ersten Mal etwas langsamer, danach füllt sich der Cache wieder. Lesezeichen, Verlauf, Passwörter und Erweiterungen sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: Vivaldi
+  action: quarantine
+  fixture: vivaldi-cache

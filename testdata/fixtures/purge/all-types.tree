@@ -1,0 +1,165 @@
+# One project of every type, built into a temp folder by TestAllTypes.
+# One path per line; a trailing / makes an empty folder. See all-types.expected.
+
+# cargo
+cargo/Cargo.toml
+cargo/src/main.rs
+cargo/target/debug/app
+cargo/.xwin-cache/x
+
+# node
+node/package.json
+node/src/index.js
+node/node_modules/dep/index.js
+node/.next/cache/x
+node/.nuxt/x
+node/.svelte-kit/x
+node/.parcel-cache/x
+node/.turbo/x
+node/.angular/x
+node/dist/bundle.js
+
+# unity
+unity/Assembly-CSharp.csproj
+unity/Assets/Scene.unity
+unity/Library/x
+unity/Temp/x
+unity/Obj/x
+unity/Logs/x
+unity/MemoryCaptures/x
+unity/Build/x
+unity/Builds/x
+
+# stack
+stack/stack.yaml
+stack/app/Main.hs
+stack/.stack-work/x
+
+# cabal
+cabal/cabal.project
+cabal/app/Main.hs
+cabal/dist-newstyle/x
+
+# sbt
+sbt/build.sbt
+sbt/src/Main.scala
+sbt/target/x
+
+# maven
+maven/pom.xml
+maven/src/Main.java
+maven/target/x
+
+# gradle
+gradle/build.gradle.kts
+gradle/src/Main.kt
+gradle/build/x
+gradle/.gradle/x
+
+# cmake
+cmake/CMakeLists.txt
+cmake/src/main.cpp
+cmake/build/x
+cmake/cmake-build-debug/x
+cmake/cmake-build-release/x
+
+# unreal
+unreal/Game.uproject
+unreal/Source/Game.cpp
+unreal/Content/Map.umap
+unreal/Binaries/x
+unreal/Intermediate/x
+unreal/DerivedDataCache/x
+unreal/Saved/x
+unreal/Build/x
+
+# jupyter
+jupyter/analysis.ipynb
+jupyter/.ipynb_checkpoints/x
+
+# python
+python/app.py
+python/tests/test_app.py
+python/__pycache__/app.pyc
+python/.mypy_cache/x
+python/.pytest_cache/x
+python/.ruff_cache/x
+
+# python-venv
+python-venv/pyproject.toml
+python-venv/.venv/pyvenv.cfg
+python-venv/venv/pyvenv.cfg
+python-venv/.tox/x
+python-venv/.nox/x
+python-venv/__pypackages__/x
+
+# pixi
+pixi/pixi.toml
+pixi/.pixi/x
+
+# composer
+composer/composer.json
+composer/src/App.php
+composer/vendor/autoload.php
+
+# dart
+dart/pubspec.yaml
+dart/lib/main.dart
+dart/build/x
+dart/.dart_tool/x
+
+# elixir
+elixir/mix.exs
+elixir/lib/app.ex
+elixir/_build/x
+elixir/.elixir-tools/x
+elixir/.elixir_ls/x
+elixir/.lexical/x
+elixir/deps/x
+
+# swift
+swift/Package.swift
+swift/Sources/main.swift
+swift/.build/x
+swift/.swiftpm/x
+
+# zig
+zig/build.zig
+zig/src/main.zig
+zig/zig-cache/x
+zig/.zig-cache/x
+zig/zig-out/x
+
+# godot
+godot/project.godot
+godot/main.gd
+godot/.godot/x
+
+# dotnet
+dotnet/App.csproj
+dotnet/Program.cs
+dotnet/bin/x
+dotnet/obj/x
+
+# terraform
+terraform/.terraform.lock.hcl
+terraform/main.tf
+terraform/.terraform/x
+
+# xcode
+xcode/App.xcodeproj/project.pbxproj
+xcode/App/main.swift
+xcode/DerivedData/x
+xcode/build/x
+
+# cocoapods
+cocoapods/Podfile
+cocoapods/App/main.m
+cocoapods/Pods/x
+
+# folders with artifact names but no project: never found
+plain/node_modules/x
+plain/target/x
+plain/vendor/x
+plain/build/x
+plain/src/notes.txt

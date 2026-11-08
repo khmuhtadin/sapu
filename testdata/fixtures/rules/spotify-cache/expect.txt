@@ -1,0 +1,1 @@
+Library/Caches/com.spotify.client/Data

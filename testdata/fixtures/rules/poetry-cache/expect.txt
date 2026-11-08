@@ -1,0 +1,2 @@
+Library/Caches/pypoetry/artifacts
+Library/Caches/pypoetry/cache

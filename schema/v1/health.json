@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/health.json",
+  "title": "data of sapu health --json",
+  "type": "object",
+  "required": ["rows"],
+  "additionalProperties": false,
+  "properties": {
+    "rows": {
+      "description": "Always in this order: battery, drive, temperature, memory, uptime. The command exits 0 whatever the status.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "value", "status", "meaning"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "enum": ["battery", "drive", "temperature", "memory", "uptime"] },
+          "title": { "type": "string" },
+          "value": { "type": "string" },
+          "status": {
+            "description": "good, watch (worth watching), attention (needs attention), unknown (the source did not answer) or skipped (does not apply, like a battery on a desktop Mac).",
+            "enum": ["good", "watch", "attention", "unknown", "skipped"]
+          },
+          "meaning": { "description": "One or two sentences a person would read.", "type": "string" }
+        }
+      }
+    }
+  }
+}

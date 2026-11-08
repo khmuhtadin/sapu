@@ -1,0 +1,2 @@
+Library/Logs/CoreSimulator/entry-a
+Library/Logs/CoreSimulator/entry-b.dat

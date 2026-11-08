@@ -1,0 +1,5 @@
+Library/Application Support/Arc/User Data/Default/Code Cache
+Library/Application Support/Arc/User Data/Default/GPUCache
+Library/Application Support/Arc/User Data/Profile 1/Code Cache
+Library/Application Support/Arc/User Data/Profile 1/GPUCache
+Library/Caches/company.thebrowser.Browser

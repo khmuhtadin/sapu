@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/envelope.json",
+  "title": "Every --json output of sapu",
+  "type": "object",
+  "required": ["schema_version", "command", "ok"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "command": { "type": "string" },
+    "ok": { "type": "boolean" },
+    "data": {},
+    "error": {
+      "type": "object",
+      "required": ["code", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "code": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    }
+  }
+}

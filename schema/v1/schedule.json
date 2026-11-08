@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/schedule.json",
+  "title": "data of sapu schedule on, off and status --json",
+  "type": "object",
+  "required": ["enabled", "every", "agent"],
+  "additionalProperties": false,
+  "properties": {
+    "enabled": { "type": "boolean" },
+    "every": { "enum": ["daily", "weekly"] },
+    "next_clean": {
+      "description": "When on: the earliest time the next clean runs. The agent checks every hour, so a clean that is due runs at the next check.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_clean": {
+      "type": "object",
+      "required": ["time", "result", "items", "bytes"],
+      "additionalProperties": false,
+      "properties": {
+        "time": { "type": "string", "format": "date-time" },
+        "result": { "enum": ["moved", "nothing", "failed"] },
+        "run_id": { "description": "The run to undo with sapu undo", "type": "string" },
+        "items": { "description": "Items moved to quarantine", "type": "integer" },
+        "bytes": { "description": "Bytes moved to quarantine", "type": "integer" },
+        "error": { "description": "Why the clean failed (result failed)", "type": "string" }
+      }
+    },
+    "last_check": {
+      "description": "The last hourly run of the agent",
+      "type": "string",
+      "format": "date-time"
+    },
+    "agent": { "$ref": "#/$defs/agent" }
+  },
+  "$defs": {
+    "agent": {
+      "type": "object",
+      "required": ["plist", "installed", "loaded", "program_missing", "warnings"],
+      "additionalProperties": false,
+      "properties": {
+        "plist": { "description": "Path of the LaunchAgent plist", "type": "string" },
+        "installed": { "description": "The plist exists", "type": "boolean" },
+        "loaded": { "description": "launchd has the agent loaded", "type": "boolean" },
+        "program": { "description": "The sapu program the plist runs", "type": "string" },
+        "program_missing": { "description": "That program no longer exists; run sapu schedule on (or alerts on) again", "type": "boolean" },
+        "warnings": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/doctor.json",
+  "title": "data of sapu doctor --json",
+  "type": "object",
+  "required": ["checks"],
+  "additionalProperties": false,
+  "properties": {
+    "checks": {
+      "description": "The command exits 0 even when a check fails; look at ok.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "ok", "detail"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "ok": { "type": "boolean" },
+          "detail": { "type": "string" },
+          "fix": { "description": "What to do when not ok.", "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/undo.json",
+  "title": "data of sapu undo --json",
+  "type": "object",
+  "required": [
+    "run_id",
+    "restored",
+    "conflicts"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "restored": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "conflict"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "conflict": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "error": {
+      "type": "string"
+    },
+    "conflicts": {
+      "type": "integer"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/version.json",
+  "title": "data of sapu version --json",
+  "type": "object",
+  "required": ["version"],
+  "additionalProperties": false,
+  "properties": { "version": { "type": "string" } }
+}

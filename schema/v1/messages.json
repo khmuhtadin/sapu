@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/messages.json",
+  "title": "data of sapu messages --json",
+  "description": "The attachments found, largest first. This command only lists; it never makes a plan.",
+  "type": "object",
+  "required": [
+    "items",
+    "total_bytes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "path",
+          "bytes",
+          "modified",
+          "type"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "modified": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "total_bytes": {
+      "type": "integer"
+    }
+  }
+}

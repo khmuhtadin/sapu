@@ -1,0 +1,4 @@
+.cargo/registry/cache/Default
+.cargo/registry/cache/Profile 1
+.cargo/registry/src/Default
+.cargo/registry/src/Profile 1

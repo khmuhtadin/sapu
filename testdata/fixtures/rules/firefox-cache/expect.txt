@@ -1,0 +1,4 @@
+Library/Caches/Firefox/Profiles/Default/cache2
+Library/Caches/Firefox/Profiles/Default/startupCache
+Library/Caches/Firefox/Profiles/Profile 1/cache2
+Library/Caches/Firefox/Profiles/Profile 1/startupCache

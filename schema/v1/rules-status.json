@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/rules-status.json",
+  "title": "data of sapu rules status, install and reset --json",
+  "description": "The rules in use after the command. install and reset return the same shape as status.",
+  "type": "object",
+  "required": ["source", "version", "embedded_version", "key_configured"],
+  "additionalProperties": false,
+  "properties": {
+    "source": {
+      "description": "embedded: the rules built into this Sapu. bundle: a signed rule update installed with sapu rules install",
+      "enum": ["embedded", "bundle"]
+    },
+    "version": { "description": "Version of the rules in use, dotted numbers like 2026.11.20", "type": "string" },
+    "embedded_version": { "description": "Version of the rules built into this Sapu", "type": "string" },
+    "created": { "description": "Bundle only: when the update was made", "type": "string", "format": "date-time" },
+    "min_sapu": { "description": "Bundle only: the oldest Sapu that may use it", "type": "string" },
+    "file": { "description": "Bundle only: where the update is stored", "type": "string" },
+    "warning": {
+      "description": "Why an installed update is not used (changed after install, bad signature, rules this Sapu cannot load, older than the built-in rules). Sapu then uses the built-in rules.",
+      "type": "string"
+    },
+    "key_configured": { "description": "This build has a signing key, so it can install updates", "type": "boolean" }
+  }
+}

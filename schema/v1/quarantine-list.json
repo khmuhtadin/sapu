@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/quarantine-list.json",
+  "title": "data of sapu quarantine list --json",
+  "type": "object",
+  "required": [
+    "runs",
+    "total_bytes"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "started",
+          "bytes",
+          "expires_after"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "started": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "expires_after": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "total_bytes": {
+      "type": "integer"
+    }
+  }
+}

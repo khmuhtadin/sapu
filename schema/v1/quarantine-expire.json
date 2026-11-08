@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/quarantine-expire.json",
+  "title": "data of sapu quarantine expire --json",
+  "type": "object",
+  "required": [
+    "freed"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "freed": {
+      "type": "integer"
+    }
+  }
+}

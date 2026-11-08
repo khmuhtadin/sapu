@@ -1,0 +1,2 @@
+Library/Developer/CoreSimulator/Caches/entry-a
+Library/Developer/CoreSimulator/Caches/entry-b.dat

@@ -1,0 +1,2 @@
+.npm/_logs/entry-a
+.npm/_logs/entry-b.dat

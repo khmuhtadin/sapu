@@ -1,0 +1,2 @@
+Library/Caches/org.swift.swiftpm/entry-a
+Library/Caches/org.swift.swiftpm/entry-b.dat

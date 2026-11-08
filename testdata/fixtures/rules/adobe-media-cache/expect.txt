@@ -1,0 +1,2 @@
+Library/Application Support/Adobe/Common/Media Cache
+Library/Application Support/Adobe/Common/Media Cache Files

@@ -1,0 +1,2 @@
+Library/Containers/com.microsoft.teams2/Data/Library/Caches/entry-a
+Library/Containers/com.microsoft.teams2/Data/Library/Caches/entry-b.dat

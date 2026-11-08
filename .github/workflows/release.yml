@@ -1,0 +1,65 @@
+# Cuts a release when a version tag is pushed. Steps and owner gates:
+# docs/releasing.md.
+#   vX.Y.Z         release (a pre-release while X is 0)
+#   vX.Y.Z-beta.N  beta, published as a pre-release
+#
+# The workflow needs no secret to succeed. Apple signing and notarization turn
+# on when the MACOS_* secrets exist; without them the release is unsigned and
+# still has checksums and a cosign signature.
+name: release
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - run: make check
+
+  release:
+    needs: check
+    runs-on: macos-15
+    # The "release" environment should require the owner's approval (repository
+    # settings > Environments), so no release goes out without the owner.
+    environment: release
+    permissions:
+      contents: write # create the GitHub release and upload files
+      id-token: write # cosign keyless signing (OIDC token)
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # the changelog needs the full history
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
+        with:
+          cosign-release: v3.1.4
+      - uses: goreleaser/goreleaser-action@a4f02ab5355a589de60d917a659ce617ed19b3de # v7.3.0
+        with:
+          version: v2.20.0
+          args: release --clean
+        env:
+          GOTOOLCHAIN: local
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Apple signing and notarization. A missing secret arrives here as an
+          # empty string, and .goreleaser.yml then skips the step: the binary is
+          # released unsigned.
+          MACOS_SIGN_P12: ${{ secrets.MACOS_SIGN_P12 }}
+          MACOS_SIGN_PASSWORD: ${{ secrets.MACOS_SIGN_PASSWORD }}
+          MACOS_NOTARY_KEY: ${{ secrets.MACOS_NOTARY_KEY }}
+          MACOS_NOTARY_KEY_ID: ${{ secrets.MACOS_NOTARY_KEY_ID }}
+          MACOS_NOTARY_ISSUER_ID: ${{ secrets.MACOS_NOTARY_ISSUER_ID }}

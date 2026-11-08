@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>framework</key>
+	<string>650.0.0</string>
+	<key>images</key>
+	<array>
+		<dict>
+			<key>image-path</key>
+			<string>__IMAGE_PATH__</string>
+			<key>image-type</key>
+			<string>disk image</string>
+			<key>system-entities</key>
+			<array>
+				<dict>
+					<key>content-hint</key>
+					<string>Apple_HFS</string>
+					<key>mount-point</key>
+					<string>/Volumes/Example</string>
+				</dict>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

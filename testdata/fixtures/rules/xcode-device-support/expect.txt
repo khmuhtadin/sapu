@@ -1,0 +1,6 @@
+Library/Developer/Xcode/iOS DeviceSupport/Default
+Library/Developer/Xcode/iOS DeviceSupport/Profile 1
+Library/Developer/Xcode/tvOS DeviceSupport/Default
+Library/Developer/Xcode/tvOS DeviceSupport/Profile 1
+Library/Developer/Xcode/watchOS DeviceSupport/Default
+Library/Developer/Xcode/watchOS DeviceSupport/Profile 1

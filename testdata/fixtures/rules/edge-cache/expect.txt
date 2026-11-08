@@ -1,0 +1,8 @@
+Library/Application Support/Microsoft Edge/Default/Code Cache
+Library/Application Support/Microsoft Edge/Default/GPUCache
+Library/Application Support/Microsoft Edge/GrShaderCache
+Library/Application Support/Microsoft Edge/Profile 1/Code Cache
+Library/Application Support/Microsoft Edge/Profile 1/GPUCache
+Library/Application Support/Microsoft Edge/ShaderCache
+Library/Caches/Microsoft Edge/Default/Cache
+Library/Caches/Microsoft Edge/Profile 1/Cache

@@ -1,0 +1,2 @@
+Library/Logs/pip/entry-a
+Library/Logs/pip/entry-b.dat

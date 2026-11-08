@@ -1,0 +1,561 @@
+# Built-in protection list. Paths use the same globs as cleanup rules.
+- id: jetbrains
+  paths:
+    - ~/Library/Application Support/JetBrains
+    - ~/Library/Caches/JetBrains
+  reason:
+    en: "JetBrains IDE settings, DataGrip data sources and consoles (V2EX 1163304)"
+    zh: "JetBrains IDE 的设置、DataGrip 的数据源和控制台（V2EX 1163304）"
+    ja: "JetBrains IDEの設定、DataGripのデータソースとコンソール（V2EX 1163304）"
+    id: "Pengaturan IDE JetBrains, sumber data dan console DataGrip (V2EX 1163304)"
+    es: "Ajustes de los IDE de JetBrains, fuentes de datos y consolas de DataGrip (V2EX 1163304)"
+    pt: "Configurações das IDEs da JetBrains, fontes de dados e consoles do DataGrip (V2EX 1163304)"
+    de: "Einstellungen der JetBrains-IDEs, Datenquellen und Konsolen von DataGrip (V2EX 1163304)"
+- id: github-desktop
+  paths:
+    - ~/Library/Application Support/GitHub Desktop
+  reason:
+    en: "GitHub Desktop accounts and repository list (V2EX 1163304)"
+    zh: "GitHub Desktop 的账户和仓库列表（V2EX 1163304）"
+    ja: "GitHub Desktopのアカウントとリポジトリの一覧（V2EX 1163304）"
+    id: "Akun dan daftar repositori GitHub Desktop (V2EX 1163304)"
+    es: "Cuentas y lista de repositorios de GitHub Desktop (V2EX 1163304)"
+    pt: "Contas e lista de repositórios do GitHub Desktop (V2EX 1163304)"
+    de: "Konten und Repository-Liste von GitHub Desktop (V2EX 1163304)"
+- id: huggingface
+  paths:
+    - ~/.cache/huggingface
+  reason:
+    en: "Downloaded AI models; slow and large to download again (V2EX 1163304)"
+    zh: "已下载的 AI 模型；重新下载既慢又占空间（V2EX 1163304）"
+    ja: "ダウンロード済みのAIモデルです。再ダウンロードは時間がかかり、容量も大きくなります（V2EX 1163304）"
+    id: "Model AI yang sudah diunduh; mengunduh ulang lambat dan besar (V2EX 1163304)"
+    es: "Modelos de IA descargados; volver a descargarlos es lento y pesado (V2EX 1163304)"
+    pt: "Modelos de IA baixados; baixar de novo é lento e pesado (V2EX 1163304)"
+    de: "Heruntergeladene KI-Modelle; erneutes Laden ist langsam und groß (V2EX 1163304)"
+- id: ollama
+  paths:
+    - ~/.ollama
+  reason:
+    en: "Ollama AI models"
+    zh: "Ollama 的 AI 模型"
+    ja: "OllamaのAIモデル"
+    id: "Model AI Ollama"
+    es: "Modelos de IA de Ollama"
+    pt: "Modelos de IA do Ollama"
+    de: "KI-Modelle von Ollama"
+- id: lm-studio
+  paths:
+    - ~/.lmstudio
+    - ~/.cache/lm-studio
+  reason:
+    en: "LM Studio AI models"
+    zh: "LM Studio 的 AI 模型"
+    ja: "LM StudioのAIモデル"
+    id: "Model AI LM Studio"
+    es: "Modelos de IA de LM Studio"
+    pt: "Modelos de IA do LM Studio"
+    de: "KI-Modelle von LM Studio"
+- id: whisper
+  paths:
+    - ~/.cache/whisper
+  reason:
+    en: "Whisper speech-recognition models"
+    zh: "Whisper 的语音识别模型"
+    ja: "Whisperの音声認識モデル"
+    id: "Model pengenalan suara Whisper"
+    es: "Modelos de reconocimiento de voz de Whisper"
+    pt: "Modelos de reconhecimento de voz do Whisper"
+    de: "Spracherkennungsmodelle von Whisper"
+- id: claude
+  paths:
+    - ~/.claude
+    - ~/.claude.json
+    - ~/Library/Application Support/Claude
+  reason:
+    en: "Claude Code and Claude app memory, sessions and settings (Mole #823)"
+    zh: "Claude Code 和 Claude 应用的记忆、会话和设置（Mole #823）"
+    ja: "Claude CodeとClaudeアプリのメモリ、セッション、設定（Mole #823）"
+    id: "Memori, sesi, dan pengaturan Claude Code serta aplikasi Claude (Mole #823)"
+    es: "Memoria, sesiones y ajustes de Claude Code y de la app de Claude (Mole #823)"
+    pt: "Memória, sessões e configurações do Claude Code e do app Claude (Mole #823)"
+    de: "Gedächtnis, Sitzungen und Einstellungen von Claude Code und der Claude-App (Mole #823)"
+- id: codex
+  paths:
+    - ~/.codex
+  reason:
+    en: "Codex sessions and settings"
+    zh: "Codex 的会话和设置"
+    ja: "Codexのセッションと設定"
+    id: "Sesi dan pengaturan Codex"
+    es: "Sesiones y ajustes de Codex"
+    pt: "Sessões e configurações do Codex"
+    de: "Sitzungen und Einstellungen von Codex"
+- id: cursor
+  paths:
+    - ~/.cursor
+    - ~/Library/Application Support/Cursor/User
+  reason:
+    en: "Cursor settings, workspaces and chat history"
+    zh: "Cursor 的设置、工作区和聊天记录"
+    ja: "Cursorの設定、ワークスペース、チャット履歴"
+    id: "Pengaturan, workspace, dan riwayat chat Cursor"
+    es: "Ajustes, espacios de trabajo e historial de chat de Cursor"
+    pt: "Configurações, workspaces e histórico de chat do Cursor"
+    de: "Einstellungen, Arbeitsbereiche und Chatverlauf von Cursor"
+- id: playwright
+  paths:
+    - ~/Library/Caches/ms-playwright
+  reason:
+    en: "Browsers installed for Playwright automation; tests break without them"
+    zh: "为 Playwright 自动化安装的浏览器；没有它们，测试会失败"
+    ja: "Playwrightの自動化のためにインストールされたブラウザです。ないとテストが失敗します"
+    id: "Browser yang dipasang untuk otomatisasi Playwright; tes akan rusak tanpa browser ini"
+    es: "Navegadores instalados para la automatización de Playwright; las pruebas fallan sin ellos"
+    pt: "Navegadores instalados para a automação do Playwright; os testes quebram sem eles"
+    de: "Für die Playwright-Automatisierung installierte Browser; ohne sie schlagen Tests fehl"
+- id: camoufox
+  paths:
+    - ~/Library/Caches/camoufox
+  reason:
+    en: "Camoufox browser used by automation tools (Mole #1941)"
+    zh: "自动化工具使用的 Camoufox 浏览器（Mole #1941）"
+    ja: "自動化ツールが使うCamoufoxブラウザです（Mole #1941）"
+    id: "Browser Camoufox yang dipakai alat otomatisasi (Mole #1941)"
+    es: "Navegador Camoufox que usan las herramientas de automatización (Mole #1941)"
+    pt: "Navegador Camoufox usado por ferramentas de automação (Mole #1941)"
+    de: "Camoufox-Browser, den Automatisierungswerkzeuge verwenden (Mole #1941)"
+- id: mail
+  paths:
+    - ~/Library/Mail
+    - ~/Library/Containers/com.apple.mail
+  reason:
+    en: "Apple Mail messages and accounts (Mole #32)"
+    zh: "Apple 邮件的邮件和账户（Mole #32）"
+    ja: "Apple Mailのメッセージとアカウント（Mole #32）"
+    id: "Email dan akun Apple Mail (Mole #32)"
+    es: "Mensajes y cuentas de Apple Mail (Mole #32)"
+    pt: "Mensagens e contas do Apple Mail (Mole #32)"
+    de: "Nachrichten und Konten von Apple Mail (Mole #32)"
+- id: notes
+  paths:
+    - ~/Library/Group Containers/group.com.apple.notes
+    - ~/Library/Containers/com.apple.Notes
+  reason:
+    en: "Apple Notes database (Mole #856)"
+    zh: "Apple 备忘录的数据库（Mole #856）"
+    ja: "Apple Notes（メモ）のデータベース（Mole #856）"
+    id: "Database Apple Catatan (Mole #856)"
+    es: "Base de datos de Apple Notas (Mole #856)"
+    pt: "Banco de dados do Apple Notas (Mole #856)"
+    de: "Datenbank von Apple Notizen (Mole #856)"
+- id: messages
+  paths:
+    - ~/Library/Messages
+  reason:
+    en: "Messages history and attachments"
+    zh: "信息的历史记录和附件"
+    ja: "メッセージの履歴と添付ファイル"
+    id: "Riwayat dan lampiran Pesan"
+    es: "Historial y archivos adjuntos de Mensajes"
+    pt: "Histórico e anexos do Mensagens"
+    de: "Verlauf und Anhänge von Nachrichten"
+- id: photos
+  paths:
+    - ~/Pictures/*.photoslibrary
+  reason:
+    en: "Photos library"
+    zh: "照片资料库"
+    ja: "写真ライブラリ"
+    id: "Pustaka Foto"
+    es: "Biblioteca de Fotos"
+    pt: "Biblioteca do Fotos"
+    de: "Fotos-Mediathek"
+- id: icloud-drive
+  paths:
+    - ~/Library/Mobile Documents
+  reason:
+    en: "iCloud Drive files"
+    zh: "iCloud 云盘的文件"
+    ja: "iCloud Driveのファイル"
+    id: "File iCloud Drive"
+    es: "Archivos de iCloud Drive"
+    pt: "Arquivos do iCloud Drive"
+    de: "Dateien in iCloud Drive"
+- id: keys
+  paths:
+    - ~/Library/Keychains
+    - ~/.ssh
+    - ~/.gnupg
+  reason:
+    en: "Passwords, keychains and keys"
+    zh: "密码、钥匙串和密钥"
+    ja: "パスワード、キーチェーン、鍵"
+    id: "Kata sandi, Rantai Kunci, dan kunci"
+    es: "Contraseñas, llaveros y claves"
+    pt: "Senhas, keychains e chaves"
+    de: "Passwörter, Schlüsselbunde und Schlüssel"
+
+# ---------------------------------------------------------------------------
+# Added in W1-C. Real data that sits in cache-like places, or that a broad
+# glob could reach. Everything above this line is unchanged.
+# ---------------------------------------------------------------------------
+
+# Other IDEs and editors
+- id: fleet
+  paths:
+    - ~/Library/Application Support/Fleet
+  reason:
+    en: "JetBrains Fleet settings and workspaces"
+    zh: "JetBrains Fleet 的设置和工作区"
+    ja: "JetBrains Fleetの設定とワークスペース"
+    id: "Pengaturan dan workspace JetBrains Fleet"
+    es: "Ajustes y espacios de trabajo de JetBrains Fleet"
+    pt: "Configurações e workspaces do JetBrains Fleet"
+    de: "Einstellungen und Arbeitsbereiche von JetBrains Fleet"
+- id: android-studio
+  paths:
+    - ~/Library/Application Support/Google/AndroidStudio*
+    - ~/.android/avd
+  reason:
+    en: "Android Studio settings, and emulator devices with their apps and data"
+    zh: "Android Studio 的设置，以及模拟器设备及其中的 App 和数据"
+    ja: "Android Studioの設定と、エミュレータのデバイスおよびそのアプリとデータ"
+    id: "Pengaturan Android Studio, serta perangkat emulator beserta aplikasi dan datanya"
+    es: "Ajustes de Android Studio y dispositivos del emulador con sus apps y datos"
+    pt: "Configurações do Android Studio e dispositivos do emulador com seus apps e dados"
+    de: "Einstellungen von Android Studio sowie Emulator-Geräte mit ihren Apps und Daten"
+- id: sublime-text
+  paths:
+    - ~/Library/Application Support/Sublime Text
+  reason:
+    en: "Sublime Text settings, packages and unsaved files kept in its session"
+    zh: "Sublime Text 的设置、软件包，以及会话中保留的未保存文件"
+    ja: "Sublime Textの設定、パッケージ、およびセッションに保持されている未保存のファイル"
+    id: "Pengaturan Sublime Text, paket, dan file belum tersimpan yang disimpan di sesinya"
+    es: "Ajustes de Sublime Text, paquetes y archivos sin guardar que se conservan en su sesión"
+    pt: "Configurações do Sublime Text, pacotes e arquivos não salvos mantidos na sessão dele"
+    de: "Einstellungen von Sublime Text, Pakete und ungespeicherte Dateien, die in der Sitzung gehalten werden"
+- id: vscode
+  paths:
+    - ~/Library/Application Support/Code/User
+    - ~/Library/Application Support/Code - Insiders/User
+    - ~/Library/Application Support/VSCodium/User
+  reason:
+    en: "VS Code settings, snippets, keybindings, workspaceStorage and local file history"
+    zh: "VS Code 的设置、代码片段、快捷键、workspaceStorage 和本地文件历史记录"
+    ja: "VS Codeの設定、スニペット、キーバインド、workspaceStorage、ローカルファイル履歴"
+    id: "Pengaturan VS Code, snippet, keybinding, workspaceStorage, dan riwayat file lokal"
+    es: "Ajustes de VS Code, fragmentos de código, atajos de teclado, workspaceStorage e historial local de archivos"
+    pt: "Configurações do VS Code, snippets, atalhos de teclado, workspaceStorage e histórico local de arquivos"
+    de: "Einstellungen von VS Code, Snippets, Tastenkürzel, workspaceStorage und lokaler Dateiverlauf"
+- id: zed
+  paths:
+    - ~/.config/zed
+    - ~/Library/Application Support/Zed
+  reason:
+    en: "Zed settings, extensions and conversations"
+    zh: "Zed 的设置、扩展和对话"
+    ja: "Zedの設定、拡張機能、会話"
+    id: "Pengaturan, ekstensi, dan percakapan Zed"
+    es: "Ajustes, extensiones y conversaciones de Zed"
+    pt: "Configurações, extensões e conversas do Zed"
+    de: "Einstellungen, Erweiterungen und Unterhaltungen von Zed"
+- id: windsurf
+  paths:
+    - ~/.windsurf
+    - ~/Library/Application Support/Windsurf/User
+  reason:
+    en: "Windsurf settings, workspaces and chat history"
+    zh: "Windsurf 的设置、工作区和聊天记录"
+    ja: "Windsurfの設定、ワークスペース、チャット履歴"
+    id: "Pengaturan, workspace, dan riwayat chat Windsurf"
+    es: "Ajustes, espacios de trabajo e historial de chat de Windsurf"
+    pt: "Configurações, workspaces e histórico de chat do Windsurf"
+    de: "Einstellungen, Arbeitsbereiche und Chatverlauf von Windsurf"
+- id: xcode-userdata
+  paths:
+    - ~/Library/Developer/Xcode/UserData
+  reason:
+    en: "Xcode key bindings, code snippets, themes and custom settings"
+    zh: "Xcode 的快捷键、代码片段、主题和自定义设置"
+    ja: "Xcodeのキーバインド、コードスニペット、テーマ、カスタム設定"
+    id: "Pintasan keyboard, snippet kode, tema, dan pengaturan kustom Xcode"
+    es: "Atajos de teclado, fragmentos de código, temas y ajustes personalizados de Xcode"
+    pt: "Atalhos de teclado, snippets de código, temas e configurações personalizadas do Xcode"
+    de: "Tastenkürzel, Codeschnipsel, Themen und eigene Einstellungen von Xcode"
+- id: xcode-archives
+  paths:
+    - ~/Library/Developer/Xcode/Archives
+  reason:
+    en: "Xcode archives of shipped builds; their dSYMs are needed to read crash reports"
+    zh: "Xcode 中已发布构建的归档；需要其中的 dSYM 才能读取崩溃报告"
+    ja: "Xcodeでリリースしたビルドのアーカイブです。クラッシュレポートを読むには、その中のdSYMが必要です"
+    id: "Arsip Xcode dari build yang sudah dirilis; dSYM di dalamnya diperlukan untuk membaca laporan crash"
+    es: "Archivos de Xcode de las compilaciones publicadas; sus dSYM hacen falta para leer los informes de fallos"
+    pt: "Arquivos do Xcode das versões publicadas; os dSYMs deles são necessários para ler relatórios de falhas"
+    de: "Xcode-Archive ausgelieferter Builds; deren dSYMs werden zum Lesen von Absturzberichten gebraucht"
+
+# Other AI tools
+- id: gemini-cli
+  paths:
+    - ~/.gemini
+  reason:
+    en: "Gemini CLI sessions, memory and settings"
+    zh: "Gemini CLI 的会话、记忆和设置"
+    ja: "Gemini CLIのセッション、メモリ、設定"
+    id: "Sesi, memori, dan pengaturan Gemini CLI"
+    es: "Sesiones, memoria y ajustes de Gemini CLI"
+    pt: "Sessões, memória e configurações do Gemini CLI"
+    de: "Sitzungen, Gedächtnis und Einstellungen von Gemini CLI"
+- id: opencode
+  paths:
+    - ~/.config/opencode
+    - ~/.local/share/opencode
+  reason:
+    en: "OpenCode settings, sessions and logins"
+    zh: "OpenCode 的设置、会话和登录信息"
+    ja: "OpenCodeの設定、セッション、ログイン情報"
+    id: "Pengaturan, sesi, dan login OpenCode"
+    es: "Ajustes, sesiones e inicios de sesión de OpenCode"
+    pt: "Configurações, sessões e logins do OpenCode"
+    de: "Einstellungen, Sitzungen und Anmeldungen von OpenCode"
+- id: t3-code
+  paths:
+    - ~/.t3/userdata
+  reason:
+    en: "T3 Code threads and attachments (projects and worktrees stay open to purge)"
+    zh: "T3 Code 的对话线程和附件（项目和 worktree 仍可被 purge 清理）"
+    ja: "T3 Codeのスレッドと添付ファイルです（プロジェクトとworktreeはpurgeの対象のままです）"
+    id: "Thread dan lampiran T3 Code (proyek dan worktree tetap bisa di-purge)"
+    es: "Hilos y archivos adjuntos de T3 Code (los proyectos y worktrees siguen disponibles para purge)"
+    pt: "Threads e anexos do T3 Code (projetos e worktrees continuam disponíveis para o purge)"
+    de: "Threads und Anhänge von T3 Code (Projekte und Worktrees bleiben für purge verfügbar)"
+
+# Virtual machines and containers: they look like caches, they hold data
+- id: docker
+  paths:
+    - ~/Library/Containers/com.docker.docker
+    - ~/.docker
+  reason:
+    en: "Docker Desktop disk image (all images, containers and named volumes, including databases) and Docker logins"
+    zh: "Docker Desktop 的磁盘映像（所有镜像、容器和命名卷，包括数据库）以及 Docker 登录信息"
+    ja: "Docker Desktopのディスクイメージ（すべてのイメージ、コンテナ、名前付きボリューム。データベースを含みます）とDockerのログイン情報"
+    id: "Disk image Docker Desktop (semua image, container, dan named volume, termasuk database) serta login Docker"
+    es: "Imagen de disco de Docker Desktop (todas las imágenes, contenedores y volúmenes con nombre, incluidas las bases de datos) e inicios de sesión de Docker"
+    pt: "Imagem de disco do Docker Desktop (todas as imagens, contêineres e volumes nomeados, inclusive bancos de dados) e logins do Docker"
+    de: "Festplattenabbild von Docker Desktop (alle Images, Container und benannten Volumes, auch Datenbanken) und Docker-Anmeldungen"
+- id: orbstack
+  paths:
+    - ~/.orbstack
+    - ~/Library/Group Containers/*.dev.orbstack
+  reason:
+    en: "OrbStack machines, containers and volumes"
+    zh: "OrbStack 的虚拟机、容器和卷"
+    ja: "OrbStackのマシン、コンテナ、ボリューム"
+    id: "Mesin, container, dan volume OrbStack"
+    es: "Máquinas, contenedores y volúmenes de OrbStack"
+    pt: "Máquinas, contêineres e volumes do OrbStack"
+    de: "Maschinen, Container und Volumes von OrbStack"
+- id: colima-lima
+  paths:
+    - ~/.colima
+    - ~/.lima
+  reason:
+    en: "Colima and Lima virtual machine disks"
+    zh: "Colima 和 Lima 的虚拟机磁盘"
+    ja: "ColimaとLimaの仮想マシンのディスク"
+    id: "Disk mesin virtual Colima dan Lima"
+    es: "Discos de las máquinas virtuales de Colima y Lima"
+    pt: "Discos das máquinas virtuais do Colima e do Lima"
+    de: "Festplatten der virtuellen Maschinen von Colima und Lima"
+- id: utm
+  paths:
+    - ~/Library/Containers/com.utmapp.UTM
+  reason:
+    en: "UTM virtual machines"
+    zh: "UTM 的虚拟机"
+    ja: "UTMの仮想マシン"
+    id: "Mesin virtual UTM"
+    es: "Máquinas virtuales de UTM"
+    pt: "Máquinas virtuais do UTM"
+    de: "Virtuelle Maschinen von UTM"
+- id: parallels
+  paths:
+    - ~/Parallels
+    - ~/Library/Parallels
+  reason:
+    en: "Parallels Desktop virtual machines"
+    zh: "Parallels Desktop 的虚拟机"
+    ja: "Parallels Desktopの仮想マシン"
+    id: "Mesin virtual Parallels Desktop"
+    es: "Máquinas virtuales de Parallels Desktop"
+    pt: "Máquinas virtuais do Parallels Desktop"
+    de: "Virtuelle Maschinen von Parallels Desktop"
+- id: vmware-virtualbox
+  paths:
+    - ~/Virtual Machines.localized
+    - ~/VirtualBox VMs
+  reason:
+    en: "VMware Fusion and VirtualBox virtual machines"
+    zh: "VMware Fusion 和 VirtualBox 的虚拟机"
+    ja: "VMware FusionとVirtualBoxの仮想マシン"
+    id: "Mesin virtual VMware Fusion dan VirtualBox"
+    es: "Máquinas virtuales de VMware Fusion y VirtualBox"
+    pt: "Máquinas virtuais do VMware Fusion e do VirtualBox"
+    de: "Virtuelle Maschinen von VMware Fusion und VirtualBox"
+- id: tart
+  paths:
+    - ~/.tart
+  reason:
+    en: "Tart virtual machines; local ones exist nowhere else"
+    zh: "Tart 的虚拟机；本地的虚拟机在其他地方都没有副本"
+    ja: "Tartの仮想マシンです。ローカルのものは他のどこにも存在しません"
+    id: "Mesin virtual Tart; yang ada di lokal tidak ada di tempat lain"
+    es: "Máquinas virtuales de Tart; las locales no existen en ningún otro sitio"
+    pt: "Máquinas virtuais do Tart; as locais não existem em nenhum outro lugar"
+    de: "Virtuelle Maschinen von Tart; lokale gibt es nirgendwo sonst"
+
+# Device backups
+- id: iphone-backups
+  paths:
+    - ~/Library/Application Support/MobileSync
+  reason:
+    en: "iPhone and iPad backups; often the only copy"
+    zh: "iPhone 和 iPad 的备份；通常是唯一的一份"
+    ja: "iPhoneとiPadのバックアップです。多くの場合、これが唯一のコピーです"
+    id: "Cadangan iPhone dan iPad; sering kali satu-satunya salinan"
+    es: "Copias de seguridad de iPhone y iPad; a menudo son la única copia"
+    pt: "Backups de iPhone e iPad; muitas vezes são a única cópia"
+    de: "Backups von iPhone und iPad; oft die einzige Kopie"
+  # sapu backups, where you pick one backup: one backup folder only, never
+  # MobileSync, Backup or anything inside a backup.
+  allow:
+    - source: backups
+      paths:
+        - ~/Library/Application Support/MobileSync/Backup/*
+
+# Apple apps with personal data
+- id: apple-personal-data
+  paths:
+    - ~/Library/Calendars
+    - ~/Library/Application Support/AddressBook
+    - ~/Library/Safari
+    - ~/Library/Group Containers/group.com.apple.VoiceMemos.shared
+    - ~/Library/Group Containers/group.com.apple.reminders
+  reason:
+    en: "Calendars, Contacts, Safari bookmarks and history, Voice Memos and Reminders"
+    zh: "日历、通讯录、Safari 书签和历史记录、语音备忘录和提醒事项"
+    ja: "カレンダー、連絡先、Safariのブックマークと履歴、ボイスメモ、リマインダー"
+    id: "Kalender, Kontak, bookmark dan riwayat Safari, Memo Suara, dan Pengingat"
+    es: "Calendarios, Contactos, marcadores e historial de Safari, Notas de voz y Recordatorios"
+    pt: "Calendários, Contatos, favoritos e histórico do Safari, Gravador de Voz e Lembretes"
+    de: "Kalender, Kontakte, Safari-Lesezeichen und -Verlauf, Sprachmemos und Erinnerungen"
+- id: apple-music
+  paths:
+    - ~/Music/Music
+    - ~/Music/iTunes
+  reason:
+    en: "Apple Music and iTunes library, including music and playlists not available online"
+    zh: "Apple Music 和 iTunes 资料库，包括网上没有的音乐和播放列表"
+    ja: "Apple MusicとiTunesのライブラリです。オンラインでは入手できない曲やプレイリストも含みます"
+    id: "Pustaka Apple Music dan iTunes, termasuk musik dan playlist yang tidak tersedia online"
+    es: "Biblioteca de Apple Music e iTunes, incluidas la música y las listas que no están disponibles en línea"
+    pt: "Biblioteca do Apple Music e do iTunes, incluindo músicas e playlists que não estão disponíveis on-line"
+    de: "Apple-Music- und iTunes-Mediathek, auch Musik und Playlists, die online nicht verfügbar sind"
+
+# Cloud drives: the folder holds the only copy of anything not yet synced
+- id: cloud-storage
+  paths:
+    - ~/Library/CloudStorage
+    - ~/Dropbox
+    - ~/Google Drive
+    - ~/OneDrive*
+  reason:
+    en: "Cloud drive folders (Dropbox, Google Drive, OneDrive); removing files here deletes them online too"
+    zh: "云盘文件夹（Dropbox、Google Drive、OneDrive）；在这里删除文件，网上的文件也会一并被删除"
+    ja: "クラウドドライブのフォルダ（Dropbox、Google Drive、OneDrive）です。ここでファイルを削除すると、オンラインのファイルも削除されます"
+    id: "Folder cloud drive (Dropbox, Google Drive, OneDrive); menghapus file di sini juga menghapusnya di online"
+    es: "Carpetas de unidades en la nube (Dropbox, Google Drive, OneDrive); eliminar archivos aquí también los elimina en línea"
+    pt: "Pastas de drives na nuvem (Dropbox, Google Drive, OneDrive); remover arquivos aqui também os exclui on-line"
+    de: "Cloud-Laufwerk-Ordner (Dropbox, Google Drive, OneDrive); Dateien, die hier gelöscht werden, verschwinden auch online"
+- id: google-drive-cache
+  paths:
+    - ~/Library/Application Support/Google/DriveFS
+  reason:
+    en: "Google Drive for desktop keeps files that are not uploaded yet in this cache; deleting it loses them"
+    zh: "Google Drive 桌面版会把尚未上传的文件保存在这个缓存中；删除它会丢失这些文件"
+    ja: "Google Drive for desktopは、まだアップロードされていないファイルをこのキャッシュに保存しています。削除すると失われます"
+    id: "Google Drive for desktop menyimpan file yang belum diunggah di cache ini; menghapusnya berarti file-file itu hilang"
+    es: "Google Drive para escritorio guarda en esta caché los archivos que aún no se han subido; si se elimina, se pierden"
+    pt: "O Google Drive para computador guarda nesse cache os arquivos que ainda não foram enviados; apagá-lo faz perdê-los"
+    de: "Google Drive für Desktop speichert noch nicht hochgeladene Dateien in diesem Cache; beim Löschen gehen sie verloren"
+
+# Passwords, wallets and credentials
+- id: password-managers
+  paths:
+    - ~/Library/Group Containers/*.com.1password
+    - ~/Library/Application Support/1Password
+    - ~/Library/Application Support/Bitwarden
+    - ~/Library/Containers/com.bitwarden.desktop
+    - ~/Library/Containers/in.sinew.Enpass-Desktop
+    - ~/.password-store
+    - ~/.config/op
+  reason:
+    en: "Password manager vaults and settings"
+    zh: "密码管理器的保险库和设置"
+    ja: "パスワードマネージャのボールトと設定"
+    id: "Vault dan pengaturan pengelola kata sandi"
+    es: "Cajas fuertes y ajustes de los gestores de contraseñas"
+    pt: "Cofres e configurações dos gerenciadores de senhas"
+    de: "Tresore und Einstellungen von Passwortmanagern"
+- id: crypto-wallets
+  paths:
+    - ~/.electrum
+    - ~/Library/Application Support/Bitcoin
+    - ~/Library/Application Support/Exodus
+  reason:
+    en: "Cryptocurrency wallets; losing a wallet file can lose the funds"
+    zh: "加密货币钱包；丢失钱包文件可能会损失资金"
+    ja: "暗号資産のウォレットです。ウォレットファイルを失うと、資金を失うおそれがあります"
+    id: "Dompet kripto; kehilangan file dompet bisa membuat dananya hilang"
+    es: "Carteras de criptomonedas; perder un archivo de cartera puede significar perder los fondos"
+    pt: "Carteiras de criptomoedas; perder um arquivo de carteira pode significar perder os fundos"
+    de: "Kryptowährungs-Wallets; der Verlust einer Wallet-Datei kann den Verlust des Guthabens bedeuten"
+- id: cloud-credentials
+  paths:
+    - ~/.aws
+    - ~/.azure
+    - ~/.config/gcloud
+    - ~/.kube
+    - ~/.oci
+    - ~/.terraform.d
+  reason:
+    en: "Cloud provider logins, cluster configs and Terraform credentials"
+    zh: "云服务商的登录信息、集群配置和 Terraform 凭据"
+    ja: "クラウドプロバイダーのログイン情報、クラスタの設定、Terraformの認証情報"
+    id: "Login penyedia cloud, konfigurasi cluster, dan kredensial Terraform"
+    es: "Inicios de sesión de proveedores de nube, configuraciones de clústeres y credenciales de Terraform"
+    pt: "Logins de provedores de nuvem, configurações de clusters e credenciais do Terraform"
+    de: "Anmeldungen bei Cloud-Anbietern, Cluster-Konfigurationen und Terraform-Zugangsdaten"
+- id: dev-credentials
+  paths:
+    - ~/.config/gh
+    - ~/.config/git
+    - ~/.gitconfig
+    - ~/.git-credentials
+    - ~/.npmrc
+    - ~/.netrc
+    - ~/.pypirc
+    - ~/.cargo/credentials.toml
+  reason:
+    en: "GitHub, git, npm, PyPI and cargo logins and settings"
+    zh: "GitHub、git、npm、PyPI 和 cargo 的登录信息和设置"
+    ja: "GitHub、git、npm、PyPI、cargoのログイン情報と設定"
+    id: "Login dan pengaturan GitHub, git, npm, PyPI, dan cargo"
+    es: "Inicios de sesión y ajustes de GitHub, git, npm, PyPI y cargo"
+    pt: "Logins e configurações do GitHub, git, npm, PyPI e cargo"
+    de: "Anmeldungen und Einstellungen von GitHub, git, npm, PyPI und cargo"
+
+# Sapu's own state folder is not listed here: it moves with SAPU_HOME, so the
+# engine and fsop guard env.StateDir directly.

@@ -1,0 +1,4 @@
+Library/Logs/CrashReporter/entry-a
+Library/Logs/CrashReporter/entry-b.dat
+Library/Logs/DiagnosticReports/entry-a
+Library/Logs/DiagnosticReports/entry-b.dat

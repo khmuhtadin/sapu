@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/whitelist-list.json",
+  "title": "data of sapu whitelist list, add and remove --json",
+  "type": "object",
+  "required": [
+    "entries"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "entries": {
+      "description": "The lines of whitelist.txt, which add and remove change",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "config_entries": {
+      "description": "The [whitelist] paths of sapu.toml; only whitelist list shows them, and Sapu never changes them",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

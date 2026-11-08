@@ -1,0 +1,2 @@
+Movies/CapCut/User Data/Cache/entry-a
+Movies/CapCut/User Data/Cache/entry-b.dat

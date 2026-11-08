@@ -1,0 +1,2 @@
+Library/Logs/Homebrew/entry-a
+Library/Logs/Homebrew/entry-b.dat

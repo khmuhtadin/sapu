@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/diff.json",
+  "title": "data of sapu diff --json",
+  "type": "object",
+  "required": [
+    "since_days",
+    "snapshots"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "since_days": {
+      "description": "How far back diff compares, from --since.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "snapshots": {
+      "description": "Number of size snapshots on disk.",
+      "type": "integer",
+      "minimum": 0
+    },
+    "recorded": {
+      "description": "With --record: the snapshot that was just saved.",
+      "$ref": "#/$defs/snapshot"
+    },
+    "diff": {
+      "description": "Absent when there are no two snapshots far enough apart; see hint.",
+      "type": "object",
+      "required": [
+        "older",
+        "newer",
+        "growth",
+        "shrink",
+        "home_before",
+        "home_after"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "older": {
+          "description": "Date of the older snapshot, YYYY-MM-DD.",
+          "type": "string"
+        },
+        "newer": {
+          "description": "Date of the newer snapshot, YYYY-MM-DD.",
+          "type": "string"
+        },
+        "growth": {
+          "description": "The biggest growth first, at most 10.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "shrink": {
+          "description": "The biggest shrink first, at most 10.",
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/change"
+          }
+        },
+        "home_before": {
+          "description": "Size of the home folder in the older snapshot.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "home_after": {
+          "description": "Size of the home folder in the newer snapshot.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "unmeasured": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unreadable": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "hint": {
+      "description": "Why there is no diff, and how to get one. Worded for people.",
+      "type": "string"
+    }
+  },
+  "$defs": {
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "date",
+        "taken",
+        "home_bytes",
+        "min_bytes",
+        "folders"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "taken": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "home_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "min_bytes": {
+          "description": "Folders smaller than this are not listed.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "folders": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "bytes"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "description": "Relative to the home folder.",
+                "type": "string"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "errors": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        "unmeasured": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "change": {
+      "type": "object",
+      "required": [
+        "path",
+        "before",
+        "after",
+        "delta",
+        "approx"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "description": "Relative to the home folder. The deepest folder that explains the change.",
+          "type": "string"
+        },
+        "before": {
+          "description": "Bytes in the older snapshot; 0 when the folder was under min_bytes then.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "after": {
+          "description": "Bytes in the newer snapshot; 0 when the folder is under min_bytes now.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "delta": {
+          "description": "after - before.",
+          "type": "integer"
+        },
+        "approx": {
+          "description": "The folder is missing from one snapshot, so delta is an estimate.",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

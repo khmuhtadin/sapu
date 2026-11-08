@@ -1,0 +1,2 @@
+Library/Application Support/Code/logs/Default
+Library/Application Support/Code/logs/Profile 1

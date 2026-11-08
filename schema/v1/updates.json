@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/updates.json",
+  "title": "data of sapu updates --json",
+  "description": "Notify only: sapu updates never downloads or installs anything. The command is shown for the user to run.",
+  "type": "object",
+  "required": ["offline", "sources", "updates", "notes"],
+  "additionalProperties": false,
+  "properties": {
+    "offline": { "description": "True when --offline was given: no network request was made.", "type": "boolean" },
+    "sources": {
+      "description": "What happened to each source, in the order homebrew, app-store, sparkle.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "enum": ["homebrew", "app-store", "sparkle"] },
+          "skipped": { "description": "Why the source was not checked. Absent when it was.", "type": "string" },
+          "checked": { "description": "Sparkle: apps with an update feed that Sapu tried.", "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "updates": {
+      "description": "Apps with a newer version, sorted by name.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "source", "installed", "available", "how"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "source": { "enum": ["homebrew", "app-store", "sparkle"] },
+          "installed": { "type": "string" },
+          "available": { "type": "string" },
+          "how": { "description": "The official way to update, in words.", "type": "string" },
+          "command": { "description": "The same as a command. Shown, never run by Sapu.", "type": "array", "items": { "type": "string" } },
+          "path": { "description": "The app, for apps with their own updater.", "type": "string" }
+        }
+      }
+    },
+    "notes": {
+      "description": "Apps that could not be checked, and why. They do not make the command fail.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "message"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  }
+}

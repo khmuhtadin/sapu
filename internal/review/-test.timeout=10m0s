@@ -1,0 +1,417 @@
+===== list 80 =====
+ sapu clean                                                13 found · 4 skipped
+ ──────────────────────────────────────────────────────────────────────────────
+  ▾ SAFE      rebuilds by itself                         7 items    2.1 GB   [x]
+    [x] chrome cache           ~/Library/Caches/…me/Default/Cache   1.3 GB
+    [x] safari cache           ~/Library/Caches/com.apple.Safari  640.0 MB
+    [x] logs diagnostic repor… ~/Library/Logs/DiagnosticReports   120.0 MB
+    [x] apple help cache       ~/Library/Caches/com.apple.helpd    45.0 MB
+    [x] logs npm               ~/.npm/_logs/2026…563Z-debug-0.log  40.0 KB
+        … 2 more                                                  ⏎ expand
+  ▾ MODERATE  rebuilds at a cost                         4 items   15.8 GB   [x]
+›   [x] xcode derived data     ~/Library/Develop…u-gxbnqtzjvmbdkd   5.2 GB
+          Xcode build output and indexes, one folder per project. Xcode
+          rebuilds it, so the next build is slower.
+          Comes back by itself: yes · Rule: xcode.derived-data
+          ~/Library/Developer/Xcode/DerivedData/Sapu-gxbnqtzjvmbdkd
+    [x] homebrew downloads     ~/Library/Caches/…mebrew/downloads   4.1 GB
+    [x] npm cache              ~/.npm/_cacache                      3.6 GB
+    [x] spotify cache          ~/Library/Caches/…tify.client/Data   2.9 GB
+  ▸ RISKY     may hold something you care about          2 items    3.1 GB   [ ]
+
+ SKIPPED  4 · Sapu leaves these where they are
+    ~/.claude                    protected    Claude Code memory and settings
+    ~/.npm/_npx/9f3c1a2b         in use       open in node (pid 4242)
+    ~/Library/Caches/JetBrains   protected    JetBrains IDE settings and indexes
+    ~/Projects/keep              whitelisted  you added it to your whitelist
+
+ Commands you can run yourself · Sapu never runs these
+    go clean -cache                                                 1.2 GB
+
+
+
+
+  
+ ──────────────────────────────────────────────────────────────────────────────
+  11 items ·  17.9 GB selected  →  quarantine, undo up to 7 days
+  ↑↓ move  space toggle  → open  a all safe  / filter  ⏎ review  ? keys  q quit
+===== risky armed 80 =====
+ sapu clean                                                13 found · 4 skipped
+ ──────────────────────────────────────────────────────────────────────────────
+  ▾ SAFE      rebuilds by itself                         7 items    2.1 GB   [x]
+    [x] chrome cache           ~/Library/Caches/…me/Default/Cache   1.3 GB
+    [x] safari cache           ~/Library/Caches/com.apple.Safari  640.0 MB
+    [x] logs diagnostic repor… ~/Library/Logs/DiagnosticReports   120.0 MB
+    [x] apple help cache       ~/Library/Caches/com.apple.helpd    45.0 MB
+    [x] logs npm               ~/.npm/_logs/2026…563Z-debug-0.log  40.0 KB
+        … 2 more                                                  ⏎ expand
+  ▾ MODERATE  rebuilds at a cost                         4 items   15.8 GB   [x]
+    [x] xcode derived data     ~/Library/Develop…u-gxbnqtzjvmbdkd   5.2 GB
+    [x] homebrew downloads     ~/Library/Caches/…mebrew/downloads   4.1 GB
+    [x] npm cache              ~/.npm/_cacache                      3.6 GB
+    [x] spotify cache          ~/Library/Caches/…tify.client/Data   2.9 GB
+  ▾ RISKY     may hold something you care about          2 items    3.1 GB   [ ]
+›   [ ] xcode archives         ~/Library/Develop…pu 1.0.xcarchive   2.1 GB
+          An app build you archived in Xcode. You need it to read crash reports
+          of that version.
+          Comes back by itself: no · Rule: xcode.archives
+          ~/Library/Developer/Xcode/Archives/2025-03-01/Sapu 1.0.xcarchive
+          RISKY · it may hold something you care about. Press space again to
+          select it.
+    [ ] telegram media         ~/Library/Group C…r.Telegram/media   1.0 GB
+
+ SKIPPED  4 · Sapu leaves these where they are
+    ~/.claude                    protected    Claude Code memory and settings
+    ~/.npm/_npx/9f3c1a2b         in use       open in node (pid 4242)
+    ~/Library/Caches/JetBrains   protected    JetBrains IDE settings and indexes
+    ~/Projects/keep              whitelisted  you added it to your whitelist
+
+ Commands you can run yourself · Sapu never runs these
+    go clean -cache                                                 1.2 GB
+  
+ ──────────────────────────────────────────────────────────────────────────────
+  11 items ·  17.9 GB selected  →  quarantine, undo up to 7 days
+  ↑↓ move  space toggle  → open  a all safe  / filter  ⏎ review  ? keys  q quit
+===== help 80 =====
+ sapu clean                                                                keys
+ ──────────────────────────────────────────────────────────────────────────────
+
+  ↑ ↓  k j   move
+  space      select or unselect; a RISKY item asks twice
+  → l        open a group, or keep an item's details open
+  ← h        close
+  ⏎          go to the confirm screen, or open a … more row
+  a          select all SAFE items (never RISKY)
+  /          filter by name, path or rule
+  esc        clear the filter
+  ?          this list
+  q          quit without changing anything
+
+  Nothing moves until you press y on the confirm screen. Items go to
+  quarantine, and sapu undo puts them back.
+
+  Press any key to go back.
+===== confirm 80 =====
+
+ ╭─ Move 12 items to quarantine? ───────────────────────────────────────╮
+ │                                                                      │
+ │  20.0 GB   SAFE 7 · MODERATE 4 · RISKY 1                             │
+ │  1 RISKY item may hold something you care about.                     │
+ │                                                                      │
+ │  Nothing is deleted. Items move to ~/.sapu/quarantine/ and come      │
+ │  back with sapu undo --last                                          │
+ │                                                                      │
+ │  The space is not free yet: they stay in quarantine until at least   │
+ │  Sun 15 Nov. After that, a later sapu clean deletes them (sooner if  │
+ │  the quarantine passes 20.0 GB).                                     │
+ │  To free it now: sapu quarantine empty RUN_ID, with the run id the   │
+ │  receipt shows.                                                      │
+ │                                                                      │
+ │  y  Move to quarantine          n  Back to the list                  │
+ │                                                                      │
+ ╰──────────────────────────────────────────────────────────────────────╯
+===== progress 80 =====
+ Moving to quarantine  ━━━━━━━━━━━━╸─────────────────────────   4/12 ·   2.1 GB
+
+   ✓ safari cache             ~/Library/Caches/com.apple.Safari   640.0 MB
+   ✓ logs diagnostic reports  ~/Library/Logs/DiagnosticReports    120.0 MB
+   ✓ apple help cache         ~/Library/Caches/com.apple.helpd     45.0 MB
+   ⋯ logs npm                 ~/.npm/_logs/2026…_563Z-debug-0.log  40.0 KB
+
+ Ctrl-C stops after the current item. What already moved can be undone.
+===== receipt 80 =====
+ ✓ Moved 12 items (20.0 GB) to quarantine in 0.0 s
+
+   The space is not free yet: these items stay in quarantine until at least Sun
+   15 Nov. After that, a later sapu clean deletes them (sooner if the
+   quarantine passes 20.0 GB).
+
+   To free the space now   sapu quarantine empty 20261108-1115-a3f9
+   Changed your mind?      sapu undo 20261108-1115-a3f9
+
+  q quit
+===== list 40 =====
+ sapu clean        13 found · 4 skipped
+ ──────────────────────────────────────
+  ▾ SAFE         7 items    2.1 GB   [x]
+    [x] chrome cache        1.3 GB
+    [x] safari cache      640.0 MB
+    [x] logs diagnostic … 120.0 MB
+    [x] apple help cache   45.0 MB
+    [x] logs npm           40.0 KB
+        … 2 more          ⏎ expand
+  ▾ MODERATE     4 items   15.8 GB   [x]
+›   [x] xcode derived da…   5.2 GB
+          Xcode build output and
+          indexes, one folder per
+          project. Xcode rebuilds it,
+          so the next build is slower.
+          Comes back by itself: yes ·
+          Rule: xcode.derived-data
+          ~/Library/Developer/Xcode/Der
+          ivedData/Sapu-gxbnqtzjvmbdkd
+    [x] homebrew downloa…   4.1 GB
+    [x] npm cache           3.6 GB
+    [x] spotify cache       2.9 GB
+  ▸ RISKY        2 items    3.1 GB   [ ]
+
+ SKIPPED  4 · Sapu leaves these where …
+    ~/.claude               protected
+    ~/.npm/_npx/9f3c1a2b    in use
+    ~/Library/C…s/JetBrains protected
+    ~/Projects/keep         whitelisted
+
+ Commands you can run yourself · Sapu …
+    go clean -cache         1.2 GB
+  
+ ──────────────────────────────────────
+  11 items ·  17.9 GB selected
+  ⏎ review  ? keys  q quit
+===== risky armed 40 =====
+ sapu clean        13 found · 4 skipped
+ ──────────────────────────────────────
+  ▾ SAFE         7 items    2.1 GB   [x]
+    [x] chrome cache        1.3 GB
+    [x] safari cache      640.0 MB
+    [x] logs diagnostic … 120.0 MB
+    [x] apple help cache   45.0 MB
+    [x] logs npm           40.0 KB
+        … 2 more          ⏎ expand
+  ▾ MODERATE     4 items   15.8 GB   [x]
+    [x] xcode derived da…   5.2 GB
+    [x] homebrew downloa…   4.1 GB
+    [x] npm cache           3.6 GB
+    [x] spotify cache       2.9 GB
+  ▾ RISKY        2 items    3.1 GB   [ ]
+›   [ ] xcode archives      2.1 GB
+          An app build you archived in
+          Xcode. You need it to read
+          crash reports of that
+          version.
+          Comes back by itself: no ·
+          Rule: xcode.archives
+          ~/Library/Developer/Xcode/Arc
+          hives/2025-03-01/Sapu 1.0.xca
+          rchive
+          RISKY · it may hold something
+          you care about. Press space
+          again to select it.
+    [ ] telegram media      1.0 GB
+
+ SKIPPED  4 · Sapu leaves these where …
+    ~/.claude               protected
+  ↓ more below
+ ──────────────────────────────────────
+  11 items ·  17.9 GB selected
+  ⏎ review  ? keys  q quit
+===== help 40 =====
+ sapu clean                        keys
+ ──────────────────────────────────────
+
+  ↑ ↓  k j   move
+  space      select or unselect; a
+             RISKY item asks twice
+  → l        open a group, or keep an
+             item's details open
+  ← h        close
+  ⏎          go to the confirm screen,
+             or open a … more row
+  a          select all SAFE items
+             (never RISKY)
+  /          filter by name, path or
+             rule
+  esc        clear the filter
+  ?          this list
+  q          quit without changing
+             anything
+
+  Nothing moves until you press y on
+  the confirm screen. Items go to
+  quarantine, and sapu undo puts them
+  back.
+
+  Press any key to go back.
+===== confirm 40 =====
+
+ ╭─ Move 12 items to quarantine? ─────╮
+ │                                    │
+ │  20.0 GB                           │
+ │  SAFE 7 · MODERATE 4 · RISKY 1     │
+ │  1 RISKY item may hold something   │
+ │  you care about.                   │
+ │                                    │
+ │  Nothing is deleted. Items move    │
+ │  to ~/.sapu/quarantine/ and come   │
+ │  back with sapu undo --last        │
+ │                                    │
+ │  The space is not free yet: they   │
+ │  stay in quarantine until at       │
+ │  least Sun 15 Nov. After that, a   │
+ │  later sapu clean deletes them     │
+ │  (sooner if the quarantine passes  │
+ │  20.0 GB).                         │
+ │  To free it now: sapu quarantine   │
+ │  empty RUN_ID, with the run id     │
+ │  the receipt shows.                │
+ │                                    │
+ │  y move   n back                   │
+ │                                    │
+ ╰────────────────────────────────────╯
+===== progress 40 =====
+ Moving to quarantine   4/12 ·   2.1 GB
+
+   ✓ safari cache         640.0 MB
+   ✓ logs diagnostic rep… 120.0 MB
+   ✓ apple help cache      45.0 MB
+   ⋯ logs npm              40.0 KB
+
+ Ctrl-C stops after the current item.
+ What already moved can be undone.
+===== receipt 40 =====
+ ✓ Moved 12 items (20.0 GB) to
+   quarantine in 0.0 s
+
+   The space is not free yet: these
+   items stay in quarantine until at
+   least Sun 15 Nov. After that, a
+   later sapu clean deletes them
+   (sooner if the quarantine passes
+   20.0 GB).
+
+   To free the space now
+sapu quarantine empty 20261108-1115-a3f9
+   Changed your mind?
+     sapu undo 20261108-1115-a3f9
+
+  q quit
+===== list 120 =====
+ sapu clean                                                                    13 found · 4 skipped
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+  ▾ SAFE      rebuilds by itself                                             7 items    2.1 GB   [x]
+    [x] chrome cache                 ~/Library/Caches/Google/Chrome/Default/Cache       1.3 GB
+    [x] safari cache                 ~/Library/Caches/com.apple.Safari                640.0 MB
+    [x] logs diagnostic reports      ~/Library/Logs/DiagnosticReports                 120.0 MB
+    [x] apple help cache             ~/Library/Caches/com.apple.helpd                  45.0 MB
+    [x] logs npm                     ~/.npm/_logs/2026-11-08T…_23_09_563Z-debug-0.log  40.0 KB
+        … 2 more                                                                      ⏎ expand
+  ▾ MODERATE  rebuilds at a cost                                             4 items   15.8 GB   [x]
+›   [x] xcode derived data           ~/Library/Developer/Xcod…ata/Sapu-gxbnqtzjvmbdkd   5.2 GB
+          Xcode build output and indexes, one folder per project. Xcode rebuilds it, so the next
+          build is slower.
+          Comes back by itself: yes · Rule: xcode.derived-data
+          ~/Library/Developer/Xcode/DerivedData/Sapu-gxbnqtzjvmbdkd
+    [x] homebrew downloads           ~/Library/Caches/Homebrew/downloads                4.1 GB
+    [x] npm cache                    ~/.npm/_cacache                                    3.6 GB
+    [x] spotify cache                ~/Library/Caches/com.spotify.client/Data           2.9 GB
+  ▸ RISKY     may hold something you care about                              2 items    3.1 GB   [ ]
+
+ SKIPPED  4 · Sapu leaves these where they are
+    ~/.claude                             protected    Claude Code memory and settings
+    ~/.npm/_npx/9f3c1a2b                  in use       open in node (pid 4242)
+    ~/Library/Caches/JetBrains            protected    JetBrains IDE settings and indexes
+    ~/Projects/keep                       whitelisted  you added it to your whitelist
+
+ Commands you can run yourself · Sapu never runs these
+    go clean -cache                                                                     1.2 GB
+
+
+
+
+  
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+  11 items ·  17.9 GB selected  →  quarantine, undo up to 7 days
+  ↑↓ move  space toggle  → open  a all safe  / filter  ⏎ review  ? keys  q quit
+===== risky armed 120 =====
+ sapu clean                                                                    13 found · 4 skipped
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+  ▾ SAFE      rebuilds by itself                                             7 items    2.1 GB   [x]
+    [x] chrome cache                 ~/Library/Caches/Google/Chrome/Default/Cache       1.3 GB
+    [x] safari cache                 ~/Library/Caches/com.apple.Safari                640.0 MB
+    [x] logs diagnostic reports      ~/Library/Logs/DiagnosticReports                 120.0 MB
+    [x] apple help cache             ~/Library/Caches/com.apple.helpd                  45.0 MB
+    [x] logs npm                     ~/.npm/_logs/2026-11-08T…_23_09_563Z-debug-0.log  40.0 KB
+        … 2 more                                                                      ⏎ expand
+  ▾ MODERATE  rebuilds at a cost                                             4 items   15.8 GB   [x]
+    [x] xcode derived data           ~/Library/Developer/Xcod…ata/Sapu-gxbnqtzjvmbdkd   5.2 GB
+    [x] homebrew downloads           ~/Library/Caches/Homebrew/downloads                4.1 GB
+    [x] npm cache                    ~/.npm/_cacache                                    3.6 GB
+    [x] spotify cache                ~/Library/Caches/com.spotify.client/Data           2.9 GB
+  ▾ RISKY     may hold something you care about                              2 items    3.1 GB   [ ]
+›   [ ] xcode archives               ~/Library/Developer/Xcod…3-01/Sapu 1.0.xcarchive   2.1 GB
+          An app build you archived in Xcode. You need it to read crash reports of that version.
+          Comes back by itself: no · Rule: xcode.archives
+          ~/Library/Developer/Xcode/Archives/2025-03-01/Sapu 1.0.xcarchive
+          RISKY · it may hold something you care about. Press space again to select it.
+    [ ] telegram media               ~/Library/Group Containe…eepcoder.Telegram/media   1.0 GB
+
+ SKIPPED  4 · Sapu leaves these where they are
+    ~/.claude                             protected    Claude Code memory and settings
+    ~/.npm/_npx/9f3c1a2b                  in use       open in node (pid 4242)
+    ~/Library/Caches/JetBrains            protected    JetBrains IDE settings and indexes
+    ~/Projects/keep                       whitelisted  you added it to your whitelist
+
+ Commands you can run yourself · Sapu never runs these
+    go clean -cache                                                                     1.2 GB
+
+
+  
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+  11 items ·  17.9 GB selected  →  quarantine, undo up to 7 days
+  ↑↓ move  space toggle  → open  a all safe  / filter  ⏎ review  ? keys  q quit
+===== help 120 =====
+ sapu clean                                                                                    keys
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+
+  ↑ ↓  k j   move
+  space      select or unselect; a RISKY item asks twice
+  → l        open a group, or keep an item's details open
+  ← h        close
+  ⏎          go to the confirm screen, or open a … more row
+  a          select all SAFE items (never RISKY)
+  /          filter by name, path or rule
+  esc        clear the filter
+  ?          this list
+  q          quit without changing anything
+
+  Nothing moves until you press y on the confirm screen. Items go to quarantine, and sapu undo puts
+  them back.
+
+  Press any key to go back.
+===== confirm 120 =====
+
+ ╭─ Move 12 items to quarantine? ───────────────────────────────────────╮
+ │                                                                      │
+ │  20.0 GB   SAFE 7 · MODERATE 4 · RISKY 1                             │
+ │  1 RISKY item may hold something you care about.                     │
+ │                                                                      │
+ │  Nothing is deleted. Items move to ~/.sapu/quarantine/ and come      │
+ │  back with sapu undo --last                                          │
+ │                                                                      │
+ │  The space is not free yet: they stay in quarantine until at least   │
+ │  Sun 15 Nov. After that, a later sapu clean deletes them (sooner if  │
+ │  the quarantine passes 20.0 GB).                                     │
+ │  To free it now: sapu quarantine empty RUN_ID, with the run id the   │
+ │  receipt shows.                                                      │
+ │                                                                      │
+ │  y  Move to quarantine          n  Back to the list                  │
+ │                                                                      │
+ ╰──────────────────────────────────────────────────────────────────────╯
+===== progress 120 =====
+ Moving to quarantine  ━━━━━━━━━━━━━━━━━━━╸──────────────────────────────────────   4/12 ·   2.1 GB
+
+   ✓ safari cache                 ~/Library/Caches/com.apple.Safari                   640.0 MB
+   ✓ logs diagnostic reports      ~/Library/Logs/DiagnosticReports                    120.0 MB
+   ✓ apple help cache             ~/Library/Caches/com.apple.helpd                     45.0 MB
+   ⋯ logs npm                     ~/.npm/_logs/2026-11-08T07_23_09_563Z-debug-0.log    40.0 KB
+
+ Ctrl-C stops after the current item. What already moved can be undone.
+===== receipt 120 =====
+ ✓ Moved 12 items (20.0 GB) to quarantine in 0.0 s
+
+   The space is not free yet: these items stay in quarantine until at least Sun 15 Nov. After that,
+   a later sapu clean deletes them (sooner if the quarantine passes 20.0 GB).
+
+   To free the space now   sapu quarantine empty 20261108-1115-a3f9
+   Changed your mind?      sapu undo 20261108-1115-a3f9
+
+  q quit

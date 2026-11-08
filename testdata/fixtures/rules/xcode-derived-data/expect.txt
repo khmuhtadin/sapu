@@ -1,0 +1,2 @@
+Library/Developer/Xcode/DerivedData/entry-a
+Library/Developer/Xcode/DerivedData/entry-b.dat

@@ -1,0 +1,2 @@
+Snapshots for volume group containing disk /:
+com.apple.os.update-3343F69B560E6FF634B1DBC43553472ED16FDA75C65C375D061E2233453CCDE8

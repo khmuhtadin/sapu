@@ -1,0 +1,8 @@
+Library/Application Support/Google/Chrome/Default/Code Cache
+Library/Application Support/Google/Chrome/Default/GPUCache
+Library/Application Support/Google/Chrome/GrShaderCache
+Library/Application Support/Google/Chrome/Profile 1/Code Cache
+Library/Application Support/Google/Chrome/Profile 1/GPUCache
+Library/Application Support/Google/Chrome/ShaderCache
+Library/Caches/Google/Chrome/Default/Cache
+Library/Caches/Google/Chrome/Profile 1/Cache

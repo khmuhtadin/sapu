@@ -1,0 +1,5 @@
+Library/Application Support/Code/Cache
+Library/Application Support/Code/CachedData
+Library/Application Support/Code/CachedExtensionVSIXs
+Library/Application Support/Code/Code Cache
+Library/Application Support/Code/GPUCache

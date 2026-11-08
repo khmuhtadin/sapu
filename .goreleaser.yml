@@ -1,0 +1,128 @@
+# GoReleaser v2 config for Sapu. See docs/releasing.md.
+#
+# Releases are tags vX.Y.Z (and vX.Y.Z-beta.N for betas). They are cut by
+# .github/workflows/release.yml. Every release is published as a GitHub
+# pre-release while the version is 0.x (`release.prerelease` below).
+#
+# v0.x releases are unsigned developer releases: checksums plus a cosign
+# signature of checksums.txt, no Apple Developer ID, no notarization.
+# docs/verify.md says exactly what that means.
+version: 2
+
+project_name: sapu
+
+before:
+  hooks:
+    - go mod verify
+
+builds:
+  - id: sapu
+    main: ./cmd/sapu
+    binary: sapu
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - arm64
+      - amd64
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X github.com/khmuhtadin/sapu/internal/cli.Version={{.Version}}
+
+# One universal (arm64 + amd64) binary. replace drops the two single-arch
+# binaries so only the universal one is archived and signed.
+universal_binaries:
+  - id: sapu
+    ids:
+      - sapu
+    replace: true
+
+archives:
+  - id: sapu
+    ids:
+      - sapu
+    formats:
+      - tar.gz
+    name_template: "sapu_{{ .Version }}_darwin_universal"
+    files:
+      - LICENSE
+      - NOTICE
+      - THIRD_PARTY_LICENSES
+      - THIRD_PARTY_NOTICES
+      - README.md
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+# Sign checksums.txt with cosign, keyless (sigstore).
+# Steps, all done in .github/workflows/release.yml:
+#   1. The job has `id-token: write`, so GitHub gives it an OIDC token that
+#      names this repository, workflow and tag.
+#   2. sigstore/cosign-installer puts cosign on the runner.
+#   3. GoReleaser runs `cosign sign-blob --bundle checksums.txt.sigstore.json
+#      checksums.txt --yes`. cosign swaps the OIDC token for a short-lived
+#      certificate from Fulcio and signs. No key is stored anywhere.
+#   4. The signature and the certificate go into a public transparency log
+#      (Rekor) and into checksums.txt.sigstore.json, which is uploaded with
+#      the release.
+# Anyone can then check that checksums.txt came from this workflow
+# (docs/verify.md). Snapshot builds skip signing.
+signs:
+  - id: checksums
+    cmd: cosign
+    artifacts: checksum
+    signature: "${artifact}.sigstore.json"
+    args:
+      - sign-blob
+      - "--bundle=${signature}"
+      - "${artifact}"
+      - "--yes"
+
+# Apple codesign and notarization, driven by CI secrets. Not used yet: v0.x is
+# released unsigned. When MACOS_SIGN_P12 is not set (or empty, which is what
+# GitHub passes for a missing secret) the step is skipped and the binary stays
+# unsigned. Set the five secrets in docs/releasing.md and it starts working.
+notarize:
+  macos:
+    - enabled: '{{ isEnvSet "MACOS_SIGN_P12" }}'
+      ids:
+        - sapu
+      sign:
+        certificate: "{{ .Env.MACOS_SIGN_P12 }}"
+        password: "{{ .Env.MACOS_SIGN_PASSWORD }}"
+      notarize:
+        issuer_id: "{{ .Env.MACOS_NOTARY_ISSUER_ID }}"
+        key_id: "{{ .Env.MACOS_NOTARY_KEY_ID }}"
+        key: "{{ .Env.MACOS_NOTARY_KEY }}"
+        wait: true
+        timeout: 20m
+
+# Every 0.x release, betas included, is created as a pre-release, so it is
+# never public as a stable release. At 1.0 change this to `auto`, which marks
+# only tags with a pre-release part (vX.Y.Z-beta.N).
+release:
+  github:
+    owner: khmuhtadin
+    name: sapu
+  prerelease: true
+  header: |
+    **Developer preview (0.x).** This download is checked by SHA-256
+    checksums and a cosign (Sigstore) signature of `checksums.txt`. It is
+    **not** signed with an Apple Developer ID and **not** notarized.
+    Verify it before you run it:
+    https://github.com/khmuhtadin/sapu/blob/main/docs/verify.md
+
+# No `brews` section: GoReleaser v2.20 marks it deprecated (it wants casks, and
+# a cask cannot carry the `test do` block). The Homebrew formula is filled by
+# hand from packaging/homebrew/sapu.rb after each stable release. See
+# docs/releasing.md.
+
+changelog:
+  use: git
+  sort: asc
+  filters:
+    exclude:
+      - "^Merge "

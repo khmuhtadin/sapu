@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/config-path.json",
+  "title": "data of sapu config path and init --json",
+  "type": "object",
+  "required": ["file", "from_env", "found"],
+  "additionalProperties": false,
+  "properties": {
+    "file": { "description": "Where Sapu reads sapu.toml: $SAPU_CONFIG, else ~/.config/sapu/sapu.toml", "type": "string" },
+    "from_env": { "description": "$SAPU_CONFIG chose the file", "type": "boolean" },
+    "found": { "description": "Something exists at that path (init: always true after it wrote the file)", "type": "boolean" }
+  }
+}

@@ -1,0 +1,3 @@
+Library/Application Support/Postman/Cache
+Library/Application Support/Postman/Code Cache
+Library/Application Support/Postman/GPUCache

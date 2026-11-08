@@ -1,0 +1,59 @@
+# macOS system caches that belong to Apple apps. One rule per app.
+
+- id: apple.appstore-cache
+  category: system
+  app: com.apple.AppStore
+  paths:
+    - ~/Library/Caches/com.apple.appstore
+  risk: safe
+  regenerates: true
+  explain:
+    en: "App Store download and artwork cache. Safe to remove; the App Store rebuilds it the next time it opens."
+    zh: "App Store 的下载和图片缓存。可以放心删除；App Store 下次打开时会重新生成。"
+    ja: "App Storeのダウンロードとアートワークのキャッシュです。安全に削除できます。次回App Storeを開いたときに再作成されます。"
+    id: "Cache unduhan dan gambar App Store. Aman dihapus; App Store akan membuatnya lagi saat dibuka berikutnya."
+    es: "Caché de descargas e ilustraciones de la App Store. Es seguro eliminarla; la App Store la recrea la próxima vez que se abre."
+    pt: "Cache de downloads e imagens da App Store. Pode remover com segurança; a App Store o recria na próxima vez que for aberta."
+    de: "Download- und Artwork-Cache des App Stores. Kann gefahrlos entfernt werden; der App Store erstellt ihn beim nächsten Öffnen neu."
+  protect_if:
+    - process_running: App Store
+  action: quarantine
+  fixture: apple-appstore-cache
+
+- id: apple.help-cache
+  category: system
+  paths:
+    - ~/Library/Caches/com.apple.helpd
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Cached help pages for macOS apps. Safe to remove; macOS fetches them again when you open Help."
+    zh: "macOS App 的帮助页面缓存。可以放心删除；你打开“帮助”时，macOS 会重新获取。"
+    ja: "macOSのAppのヘルプページのキャッシュです。安全に削除できます。ヘルプを開くと、macOSが再取得します。"
+    id: "Cache halaman bantuan untuk aplikasi macOS. Aman dihapus; macOS akan mengambilnya lagi saat kamu membuka Bantuan."
+    es: "Páginas de ayuda en caché de las apps de macOS. Es seguro eliminarlas; macOS las obtiene de nuevo cuando abres Ayuda."
+    pt: "Páginas de ajuda em cache dos apps do macOS. Pode remover com segurança; o macOS as busca de novo quando você abre a Ajuda."
+    de: "Zwischengespeicherte Hilfeseiten für macOS-Apps. Kann gefahrlos entfernt werden; macOS lädt sie erneut, sobald die Hilfe geöffnet wird."
+  protect_if:
+    - process_running: Help Viewer
+  action: quarantine
+  fixture: apple-help-cache
+
+- id: apple.iphone-software-updates
+  category: system
+  paths:
+    - "~/Library/iTunes/iPhone Software Updates/**"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "iOS and iPadOS update files (.ipsw) that Finder downloaded to update a device. Safe to remove; Finder downloads the update again if you need it, and each file can be several GB."
+    zh: "Finder 为更新设备而下载的 iOS 和 iPadOS 更新文件（.ipsw）。可以放心删除；需要时 Finder 会重新下载更新，每个文件可能有好几 GB。"
+    ja: "デバイスをアップデートするためにFinderがダウンロードしたiOSとiPadOSのアップデートファイル（.ipsw）です。安全に削除できます。必要になればFinderがアップデートを再ダウンロードします。1ファイルで数GBになることもあります。"
+    id: "File pembaruan iOS dan iPadOS (.ipsw) yang diunduh Finder untuk memperbarui perangkat. Aman dihapus; Finder akan mengunduh pembaruan lagi jika kamu membutuhkannya, dan satu file bisa berukuran beberapa GB."
+    es: "Archivos de actualización de iOS y iPadOS (.ipsw) que el Finder descargó para actualizar un dispositivo. Es seguro eliminarlos; el Finder vuelve a descargar la actualización si la necesitas, y cada archivo puede ocupar varios GB."
+    pt: "Arquivos de atualização do iOS e do iPadOS (.ipsw) que o Finder baixou para atualizar um dispositivo. Pode remover com segurança; o Finder baixa a atualização de novo se você precisar, e cada arquivo pode ter vários GB."
+    de: "Update-Dateien für iOS und iPadOS (.ipsw), die der Finder zum Aktualisieren eines Geräts geladen hat. Kann gefahrlos entfernt werden; der Finder lädt das Update erneut, falls es gebraucht wird, und jede Datei kann mehrere GB groß sein."
+  protect_if:
+    - modified_within: 1d
+  action: quarantine
+  fixture: apple-iphone-software-updates

@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/status.json",
+  "title": "data of sapu status --json",
+  "type": "object",
+  "required": [
+    "disk",
+    "quarantine",
+    "last_runs",
+    "schedule",
+    "alerts",
+    "agent",
+    "full_disk_access"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "disk": {
+      "type": "object",
+      "required": [
+        "total_bytes",
+        "used_bytes",
+        "free_bytes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used_bytes": {
+          "description": "Counts purgeable space as used, so it can be higher than System Settings says.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "free_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "quarantine": {
+      "type": "object",
+      "required": [
+        "runs",
+        "bytes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "runs": {
+          "description": "Runs that still hold items.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "earliest_expiry": {
+          "description": "The earliest time a later sapu run may expire one of the runs. Absent when the quarantine is empty.",
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "last_runs": {
+      "description": "The last 3 runs, newest first.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "status",
+          "started",
+          "items",
+          "bytes"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "done",
+              "interrupted",
+              "undone",
+              "emptied"
+            ]
+          },
+          "started": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "items": {
+            "type": "integer"
+          },
+          "bytes": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "every"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "every": {
+          "enum": [
+            "daily",
+            "weekly"
+          ]
+        },
+        "next_clean": {
+          "description": "When on: the earliest time the next clean runs.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_clean": {
+          "type": "object",
+          "required": [
+            "time",
+            "result",
+            "items",
+            "bytes"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "time": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "result": {
+              "enum": [
+                "moved",
+                "nothing",
+                "failed"
+              ]
+            },
+            "run_id": {
+              "type": "string"
+            },
+            "items": {
+              "type": "integer"
+            },
+            "bytes": {
+              "type": "integer"
+            },
+            "error": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "alerts": {
+      "type": "object",
+      "required": [
+        "enabled",
+        "min_free_bytes",
+        "drop_bytes_per_day"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "min_free_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "drop_bytes_per_day": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "free_bytes": {
+          "description": "Free space at the last agent sample.",
+          "type": "integer"
+        }
+      }
+    },
+    "last_check": {
+      "description": "The last hourly run of the agent.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "agent": {
+      "type": "object",
+      "required": [
+        "plist",
+        "installed",
+        "loaded",
+        "program_missing",
+        "warnings"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "plist": {
+          "type": "string"
+        },
+        "installed": {
+          "type": "boolean"
+        },
+        "loaded": {
+          "type": "boolean"
+        },
+        "program": {
+          "type": "string"
+        },
+        "program_missing": {
+          "type": "boolean"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "full_disk_access": {
+      "description": "This terminal can read protected folders.",
+      "type": "boolean"
+    },
+    "swap": {
+      "description": "Absent when swap usage cannot be read.",
+      "type": "object",
+      "required": [
+        "used_bytes",
+        "total_bytes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "used_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "growth": {
+      "description": "Biggest growth over the last 7 days, from two size snapshots. Absent when there are not two snapshots 7 days apart.",
+      "type": "object",
+      "required": [
+        "since_days",
+        "older",
+        "newer"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "since_days": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "older": {
+          "type": "string"
+        },
+        "newer": {
+          "type": "string"
+        },
+        "biggest": {
+          "description": "Absent when nothing grew by 10 MB or more.",
+          "type": "object",
+          "required": [
+            "path",
+            "before",
+            "after",
+            "delta",
+            "approx"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "description": "Relative to the home folder.",
+              "type": "string"
+            },
+            "before": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "after": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "delta": {
+              "type": "integer"
+            },
+            "approx": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}

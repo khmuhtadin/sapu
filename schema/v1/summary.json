@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/summary.json",
+  "title": "data of sapu --json (the summary)",
+  "type": "object",
+  "required": ["free_bytes", "total_bytes", "reclaimable", "protected_items", "in_use_items", "full_disk_access"],
+  "additionalProperties": false,
+  "properties": {
+    "free_bytes": { "type": "integer", "minimum": 0 },
+    "total_bytes": { "type": "integer", "minimum": 0 },
+    "reclaimable": {
+      "description": "What `sapu clean` would move to quarantine. selected_bytes is safe plus moderate; risky items are never selected.",
+      "type": "object",
+      "required": ["safe_bytes", "moderate_bytes", "selected_bytes", "risky_bytes", "items"],
+      "additionalProperties": false,
+      "properties": {
+        "safe_bytes": { "type": "integer", "minimum": 0 },
+        "moderate_bytes": { "type": "integer", "minimum": 0 },
+        "selected_bytes": { "type": "integer", "minimum": 0 },
+        "risky_bytes": { "type": "integer", "minimum": 0 },
+        "items": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "protected_items": { "description": "Items skipped because they are protected or whitelisted.", "type": "integer", "minimum": 0 },
+    "in_use_items": { "description": "Items skipped because an app has them open.", "type": "integer", "minimum": 0 },
+    "full_disk_access": { "type": "boolean" }
+  }
+}

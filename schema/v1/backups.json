@@ -1,0 +1,366 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/backups.json",
+  "title": "data of sapu backups --json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/found"
+      }
+    },
+    "skipped": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/skip"
+      }
+    },
+    "plan_file": {
+      "type": "string"
+    },
+    "summary": {
+      "$ref": "#/$defs/summary"
+    },
+    "result": {
+      "$ref": "#/$defs/result"
+    },
+    "expires_after": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "deleted": {
+      "type": "boolean"
+    },
+    "cancelled": {
+      "type": "boolean"
+    },
+    "space": {
+      "description": "Free space of the home volume after the run. A move into quarantine frees nothing until the quarantine is emptied. Sizes are approximate: APFS clones and hard links can make the real change smaller.",
+      "type": "object",
+      "required": [
+        "free_bytes"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "free_bytes": {
+          "description": "Free space now.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "free_after_empty_bytes": {
+          "description": "Quarantine run: about this much will be free after sapu quarantine empty RUN_ID.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "freed_bytes": {
+          "description": "--permanent: about this much was freed by the run.",
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  },
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "required": [
+        "dev",
+        "ino",
+        "mode",
+        "size",
+        "mtime_ns"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dev": {
+          "type": "integer"
+        },
+        "ino": {
+          "type": "integer"
+        },
+        "mode": {
+          "type": "integer"
+        },
+        "size": {
+          "type": "integer"
+        },
+        "mtime_ns": {
+          "type": "integer"
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "path",
+        "bytes",
+        "risk",
+        "regenerates",
+        "explain",
+        "action",
+        "identity",
+        "selected"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "bytes": {
+          "type": "integer"
+        },
+        "risk": {
+          "enum": [
+            "safe",
+            "moderate",
+            "risky"
+          ]
+        },
+        "regenerates": {
+          "type": "boolean"
+        },
+        "explain": {
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "quarantine",
+            "official_command"
+          ]
+        },
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "protect_if": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "process_running": {
+                "type": "string"
+              },
+              "modified_within": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "identity": {
+          "$ref": "#/$defs/identity"
+        },
+        "selected": {
+          "type": "boolean"
+        },
+        "keep_copy": {
+          "description": "dupes: the copy that stays; apply moves the item only while it exists with this identity",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "identity"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "identity": {
+              "$ref": "#/$defs/identity"
+            }
+          }
+        }
+      }
+    },
+    "skip": {
+      "type": "object",
+      "required": [
+        "path",
+        "source",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "protected",
+            "whitelisted",
+            "in_use",
+            "changed",
+            "gone",
+            "duplicate",
+            "unreadable"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    },
+    "failure": {
+      "type": "object",
+      "required": [
+        "item",
+        "error"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "item": {
+          "$ref": "#/$defs/item"
+        },
+        "error": {
+          "type": "string"
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": [
+        "selected_items",
+        "selected_bytes",
+        "not_selected_items",
+        "skipped",
+        "commands"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "selected_items": {
+          "type": "integer"
+        },
+        "selected_bytes": {
+          "type": "integer"
+        },
+        "not_selected_items": {
+          "type": "integer"
+        },
+        "skipped": {
+          "type": "integer"
+        },
+        "commands": {
+          "type": "integer"
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "required": [
+        "run_id",
+        "moved",
+        "skipped",
+        "failed",
+        "suggested",
+        "bytes",
+        "freed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "run_id": {
+          "type": "string"
+        },
+        "moved": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/item"
+          }
+        },
+        "skipped": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/skip"
+          }
+        },
+        "failed": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/failure"
+          }
+        },
+        "suggested": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/item"
+          }
+        },
+        "bytes": {
+          "type": "integer"
+        },
+        "freed": {
+          "type": "integer"
+        }
+      }
+    },
+    "found": {
+      "type": "object",
+      "required": [
+        "number",
+        "path",
+        "bytes",
+        "device",
+        "model",
+        "newest",
+        "explain"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "number": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        },
+        "bytes": {
+          "type": "integer"
+        },
+        "device": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "last_backup": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "newest": {
+          "type": "boolean"
+        },
+        "explain": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "description": "Without --pick: items is the numbered list and nothing changed. With --pick: the result of the plan, as for purge.",
+  "oneOf": [
+    {
+      "required": [
+        "items",
+        "skipped"
+      ]
+    },
+    {
+      "required": [
+        "summary"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/plan.json",
+  "title": "the plan file written by sapu clean --plan, sapu purge --plan and sapu dupes --plan",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "kind",
+    "created_at",
+    "home",
+    "items",
+    "skipped"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "kind": {
+      "enum": [
+        "clean",
+        "purge",
+        "analyze",
+        "uninstall",
+        "large",
+        "backups",
+        "messages",
+        "trash",
+        "installer",
+        "dupes",
+        "packages",
+        "optimize",
+        "login-items",
+        "reset",
+        "similar",
+        "tidy"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "home": {
+      "type": "string"
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/item"
+      }
+    },
+    "skipped": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/skip"
+      }
+    }
+  },
+  "$defs": {
+    "identity": {
+      "type": "object",
+      "required": [
+        "dev",
+        "ino",
+        "mode",
+        "size",
+        "mtime_ns"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "dev": {
+          "type": "integer"
+        },
+        "ino": {
+          "type": "integer"
+        },
+        "mode": {
+          "type": "integer"
+        },
+        "size": {
+          "type": "integer"
+        },
+        "mtime_ns": {
+          "type": "integer"
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "id",
+        "source",
+        "path",
+        "bytes",
+        "risk",
+        "regenerates",
+        "explain",
+        "action",
+        "identity",
+        "selected"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "bytes": {
+          "type": "integer"
+        },
+        "risk": {
+          "enum": [
+            "safe",
+            "moderate",
+            "risky"
+          ]
+        },
+        "regenerates": {
+          "type": "boolean"
+        },
+        "explain": {
+          "type": "string"
+        },
+        "action": {
+          "enum": [
+            "quarantine",
+            "official_command"
+          ]
+        },
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "protect_if": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "minProperties": 1,
+            "properties": {
+              "process_running": {
+                "type": "string"
+              },
+              "modified_within": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "identity": {
+          "$ref": "#/$defs/identity"
+        },
+        "selected": {
+          "type": "boolean"
+        },
+        "keep_copy": {
+          "description": "dupes: the copy that stays; apply moves the item only while it exists with this identity",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "identity"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "identity": {
+              "$ref": "#/$defs/identity"
+            }
+          }
+        },
+        "clone_from": {
+          "description": "dupes --replace-with-clone: always keep_copy.path. Apply moves the item to quarantine and puts an APFS clone of this file at the item's path, with the item's mode and modification time",
+          "type": "string"
+        },
+        "requires": {
+          "description": "ID of an item of this plan that must be moved in the same run before this one may run (uninstall: the app). Apply moves items without requires first, and skips this one with reason requires when that item was not moved",
+          "type": "string"
+        }
+      }
+    },
+    "skip": {
+      "type": "object",
+      "required": [
+        "path",
+        "source",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "protected",
+            "whitelisted",
+            "in_use",
+            "changed",
+            "gone",
+            "duplicate",
+            "unreadable"
+          ]
+        },
+        "detail": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

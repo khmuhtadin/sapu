@@ -1,0 +1,11 @@
+/bin/
+/dist/
+*.test
+*.out
+.DS_Store
+/macos/.build/
+/macos/build/
+/website/node_modules/
+/website/dist/
+/website/.astro/
+/website/.wrangler/

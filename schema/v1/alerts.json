@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/alerts.json",
+  "title": "data of sapu alerts on, off and status --json",
+  "type": "object",
+  "required": ["enabled", "min_free_bytes", "drop_bytes_per_day", "agent"],
+  "additionalProperties": false,
+  "properties": {
+    "enabled": { "type": "boolean" },
+    "min_free_bytes": { "description": "Alert when free space is below this; 0 turns this alert off", "type": "integer", "minimum": 0 },
+    "drop_bytes_per_day": { "description": "Alert when free space falls by more than this in 24 hours; 0 turns this alert off", "type": "integer", "minimum": 0 },
+    "last_check": {
+      "description": "The last hourly run of the agent",
+      "type": "string",
+      "format": "date-time"
+    },
+    "free_bytes": { "description": "Free space at the last sample", "type": "integer" },
+    "notified": {
+      "description": "Last notification of each kind: low, drop, failed",
+      "type": "object",
+      "additionalProperties": { "type": "string", "format": "date-time" }
+    },
+    "agent": { "$ref": "#/$defs/agent" }
+  },
+  "$defs": {
+    "agent": {
+      "type": "object",
+      "required": ["plist", "installed", "loaded", "program_missing", "warnings"],
+      "additionalProperties": false,
+      "properties": {
+        "plist": { "description": "Path of the LaunchAgent plist", "type": "string" },
+        "installed": { "description": "The plist exists", "type": "boolean" },
+        "loaded": { "description": "launchd has the agent loaded", "type": "boolean" },
+        "program": { "description": "The sapu program the plist runs", "type": "string" },
+        "program_missing": { "description": "That program no longer exists; run sapu schedule on (or alerts on) again", "type": "boolean" },
+        "warnings": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

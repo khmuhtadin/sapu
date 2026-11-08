@@ -1,0 +1,129 @@
+# Log files and crash reports.
+
+- id: logs.diagnostic-reports
+  category: logs
+  paths:
+    - "~/Library/Logs/DiagnosticReports/**"
+    - "~/Library/Logs/CrashReporter/**"
+  risk: safe
+  regenerates: false
+  explain:
+    en: "Crash and hang reports macOS saved when an app stopped working. Safe to remove unless you still want to send one to a developer; new reports appear only if something crashes again."
+    zh: "macOS 在 App 停止工作时保存的崩溃和卡死报告。可以放心删除，除非你还想把某份报告发给开发者；只有再次发生崩溃时才会产生新报告。"
+    ja: "Appが動作しなくなったときにmacOSが保存したクラッシュレポートとハングレポートです。開発者に送りたいレポートがなければ、安全に削除できます。新しいレポートは、再び何かがクラッシュした場合にのみ作成されます。"
+    id: "Laporan crash dan hang yang disimpan macOS saat aplikasi berhenti bekerja. Aman dihapus, kecuali kamu masih ingin mengirimnya ke developer; laporan baru hanya muncul jika ada yang crash lagi."
+    es: "Informes de fallos y bloqueos que macOS guardó cuando una app dejó de funcionar. Es seguro eliminarlos, salvo que aún quieras enviar alguno a un desarrollador; solo aparecen informes nuevos si algo vuelve a fallar."
+    pt: "Relatórios de falhas e travamentos que o macOS salvou quando um app parou de funcionar. Pode remover com segurança, a menos que você ainda queira enviar algum a um desenvolvedor; novos relatórios só aparecem se algo falhar de novo."
+    de: "Absturz- und Hängerberichte, die macOS gespeichert hat, wenn eine App nicht mehr funktionierte. Kann gefahrlos entfernt werden, außer ein Bericht soll noch an einen Entwickler geschickt werden; neue Berichte entstehen nur, wenn wieder etwas abstürzt."
+  action: quarantine
+  fixture: logs-diagnostic-reports
+
+- id: logs.homebrew
+  category: logs
+  paths:
+    - "~/Library/Logs/Homebrew/**"
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Build and install logs from Homebrew, one folder per formula. Safe to remove; Homebrew writes new logs the next time it installs something."
+    zh: "Homebrew 的构建和安装日志，每个 formula 一个文件夹。可以放心删除；Homebrew 下次安装东西时会写入新的日志。"
+    ja: "Homebrewのビルドログとインストールログです（formulaごとに1フォルダ）。安全に削除できます。次にHomebrewが何かをインストールするとき、新しいログが書き込まれます。"
+    id: "Log build dan instalasi dari Homebrew, satu folder per formula. Aman dihapus; Homebrew akan menulis log baru saat menginstal sesuatu berikutnya."
+    es: "Registros de compilación e instalación de Homebrew, una carpeta por fórmula. Es seguro eliminarlos; Homebrew escribe registros nuevos la próxima vez que instala algo."
+    pt: "Logs de build e instalação do Homebrew, uma pasta por fórmula. Pode remover com segurança; o Homebrew grava novos logs na próxima vez que instalar algo."
+    de: "Build- und Installationsprotokolle von Homebrew, ein Ordner pro Formula. Kann gefahrlos entfernt werden; Homebrew schreibt neue Protokolle, sobald es das nächste Mal etwas installiert."
+  action: quarantine
+  fixture: logs-homebrew
+
+- id: logs.coresimulator
+  category: logs
+  paths:
+    - "~/Library/Logs/CoreSimulator/**"
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Log files from the iOS Simulator. Safe to remove; the Simulator writes new logs the next time it runs."
+    zh: "iOS Simulator 的日志文件。可以放心删除；Simulator 下次运行时会写入新的日志。"
+    ja: "iOS Simulatorのログファイルです。安全に削除できます。次にSimulatorを実行するとき、新しいログが書き込まれます。"
+    id: "File log dari iOS Simulator. Aman dihapus; Simulator akan menulis log baru saat dijalankan berikutnya."
+    es: "Archivos de registro del iOS Simulator. Es seguro eliminarlos; Simulator escribe registros nuevos la próxima vez que se ejecuta."
+    pt: "Arquivos de log do iOS Simulator. Pode remover com segurança; o Simulator grava novos logs na próxima vez que for executado."
+    de: "Protokolldateien des iOS Simulators. Kann gefahrlos entfernt werden; Simulator schreibt neue Protokolle, sobald er das nächste Mal läuft."
+  protect_if:
+    - process_running: Simulator
+  action: quarantine
+  fixture: logs-coresimulator
+
+- id: logs.zoom
+  category: logs
+  paths:
+    - "~/Library/Logs/zoom.us/**"
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Zoom's diagnostic logs. Safe to remove; Zoom writes new logs the next time you use it."
+    zh: "Zoom 的诊断日志。可以放心删除；你下次使用 Zoom 时会写入新的日志。"
+    ja: "Zoomの診断ログです。安全に削除できます。次回Zoomを使うとき、新しいログが書き込まれます。"
+    id: "Log diagnostik Zoom. Aman dihapus; Zoom akan menulis log baru saat kamu menggunakannya berikutnya."
+    es: "Registros de diagnóstico de Zoom. Es seguro eliminarlos; Zoom escribe registros nuevos la próxima vez que lo usas."
+    pt: "Logs de diagnóstico do Zoom. Pode remover com segurança; o Zoom grava novos logs na próxima vez que você usá-lo."
+    de: "Diagnoseprotokolle von Zoom. Kann gefahrlos entfernt werden; Zoom schreibt neue Protokolle, sobald es das nächste Mal verwendet wird."
+  protect_if:
+    - process_running: zoom.us
+  action: quarantine
+  fixture: logs-zoom
+
+- id: logs.npm
+  category: logs
+  paths:
+    - "~/.npm/_logs/**"
+  risk: safe
+  regenerates: true
+  explain:
+    en: "npm's debug logs, one file per command. Safe to remove; npm writes a new one each time it runs."
+    zh: "npm 的调试日志，每条命令一个文件。可以放心删除；npm 每次运行时都会写入新的日志。"
+    ja: "npmのデバッグログです（コマンドごとに1ファイル）。安全に削除できます。npmは実行するたびに新しいログを書き込みます。"
+    id: "Log debug npm, satu file per perintah. Aman dihapus; npm menulis log baru setiap kali dijalankan."
+    es: "Registros de depuración de npm, un archivo por comando. Es seguro eliminarlos; npm escribe uno nuevo cada vez que se ejecuta."
+    pt: "Logs de depuração do npm, um arquivo por comando. Pode remover com segurança; o npm grava um novo toda vez que é executado."
+    de: "Debug-Protokolle von npm, eine Datei pro Befehl. Kann gefahrlos entfernt werden; npm schreibt bei jedem Lauf ein neues."
+  action: quarantine
+  fixture: logs-npm
+
+- id: logs.pip
+  category: logs
+  paths:
+    - "~/Library/Logs/pip/**"
+  risk: safe
+  regenerates: true
+  explain:
+    en: "pip's log file. Safe to remove; pip writes a new one the next time it runs."
+    zh: "pip 的日志文件。可以放心删除；pip 下次运行时会写入新的日志。"
+    ja: "pipのログファイルです。安全に削除できます。次にpipを実行するとき、新しいログが書き込まれます。"
+    id: "File log pip. Aman dihapus; pip akan menulis yang baru saat dijalankan berikutnya."
+    es: "El archivo de registro de pip. Es seguro eliminarlo; pip escribe uno nuevo la próxima vez que se ejecuta."
+    pt: "O arquivo de log do pip. Pode remover com segurança; o pip grava um novo na próxima vez que for executado."
+    de: "Die Protokolldatei von pip. Kann gefahrlos entfernt werden; pip schreibt beim nächsten Lauf eine neue."
+  action: quarantine
+  fixture: logs-pip
+
+- id: logs.vscode
+  category: logs
+  app: com.microsoft.VSCode
+  paths:
+    - "~/Library/Application Support/Code/logs/*"
+  risk: safe
+  regenerates: true
+  explain:
+    en: "VS Code's log folders, one per session. Safe to remove while VS Code is closed; VS Code creates a new one every time it starts."
+    zh: "VS Code 的日志文件夹，每个会话一个。VS Code 关闭时可以放心删除；VS Code 每次启动都会创建新的日志文件夹。"
+    ja: "VS Codeのログフォルダです（セッションごとに1つ）。VS Codeを終了しているときは、安全に削除できます。VS Codeは起動するたびに新しいログフォルダを作成します。"
+    id: "Folder log VS Code, satu per sesi. Aman dihapus saat VS Code tertutup; VS Code membuat yang baru setiap kali dibuka."
+    es: "Carpetas de registro de VS Code, una por sesión. Es seguro eliminarlas mientras VS Code está cerrado; VS Code crea una nueva cada vez que se inicia."
+    pt: "Pastas de log do VS Code, uma por sessão. Pode remover com segurança enquanto o VS Code estiver fechado; o VS Code cria uma nova toda vez que é iniciado."
+    de: "Protokollordner von VS Code, einer pro Sitzung. Kann gefahrlos entfernt werden, solange VS Code geschlossen ist; VS Code legt bei jedem Start einen neuen an."
+  protect_if:
+    - process_running: Code
+    - process_running: Electron
+  action: quarantine
+  fixture: logs-vscode

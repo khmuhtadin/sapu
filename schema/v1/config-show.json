@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sapu.invalid/schema/v1/config-show.json",
+  "title": "data of sapu config show --json",
+  "description": "The settings in effect: sapu.toml where it sets them, the defaults elsewhere. docs/config.md describes each one.",
+  "type": "object",
+  "required": ["file", "from_env", "found", "profile", "quarantine", "clean", "purge", "whitelist", "from"],
+  "additionalProperties": false,
+  "properties": {
+    "file": { "description": "Where Sapu reads sapu.toml", "type": "string" },
+    "from_env": { "description": "$SAPU_CONFIG chose the file", "type": "boolean" },
+    "found": { "description": "The file exists; false means every setting is the default", "type": "boolean" },
+    "profile": { "enum": ["conservative", "standard", "aggressive"] },
+    "quarantine": {
+      "type": "object",
+      "required": ["max_age_seconds", "max_bytes"],
+      "additionalProperties": false,
+      "properties": {
+        "max_age_seconds": { "type": "integer", "minimum": 86400 },
+        "max_bytes": { "type": "integer", "minimum": 1000000000 }
+      }
+    },
+    "clean": {
+      "type": "object",
+      "required": ["exclude"],
+      "additionalProperties": false,
+      "properties": {
+        "exclude": { "description": "Rule ids and categories clean never selects", "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "purge": {
+      "type": "object",
+      "required": ["roots", "older_than_seconds"],
+      "additionalProperties": false,
+      "properties": {
+        "roots": { "description": "Folders purge searches when given none, as written (~ not expanded)", "type": "array", "items": { "type": "string" } },
+        "older_than_seconds": { "description": "0 means every project", "type": "integer", "minimum": 0 }
+      }
+    },
+    "whitelist": {
+      "description": "Every whitelist entry Sapu reads, from both places",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "from"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "from": { "enum": ["sapu.toml", "whitelist.txt"] }
+        }
+      }
+    },
+    "from": {
+      "description": "Where each setting came from, by key: profile, quarantine.max_age, quarantine.max_size, clean.exclude, purge.roots, purge.older_than, whitelist.paths",
+      "type": "object",
+      "additionalProperties": { "enum": ["sapu.toml", "default"] }
+    }
+  }
+}

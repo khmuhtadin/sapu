@@ -1,0 +1,320 @@
+# Build-artifact types for `sapu purge`. Format: see internal/purge/types.go.
+# List adapted from kondo (MIT, https://github.com/tbillington/kondo); see
+# THIRD_PARTY_LICENSES. Left out on purpose, because they hold things that are
+# not build output: Unreal Saved/ and Build/, Unity Build/ and Builds/, Swift
+# .swiftpm/. Left out because an artifact must be one folder name: kondo's
+# nested ones (android/build, project/target, linux/flutter/ephemeral, ...).
+# Those are still found where the nested folder has its own marker, for
+# example android/build through android/build.gradle.
+
+- id: cargo
+  markers: [Cargo.toml]
+  artifacts: [target, .xwin-cache]
+  risk: safe
+  explain:
+    en: "Rust build output. Rebuilt by the next cargo build."
+    zh: "Rust 构建产物。下次 cargo build 时会重新生成。"
+    ja: "Rustのビルド成果物です。次回のcargo buildで再作成されます。"
+    id: "Hasil build Rust. Dibuat ulang oleh cargo build berikutnya."
+    es: "Resultados de compilación de Rust. Se vuelven a generar con el próximo cargo build."
+    pt: "Resultado de build do Rust. Recriado pelo próximo cargo build."
+    de: "Rust-Build-Ausgaben. Werden vom nächsten cargo build neu erstellt."
+
+- id: node
+  markers: [package.json]
+  artifacts: [node_modules, .next, .nuxt, .svelte-kit, .parcel-cache, .turbo, .angular]
+  risk: safe
+  explain:
+    en: "Installed npm packages and build output. Rebuilt by npm install or the next build."
+    zh: "已安装的 npm 软件包和构建产物。通过 npm install 或下次构建重新生成。"
+    ja: "インストール済みのnpmパッケージとビルド成果物です。npm installまたは次回のビルドで再作成されます。"
+    id: "Paket npm yang terpasang dan hasil build. Dibuat ulang oleh npm install atau build berikutnya."
+    es: "Paquetes de npm instalados y resultados de compilación. Se vuelven a generar con npm install o con la próxima compilación."
+    pt: "Pacotes npm instalados e resultado de build. Recriados por npm install ou pelo próximo build."
+    de: "Installierte npm-Pakete und Build-Ausgaben. Werden von npm install oder vom nächsten Build neu erstellt."
+
+- id: unity
+  markers: [Assembly-CSharp.csproj]
+  artifacts: [Library, Temp, Obj, Logs, MemoryCaptures]
+  risk: moderate
+  explain:
+    en: "Unity import cache and temporary files. Unity rebuilds them when the project opens, which can take a while."
+    zh: "Unity 的导入缓存和临时文件。项目打开时 Unity 会重新生成，这可能需要一段时间。"
+    ja: "Unityのインポートキャッシュと一時ファイルです。プロジェクトを開くとUnityが再作成しますが、しばらく時間がかかることがあります。"
+    id: "Cache impor dan file sementara Unity. Unity membuatnya lagi saat proyek dibuka, dan itu bisa butuh waktu cukup lama."
+    es: "Caché de importación y archivos temporales de Unity. Unity los recrea al abrir el proyecto, lo que puede tardar un rato."
+    pt: "Cache de importação e arquivos temporários do Unity. O Unity os recria quando o projeto é aberto, o que pode demorar um pouco."
+    de: "Import-Cache und temporäre Dateien von Unity. Unity erstellt sie beim Öffnen des Projekts neu, was eine Weile dauern kann."
+
+- id: stack
+  markers: [stack.yaml]
+  artifacts: [.stack-work]
+  risk: safe
+  explain:
+    en: "Haskell Stack build output. Rebuilt by the next stack build."
+    zh: "Haskell Stack 的构建产物。下次 stack build 时会重新生成。"
+    ja: "Haskell Stackのビルド成果物です。次回のstack buildで再作成されます。"
+    id: "Hasil build Haskell Stack. Dibuat ulang oleh stack build berikutnya."
+    es: "Resultados de compilación de Haskell Stack. Se vuelven a generar con el próximo stack build."
+    pt: "Resultado de build do Haskell Stack. Recriado pelo próximo stack build."
+    de: "Haskell-Stack-Build-Ausgaben. Werden vom nächsten stack build neu erstellt."
+
+- id: cabal
+  markers: [cabal.project]
+  artifacts: [dist-newstyle]
+  risk: safe
+  explain:
+    en: "Haskell Cabal build output. Rebuilt by the next cabal build."
+    zh: "Haskell Cabal 的构建产物。下次 cabal build 时会重新生成。"
+    ja: "Haskell Cabalのビルド成果物です。次回のcabal buildで再作成されます。"
+    id: "Hasil build Haskell Cabal. Dibuat ulang oleh cabal build berikutnya."
+    es: "Resultados de compilación de Haskell Cabal. Se vuelven a generar con el próximo cabal build."
+    pt: "Resultado de build do Haskell Cabal. Recriado pelo próximo cabal build."
+    de: "Haskell-Cabal-Build-Ausgaben. Werden vom nächsten cabal build neu erstellt."
+
+- id: sbt
+  markers: [build.sbt]
+  artifacts: [target]
+  risk: safe
+  explain:
+    en: "Scala sbt build output. Rebuilt by the next sbt compile."
+    zh: "Scala sbt 的构建产物。下次 sbt compile 时会重新生成。"
+    ja: "Scala sbtのビルド成果物です。次回のsbt compileで再作成されます。"
+    id: "Hasil build Scala sbt. Dibuat ulang oleh sbt compile berikutnya."
+    es: "Resultados de compilación de Scala sbt. Se vuelven a generar con el próximo sbt compile."
+    pt: "Resultado de build do Scala sbt. Recriado pelo próximo sbt compile."
+    de: "Scala-sbt-Build-Ausgaben. Werden vom nächsten sbt compile neu erstellt."
+
+- id: maven
+  markers: [pom.xml]
+  artifacts: [target]
+  risk: safe
+  explain:
+    en: "Maven build output. Rebuilt by the next mvn build."
+    zh: "Maven 的构建产物。下次 mvn build 时会重新生成。"
+    ja: "Mavenのビルド成果物です。次回のmvn buildで再作成されます。"
+    id: "Hasil build Maven. Dibuat ulang oleh mvn build berikutnya."
+    es: "Resultados de compilación de Maven. Se vuelven a generar con el próximo mvn build."
+    pt: "Resultado de build do Maven. Recriado pelo próximo mvn build."
+    de: "Maven-Build-Ausgaben. Werden vom nächsten mvn build neu erstellt."
+
+- id: gradle
+  markers: [build.gradle, build.gradle.kts]
+  artifacts: [build, .gradle]
+  risk: safe
+  explain:
+    en: "Gradle build output and cache. Rebuilt by the next Gradle build."
+    zh: "Gradle 的构建产物和缓存。下次 Gradle 构建时会重新生成。"
+    ja: "Gradleのビルド成果物とキャッシュです。次回のGradleビルドで再作成されます。"
+    id: "Hasil build dan cache Gradle. Dibuat ulang oleh build Gradle berikutnya."
+    es: "Resultados de compilación y caché de Gradle. Se vuelven a generar con la próxima compilación de Gradle."
+    pt: "Resultado de build e cache do Gradle. Recriados pelo próximo build do Gradle."
+    de: "Gradle-Build-Ausgaben und -Cache. Werden vom nächsten Gradle-Build neu erstellt."
+
+- id: cmake
+  markers: [CMakeLists.txt]
+  artifacts: [build, cmake-build-debug, cmake-build-release]
+  risk: safe
+  explain:
+    en: "CMake build folders. Rebuilt by running cmake and the build again."
+    zh: "CMake 的构建文件夹。重新运行 cmake 并构建后会重新生成。"
+    ja: "CMakeのビルドフォルダです。cmakeとビルドを再度実行すると再作成されます。"
+    id: "Folder build CMake. Dibuat ulang dengan menjalankan cmake dan build lagi."
+    es: "Carpetas de compilación de CMake. Se vuelven a generar al ejecutar cmake y la compilación otra vez."
+    pt: "Pastas de build do CMake. Recriadas ao executar o cmake e o build de novo."
+    de: "CMake-Build-Ordner. Werden neu erstellt, wenn cmake und der Build erneut ausgeführt werden."
+
+- id: unreal
+  markers: ["*.uproject"]
+  artifacts: [Binaries, Intermediate, DerivedDataCache]
+  risk: moderate
+  explain:
+    en: "Unreal Engine compiled code and shader cache. Rebuilt when the project is built or opened, which can take a long time."
+    zh: "Unreal Engine 的已编译代码和着色器缓存。项目构建或打开时会重新生成，这可能需要很长时间。"
+    ja: "Unreal Engineのコンパイル済みコードとシェーダーキャッシュです。プロジェクトのビルド時または起動時に再作成され、長い時間がかかることがあります。"
+    id: "Kode terkompilasi dan cache shader Unreal Engine. Dibuat ulang saat proyek dibuild atau dibuka, dan itu bisa memakan waktu sangat lama."
+    es: "Código compilado y caché de shaders de Unreal Engine. Se vuelven a generar al compilar o abrir el proyecto, lo que puede tardar mucho."
+    pt: "Código compilado e cache de shaders do Unreal Engine. Recriados quando o projeto é compilado ou aberto, o que pode demorar muito."
+    de: "Kompilierter Code und Shader-Cache von Unreal Engine. Werden beim Bauen oder Öffnen des Projekts neu erstellt, was lange dauern kann."
+
+- id: jupyter
+  markers: ["*.ipynb"]
+  artifacts: [.ipynb_checkpoints]
+  risk: safe
+  explain:
+    en: "Jupyter autosave copies of notebooks. Created again the next time a notebook is saved."
+    zh: "Jupyter 笔记本的自动保存副本。下次保存笔记本时会重新生成。"
+    ja: "Jupyterのノートブックの自動保存コピーです。次回ノートブックを保存すると再作成されます。"
+    id: "Salinan autosave notebook Jupyter. Dibuat ulang saat notebook disimpan berikutnya."
+    es: "Copias de autoguardado de los notebooks de Jupyter. Se vuelven a crear la próxima vez que se guarda un notebook."
+    pt: "Cópias de salvamento automático dos notebooks do Jupyter. Criadas de novo na próxima vez que um notebook for salvo."
+    de: "Automatische Sicherungskopien von Jupyter-Notebooks. Werden beim nächsten Speichern eines Notebooks neu erstellt."
+
+- id: python
+  markers: ["*.py"]
+  artifacts: [__pycache__, .mypy_cache, .pytest_cache, .ruff_cache]
+  risk: safe
+  explain:
+    en: "Python bytecode and tool caches. Created again the next time the code or the tools run."
+    zh: "Python 字节码和工具缓存。下次运行代码或工具时会重新生成。"
+    ja: "Pythonのバイトコードとツールのキャッシュです。次にコードやツールを実行すると再作成されます。"
+    id: "Bytecode Python dan cache alat. Dibuat ulang saat kode atau alatnya dijalankan berikutnya."
+    es: "Bytecode de Python y cachés de herramientas. Se vuelven a crear la próxima vez que se ejecuta el código o las herramientas."
+    pt: "Bytecode do Python e caches de ferramentas. Criados de novo na próxima vez que o código ou as ferramentas forem executados."
+    de: "Python-Bytecode und Werkzeug-Caches. Werden beim nächsten Ausführen des Codes oder der Werkzeuge neu erstellt."
+
+- id: python-venv
+  markers: [pyproject.toml, requirements.txt, setup.py, setup.cfg, Pipfile, tox.ini, noxfile.py]
+  artifacts: [.venv, venv, .tox, .nox, __pypackages__]
+  risk: moderate
+  explain:
+    en: "Python virtual environments. Rebuilt by creating the environment and installing the requirements again, which needs a download."
+    zh: "Python 虚拟环境。重新创建环境并重新安装依赖即可恢复，这需要下载。"
+    ja: "Pythonの仮想環境です。環境を作り直して要件を再インストールすると復元されますが、ダウンロードが必要です。"
+    id: "Virtual environment Python. Dibuat ulang dengan membuat environment lagi dan menginstal requirements, yang butuh unduhan."
+    es: "Entornos virtuales de Python. Se vuelven a generar creando el entorno e instalando de nuevo los requisitos, lo que necesita una descarga."
+    pt: "Ambientes virtuais do Python. Recriados ao criar o ambiente e instalar os requisitos de novo, o que exige um download."
+    de: "Virtuelle Python-Umgebungen. Werden neu erstellt, indem die Umgebung angelegt und die Anforderungen erneut installiert werden, was einen Download braucht."
+
+- id: pixi
+  markers: [pixi.toml]
+  artifacts: [.pixi]
+  risk: moderate
+  explain:
+    en: "Pixi environments. Rebuilt by pixi install, which needs a download."
+    zh: "Pixi 环境。通过 pixi install 重新生成，这需要下载。"
+    ja: "Pixiの環境です。pixi installで再作成されますが、ダウンロードが必要です。"
+    id: "Environment Pixi. Dibuat ulang oleh pixi install, yang butuh unduhan."
+    es: "Entornos de Pixi. Se vuelven a generar con pixi install, que necesita una descarga."
+    pt: "Ambientes do Pixi. Recriados por pixi install, que exige um download."
+    de: "Pixi-Umgebungen. Werden von pixi install neu erstellt, was einen Download braucht."
+
+- id: composer
+  markers: [composer.json]
+  artifacts: [vendor]
+  risk: moderate
+  explain:
+    en: "PHP packages installed by Composer. Rebuilt by composer install, which needs a download."
+    zh: "Composer 安装的 PHP 软件包。通过 composer install 重新生成，这需要下载。"
+    ja: "ComposerでインストールしたPHPパッケージです。composer installで再作成されますが、ダウンロードが必要です。"
+    id: "Paket PHP yang dipasang Composer. Dibuat ulang oleh composer install, yang butuh unduhan."
+    es: "Paquetes de PHP instalados por Composer. Se vuelven a generar con composer install, que necesita una descarga."
+    pt: "Pacotes PHP instalados pelo Composer. Recriados por composer install, que exige um download."
+    de: "Von Composer installierte PHP-Pakete. Werden von composer install neu erstellt, was einen Download braucht."
+
+- id: dart
+  markers: [pubspec.yaml]
+  artifacts: [build, .dart_tool]
+  risk: safe
+  explain:
+    en: "Dart and Flutter build output and tool cache. Rebuilt by the next build or pub get."
+    zh: "Dart 和 Flutter 的构建产物及工具缓存。下次构建或运行 pub get 时会重新生成。"
+    ja: "DartとFlutterのビルド成果物とツールキャッシュです。次回のビルドまたはpub getで再作成されます。"
+    id: "Hasil build dan cache alat Dart dan Flutter. Dibuat ulang oleh build berikutnya atau pub get."
+    es: "Resultados de compilación y caché de herramientas de Dart y Flutter. Se vuelven a generar con la próxima compilación o con pub get."
+    pt: "Resultado de build e cache de ferramentas do Dart e do Flutter. Recriados pelo próximo build ou por pub get."
+    de: "Build-Ausgaben und Werkzeug-Cache von Dart und Flutter. Werden vom nächsten Build oder von pub get neu erstellt."
+
+- id: elixir
+  markers: [mix.exs]
+  artifacts: [_build, .elixir-tools, .elixir_ls, .lexical]
+  risk: safe
+  explain:
+    en: "Elixir build output and language server caches. Rebuilt by the next mix compile."
+    zh: "Elixir 的构建产物和语言服务器缓存。下次 mix compile 时会重新生成。"
+    ja: "Elixirのビルド成果物とランゲージサーバーのキャッシュです。次回のmix compileで再作成されます。"
+    id: "Hasil build Elixir dan cache language server. Dibuat ulang oleh mix compile berikutnya."
+    es: "Resultados de compilación de Elixir y cachés del servidor de lenguaje. Se vuelven a generar con el próximo mix compile."
+    pt: "Resultado de build do Elixir e caches do servidor de linguagem. Recriados pelo próximo mix compile."
+    de: "Elixir-Build-Ausgaben und Caches des Language-Servers. Werden vom nächsten mix compile neu erstellt."
+
+- id: swift
+  markers: [Package.swift]
+  artifacts: [.build]
+  risk: safe
+  explain:
+    en: "Swift package build output. Rebuilt by the next swift build."
+    zh: "Swift 软件包的构建产物。下次 swift build 时会重新生成。"
+    ja: "Swiftパッケージのビルド成果物です。次回のswift buildで再作成されます。"
+    id: "Hasil build paket Swift. Dibuat ulang oleh swift build berikutnya."
+    es: "Resultados de compilación de paquetes de Swift. Se vuelven a generar con el próximo swift build."
+    pt: "Resultado de build de pacotes Swift. Recriado pelo próximo swift build."
+    de: "Build-Ausgaben von Swift-Paketen. Werden vom nächsten swift build neu erstellt."
+
+- id: zig
+  markers: [build.zig]
+  artifacts: [zig-cache, .zig-cache, zig-out]
+  risk: safe
+  explain:
+    en: "Zig build cache and output. Rebuilt by the next zig build."
+    zh: "Zig 的构建缓存和产物。下次 zig build 时会重新生成。"
+    ja: "Zigのビルドキャッシュと成果物です。次回のzig buildで再作成されます。"
+    id: "Cache dan hasil build Zig. Dibuat ulang oleh zig build berikutnya."
+    es: "Caché y resultados de compilación de Zig. Se vuelven a generar con el próximo zig build."
+    pt: "Cache e resultado de build do Zig. Recriados pelo próximo zig build."
+    de: "Zig-Build-Cache und -Ausgaben. Werden vom nächsten zig build neu erstellt."
+
+- id: godot
+  markers: [project.godot]
+  artifacts: [.godot]
+  risk: safe
+  explain:
+    en: "Godot import cache. Rebuilt when the project opens in the editor."
+    zh: "Godot 的导入缓存。在编辑器中打开项目时会重新生成。"
+    ja: "Godotのインポートキャッシュです。エディタでプロジェクトを開くと再作成されます。"
+    id: "Cache impor Godot. Dibuat ulang saat proyek dibuka di editor."
+    es: "Caché de importación de Godot. Se vuelve a generar cuando el proyecto se abre en el editor."
+    pt: "Cache de importação do Godot. Recriado quando o projeto é aberto no editor."
+    de: "Import-Cache von Godot. Wird neu erstellt, sobald das Projekt im Editor geöffnet wird."
+
+- id: dotnet
+  markers: ["*.csproj", "*.fsproj"]
+  artifacts: [bin, obj]
+  risk: safe
+  explain:
+    en: ".NET build output. Rebuilt by the next dotnet build."
+    zh: ".NET 的构建产物。下次 dotnet build 时会重新生成。"
+    ja: ".NETのビルド成果物です。次回のdotnet buildで再作成されます。"
+    id: "Hasil build .NET. Dibuat ulang oleh dotnet build berikutnya."
+    es: "Resultados de compilación de .NET. Se vuelven a generar con el próximo dotnet build."
+    pt: "Resultado de build do .NET. Recriado pelo próximo dotnet build."
+    de: ".NET-Build-Ausgaben. Werden vom nächsten dotnet build neu erstellt."
+
+- id: terraform
+  markers: [.terraform.lock.hcl]
+  artifacts: [.terraform]
+  risk: moderate
+  explain:
+    en: "Terraform downloaded providers and modules. Restored by terraform init, which needs a download."
+    zh: "Terraform 下载的提供程序和模块。通过 terraform init 恢复，这需要下载。"
+    ja: "Terraformがダウンロードしたプロバイダーとモジュールです。terraform initで復元されますが、ダウンロードが必要です。"
+    id: "Provider dan modul yang diunduh Terraform. Dipulihkan oleh terraform init, yang butuh unduhan."
+    es: "Proveedores y módulos descargados por Terraform. Se restauran con terraform init, que necesita una descarga."
+    pt: "Providers e módulos baixados pelo Terraform. Restaurados por terraform init, que exige um download."
+    de: "Von Terraform geladene Provider und Module. Werden von terraform init wiederhergestellt, was einen Download braucht."
+
+- id: xcode
+  markers: ["*.xcodeproj", "*.xcworkspace"]
+  artifacts: [DerivedData, build]
+  risk: safe
+  explain:
+    en: "Xcode build output. Rebuilt by the next Xcode build."
+    zh: "Xcode 的构建产物。下次 Xcode 构建时会重新生成。"
+    ja: "Xcodeのビルド成果物です。次回のXcodeビルドで再作成されます。"
+    id: "Hasil build Xcode. Dibuat ulang oleh build Xcode berikutnya."
+    es: "Resultados de compilación de Xcode. Se vuelven a generar con la próxima compilación de Xcode."
+    pt: "Resultado de build do Xcode. Recriado pelo próximo build do Xcode."
+    de: "Xcode-Build-Ausgaben. Werden vom nächsten Xcode-Build neu erstellt."
+
+- id: cocoapods
+  markers: [Podfile]
+  artifacts: [Pods]
+  risk: moderate
+  explain:
+    en: "CocoaPods dependencies. Restored by pod install, which needs a download."
+    zh: "CocoaPods 的依赖项。通过 pod install 恢复，这需要下载。"
+    ja: "CocoaPodsの依存関係です。pod installで復元されますが、ダウンロードが必要です。"
+    id: "Dependensi CocoaPods. Dipulihkan oleh pod install, yang butuh unduhan."
+    es: "Dependencias de CocoaPods. Se restauran con pod install, que necesita una descarga."
+    pt: "Dependências do CocoaPods. Restauradas por pod install, que exige um download."
+    de: "CocoaPods-Abhängigkeiten. Werden von pod install wiederhergestellt, was einen Download braucht."

@@ -1,0 +1,517 @@
+# Developer tool caches. Source code, installed tools and project environments are never targeted.
+
+- id: xcode.derived-data
+  category: dev
+  app: com.apple.dt.Xcode
+  paths:
+    - "~/Library/Developer/Xcode/DerivedData/**"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Xcode build output and indexes, one folder per project. Safe to remove; Xcode rebuilds it, so the next build of each project is slower."
+    zh: "Xcode 的构建产物和索引，每个项目一个文件夹。可以放心删除；Xcode 会重新生成，所以每个项目的下一次构建会变慢。"
+    ja: "Xcodeのビルド成果物とインデックスです（プロジェクトごとに1フォルダ）。安全に削除できます。Xcodeが再作成するため、各プロジェクトの次回のビルドは遅くなります。"
+    id: "Hasil build dan indeks Xcode, satu folder per proyek. Aman dihapus; Xcode akan membuatnya lagi, jadi build berikutnya untuk tiap proyek jadi lebih lambat."
+    es: "Resultados de compilación e índices de Xcode, una carpeta por proyecto. Es seguro eliminarlos; Xcode los vuelve a crear, así que la próxima compilación de cada proyecto será más lenta."
+    pt: "Resultados de build e índices do Xcode, uma pasta por projeto. Pode remover com segurança; o Xcode os recria, então o próximo build de cada projeto fica mais lento."
+    de: "Build-Ausgaben und Indizes von Xcode, ein Ordner pro Projekt. Kann gefahrlos entfernt werden; Xcode erstellt sie neu, daher dauert der nächste Build jedes Projekts länger."
+  protect_if:
+    - process_running: Xcode
+  action: quarantine
+  fixture: xcode-derived-data
+
+- id: xcode.device-support
+  category: dev
+  app: com.apple.dt.Xcode
+  paths:
+    - "~/Library/Developer/Xcode/iOS DeviceSupport/*"
+    - "~/Library/Developer/Xcode/watchOS DeviceSupport/*"
+    - "~/Library/Developer/Xcode/tvOS DeviceSupport/*"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Debug symbols Xcode copied from iPhones, iPads, Watches and Apple TVs, one folder per OS version. Safe to remove; Xcode copies them again (a few minutes) the next time you connect a device on that version."
+    zh: "Xcode 从 iPhone、iPad、Apple Watch 和 Apple TV 复制来的调试符号，每个系统版本一个文件夹。可以放心删除；下次连接该版本的设备时，Xcode 会再次复制（需要几分钟）。"
+    ja: "XcodeがiPhone、iPad、Apple Watch、Apple TVからコピーしたデバッグシンボルです（OSバージョンごとに1フォルダ）。安全に削除できます。そのバージョンのデバイスを次に接続したとき、Xcodeが再度コピーします（数分かかります）。"
+    id: "Simbol debug yang disalin Xcode dari iPhone, iPad, Apple Watch, dan Apple TV, satu folder per versi OS. Aman dihapus; Xcode akan menyalinnya lagi (beberapa menit) saat kamu menghubungkan perangkat dengan versi itu."
+    es: "Símbolos de depuración que Xcode copió de iPhone, iPad, Apple Watch y Apple TV, una carpeta por versión del sistema. Es seguro eliminarlos; Xcode los copia de nuevo (unos minutos) la próxima vez que conectes un dispositivo con esa versión."
+    pt: "Símbolos de depuração que o Xcode copiou de iPhones, iPads, Apple Watches e Apple TVs, uma pasta por versão do sistema. Pode remover com segurança; o Xcode os copia de novo (alguns minutos) na próxima vez que você conectar um dispositivo com essa versão."
+    de: "Debug-Symbole, die Xcode von iPhones, iPads, Apple Watches und Apple TVs kopiert hat, ein Ordner pro Systemversion. Kann gefahrlos entfernt werden; Xcode kopiert sie beim nächsten Anschließen eines Geräts mit dieser Version erneut (einige Minuten)."
+  protect_if:
+    - process_running: Xcode
+  action: quarantine
+  fixture: xcode-device-support
+
+- id: xcode.simulator-caches
+  category: dev
+  app: com.apple.iphonesimulator
+  paths:
+    - "~/Library/Developer/CoreSimulator/Caches/**"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Simulator system caches (dyld). Safe to remove; the Simulator rebuilds them at its next launch, which takes a few minutes. Your simulated devices and their app data are not touched."
+    zh: "Simulator 的系统缓存（dyld）。可以放心删除；Simulator 会在下次启动时重新生成，需要几分钟。你的模拟设备及其中的 App 数据不会被改动。"
+    ja: "Simulatorのシステムキャッシュ（dyld）です。安全に削除できます。次回Simulatorを起動するときに再作成され、数分かかります。シミュレートしたデバイスとそのアプリのデータは変更されません。"
+    id: "Cache sistem Simulator (dyld). Aman dihapus; Simulator akan membuatnya lagi saat dijalankan berikutnya, butuh beberapa menit. Perangkat simulasi dan data aplikasinya tidak disentuh."
+    es: "Cachés del sistema de Simulator (dyld). Es seguro eliminarlos; Simulator los recrea en su próximo inicio, lo que tarda unos minutos. Tus dispositivos simulados y los datos de sus apps no se tocan."
+    pt: "Caches do sistema do Simulator (dyld). Pode remover com segurança; o Simulator os recria na próxima inicialização, o que leva alguns minutos. Seus dispositivos simulados e os dados dos apps deles não são tocados."
+    de: "System-Caches des Simulators (dyld). Kann gefahrlos entfernt werden; Simulator erstellt sie beim nächsten Start neu, das dauert einige Minuten. Simulierte Geräte und deren App-Daten werden nicht angetastet."
+  protect_if:
+    - process_running: Simulator
+  action: quarantine
+  fixture: xcode-simulator-caches
+
+- id: xcode.documentation-cache
+  category: dev
+  app: com.apple.dt.Xcode
+  paths:
+    - ~/Library/Developer/Xcode/DocumentationCache
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Apple documentation that Xcode downloaded for offline use. Safe to remove; Xcode downloads it again when you open the documentation."
+    zh: "Xcode 下载的、供离线使用的 Apple 文档。可以放心删除；你再次打开文档时，Xcode 会重新下载。"
+    ja: "Xcodeがオフライン用にダウンロードしたAppleのドキュメントです。安全に削除できます。ドキュメントを開くと、Xcodeが再度ダウンロードします。"
+    id: "Dokumentasi Apple yang diunduh Xcode untuk dipakai offline. Aman dihapus; Xcode akan mengunduhnya lagi saat kamu membuka dokumentasi."
+    es: "Documentación de Apple que Xcode descargó para usarla sin conexión. Es seguro eliminarla; Xcode la descarga de nuevo cuando abres la documentación."
+    pt: "Documentação da Apple que o Xcode baixou para uso off-line. Pode remover com segurança; o Xcode a baixa de novo quando você abre a documentação."
+    de: "Apple-Dokumentation, die Xcode für die Offline-Nutzung geladen hat. Kann gefahrlos entfernt werden; Xcode lädt sie erneut, sobald die Dokumentation geöffnet wird."
+  protect_if:
+    - process_running: Xcode
+  action: quarantine
+  fixture: xcode-documentation-cache
+
+- id: xcode.cache
+  category: dev
+  app: com.apple.dt.Xcode
+  paths:
+    - ~/Library/Caches/com.apple.dt.Xcode
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Xcode's own cache folder. Safe to remove; Xcode rebuilds it as you work."
+    zh: "Xcode 自己的缓存文件夹。可以放心删除；你继续工作时，Xcode 会重新生成。"
+    ja: "Xcode自身のキャッシュフォルダです。安全に削除できます。作業を続けるうちにXcodeが再作成します。"
+    id: "Folder cache milik Xcode sendiri. Aman dihapus; Xcode akan membuatnya lagi saat kamu bekerja."
+    es: "La carpeta de caché propia de Xcode. Es seguro eliminarla; Xcode la recrea mientras trabajas."
+    pt: "A pasta de cache do próprio Xcode. Pode remover com segurança; o Xcode a recria enquanto você trabalha."
+    de: "Der eigene Cache-Ordner von Xcode. Kann gefahrlos entfernt werden; Xcode erstellt ihn während der Arbeit neu."
+  protect_if:
+    - process_running: Xcode
+  action: quarantine
+  fixture: xcode-cache
+
+- id: swiftpm.cache
+  category: dev
+  app: org.swift.swiftpm
+  paths:
+    - "~/Library/Caches/org.swift.swiftpm/**"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Swift Package Manager's cloned repositories and manifest cache. Safe to remove; packages are downloaded again the next time a project resolves them."
+    zh: "Swift Package Manager 克隆的仓库和清单缓存。可以放心删除；下次有项目解析这些包时会重新下载。"
+    ja: "Swift Package Managerがクローンしたリポジトリとマニフェストのキャッシュです。安全に削除できます。次にプロジェクトがパッケージを解決するとき、再度ダウンロードされます。"
+    id: "Repositori hasil clone dan cache manifest milik Swift Package Manager. Aman dihapus; paket akan diunduh lagi saat proyek berikutnya me-resolve paket tersebut."
+    es: "Repositorios clonados y caché de manifiestos de Swift Package Manager. Es seguro eliminarlos; los paquetes se descargan de nuevo la próxima vez que un proyecto los resuelva."
+    pt: "Repositórios clonados e cache de manifestos do Swift Package Manager. Pode remover com segurança; os pacotes são baixados de novo na próxima vez que um projeto os resolver."
+    de: "Geklonte Repositories und Manifest-Cache des Swift Package Managers. Kann gefahrlos entfernt werden; Pakete werden erneut geladen, sobald ein Projekt sie das nächste Mal auflöst."
+  protect_if:
+    - process_running: Xcode
+  action: quarantine
+  fixture: swiftpm-cache
+
+- id: npm.cache
+  category: dev
+  paths:
+    - ~/.npm/_cacache
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "npm's download cache. Safe to remove; npm downloads packages again on the next install, so that install is slower."
+    zh: "npm 的下载缓存。可以放心删除；下次安装时 npm 会重新下载软件包，所以那次安装会更慢。"
+    ja: "npmのダウンロードキャッシュです。安全に削除できます。次回のインストール時にnpmがパッケージを再ダウンロードするため、そのインストールは遅くなります。"
+    id: "Cache unduhan npm. Aman dihapus; npm akan mengunduh paket lagi saat install berikutnya, jadi install itu jadi lebih lambat."
+    es: "La caché de descargas de npm. Es seguro eliminarla; npm vuelve a descargar los paquetes en la próxima instalación, así que esa instalación será más lenta."
+    pt: "O cache de downloads do npm. Pode remover com segurança; o npm baixa os pacotes de novo na próxima instalação, então essa instalação fica mais lenta."
+    de: "Der Download-Cache von npm. Kann gefahrlos entfernt werden; npm lädt Pakete bei der nächsten Installation erneut, daher dauert diese Installation länger."
+  action: quarantine
+  fixture: npm-cache
+
+- id: yarn.cache
+  category: dev
+  paths:
+    - "~/Library/Caches/Yarn/*"
+    - ~/.yarn/berry/cache
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Yarn's package download cache. Safe to remove; Yarn downloads packages again on the next install, so that install is slower."
+    zh: "Yarn 的软件包下载缓存。可以放心删除；下次安装时 Yarn 会重新下载软件包，所以那次安装会更慢。"
+    ja: "Yarnのパッケージダウンロードキャッシュです。安全に削除できます。次回のインストール時にYarnがパッケージを再ダウンロードするため、そのインストールは遅くなります。"
+    id: "Cache unduhan paket Yarn. Aman dihapus; Yarn akan mengunduh paket lagi saat install berikutnya, jadi install itu jadi lebih lambat."
+    es: "La caché de descargas de paquetes de Yarn. Es seguro eliminarla; Yarn vuelve a descargar los paquetes en la próxima instalación, así que esa instalación será más lenta."
+    pt: "O cache de downloads de pacotes do Yarn. Pode remover com segurança; o Yarn baixa os pacotes de novo na próxima instalação, então essa instalação fica mais lenta."
+    de: "Der Paket-Download-Cache von Yarn. Kann gefahrlos entfernt werden; Yarn lädt Pakete bei der nächsten Installation erneut, daher dauert diese Installation länger."
+  action: quarantine
+  fixture: yarn-cache
+
+- id: pip.cache
+  category: dev
+  paths:
+    - ~/Library/Caches/pip
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "pip's download and wheel cache. Best cleared with pip's own command; pip downloads packages again the next time you install them."
+    zh: "pip 的下载和 wheel 缓存。最好用 pip 自带的命令清理；下次安装软件包时，pip 会重新下载。"
+    ja: "pipのダウンロードキャッシュとwheelキャッシュです。pip自身のコマンドで消去するのが最適です。次にパッケージをインストールするとき、pipが再ダウンロードします。"
+    id: "Cache unduhan dan wheel milik pip. Sebaiknya dibersihkan dengan perintah bawaan pip; pip akan mengunduh paket lagi saat kamu menginstalnya berikutnya."
+    es: "La caché de descargas y wheels de pip. Lo mejor es limpiarla con el comando propio de pip; pip vuelve a descargar los paquetes la próxima vez que los instales."
+    pt: "O cache de downloads e wheels do pip. O ideal é limpar com o comando do próprio pip; o pip baixa os pacotes de novo na próxima vez que você os instalar."
+    de: "Download- und Wheel-Cache von pip. Am besten mit dem eigenen Befehl von pip leeren; pip lädt Pakete bei der nächsten Installation erneut."
+  action: official_command
+  command:
+    - "python3"
+    - "-m"
+    - "pip"
+    - "cache"
+    - "purge"
+  fixture: pip-cache
+
+- id: homebrew.downloads
+  category: dev
+  app: com.github.brew
+  paths:
+    - ~/Library/Caches/Homebrew/downloads
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Downloaded Homebrew bottles and sources. Best cleared with `brew cleanup`, which also removes old versions of installed formulae; Homebrew downloads again whatever you reinstall."
+    zh: "已下载的 Homebrew bottle 和源码。最好用 `brew cleanup` 清理，它还会删除已安装 formula 的旧版本；重新安装时，Homebrew 会重新下载所需内容。"
+    ja: "ダウンロード済みのHomebrewのbottleとソースです。`brew cleanup`で消去するのが最適です。インストール済みformulaの古いバージョンも削除されます。再インストールしたものは、Homebrewが再度ダウンロードします。"
+    id: "Bottle dan source Homebrew yang sudah diunduh. Sebaiknya dibersihkan dengan `brew cleanup`, yang juga menghapus versi lama formula yang terpasang; Homebrew akan mengunduh lagi apa pun yang kamu instal ulang."
+    es: "Bottles y fuentes de Homebrew descargados. Lo mejor es limpiarlos con `brew cleanup`, que también elimina las versiones antiguas de las fórmulas instaladas; Homebrew vuelve a descargar lo que reinstales."
+    pt: "Bottles e fontes do Homebrew baixados. O ideal é limpar com `brew cleanup`, que também remove versões antigas das fórmulas instaladas; o Homebrew baixa de novo o que você reinstalar."
+    de: "Heruntergeladene Homebrew-Bottles und -Quellen. Am besten mit `brew cleanup` leeren; das entfernt auch alte Versionen installierter Formulae. Homebrew lädt alles erneut, was neu installiert wird."
+  action: official_command
+  command:
+    - "brew"
+    - "cleanup"
+    - "--prune=all"
+  fixture: homebrew-downloads
+
+- id: go.build-cache
+  category: dev
+  paths:
+    - ~/Library/Caches/go-build
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Go's compiled build cache. Best cleared with `go clean -cache`; the next build of each project is slower while it fills again."
+    zh: "Go 的编译构建缓存。最好用 `go clean -cache` 清理；缓存重新填充期间，每个项目的下一次构建会更慢。"
+    ja: "Goのコンパイル済みビルドキャッシュです。`go clean -cache`で消去するのが最適です。キャッシュが再び貯まるまで、各プロジェクトの次回のビルドは遅くなります。"
+    id: "Cache build hasil kompilasi Go. Sebaiknya dibersihkan dengan `go clean -cache`; build berikutnya untuk tiap proyek lebih lambat selama cache terisi lagi."
+    es: "La caché de compilación de Go. Lo mejor es limpiarla con `go clean -cache`; la próxima compilación de cada proyecto será más lenta mientras se vuelve a llenar."
+    pt: "O cache de build compilado do Go. O ideal é limpar com `go clean -cache`; o próximo build de cada projeto fica mais lento enquanto o cache se enche de novo."
+    de: "Der kompilierte Build-Cache von Go. Am besten mit `go clean -cache` leeren; der nächste Build jedes Projekts dauert länger, solange sich der Cache wieder füllt."
+  action: official_command
+  command:
+    - "go"
+    - "clean"
+    - "-cache"
+  fixture: go-build-cache
+
+- id: go.module-cache
+  category: dev
+  paths:
+    - ~/go/pkg/mod
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Downloaded Go modules. Must be cleared with `go clean -modcache`, because Go makes these files read-only; modules download again at the next build, so offline builds fail until then."
+    zh: "已下载的 Go 模块。必须用 `go clean -modcache` 清理，因为 Go 会把这些文件设为只读；模块会在下次构建时重新下载，所以在那之前离线构建会失败。"
+    ja: "ダウンロード済みのGoモジュールです。Goはこれらのファイルを読み取り専用にするため、必ず`go clean -modcache`で消去してください。モジュールは次回のビルドで再ダウンロードされるため、それまではオフラインでのビルドは失敗します。"
+    id: "Modul Go yang sudah diunduh. Harus dibersihkan dengan `go clean -modcache`, karena Go membuat file-file ini hanya-baca; modul akan diunduh lagi pada build berikutnya, jadi build offline akan gagal sampai saat itu."
+    es: "Módulos de Go descargados. Deben limpiarse con `go clean -modcache`, porque Go marca estos archivos como de solo lectura; los módulos se descargan de nuevo en la próxima compilación, así que las compilaciones sin conexión fallan hasta entonces."
+    pt: "Módulos do Go baixados. Devem ser limpos com `go clean -modcache`, porque o Go deixa esses arquivos somente leitura; os módulos são baixados de novo no próximo build, então builds off-line falham até lá."
+    de: "Heruntergeladene Go-Module. Müssen mit `go clean -modcache` geleert werden, da Go diese Dateien schreibgeschützt anlegt; Module werden beim nächsten Build erneut geladen, daher schlagen Offline-Builds bis dahin fehl."
+  action: official_command
+  command:
+    - "go"
+    - "clean"
+    - "-modcache"
+  fixture: go-module-cache
+
+- id: gradle.caches
+  category: dev
+  paths:
+    - "~/.gradle/caches/*"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Gradle's downloaded libraries and build caches. Safe to remove when no build is running; Gradle downloads and rebuilds them, so the next build is slower."
+    zh: "Gradle 下载的库和构建缓存。没有构建在运行时可以放心删除；Gradle 会重新下载并重新生成，所以下一次构建会变慢。"
+    ja: "Gradleがダウンロードしたライブラリとビルドキャッシュです。ビルドが実行中でなければ、安全に削除できます。Gradleが再ダウンロードして再作成するため、次回のビルドは遅くなります。"
+    id: "Library yang diunduh dan cache build Gradle. Aman dihapus jika tidak ada build yang berjalan; Gradle akan mengunduh dan membuatnya lagi, jadi build berikutnya lebih lambat."
+    es: "Bibliotecas descargadas y cachés de compilación de Gradle. Es seguro eliminarlas cuando no hay ninguna compilación en curso; Gradle las descarga y las reconstruye, así que la próxima compilación será más lenta."
+    pt: "Bibliotecas baixadas e caches de build do Gradle. Pode remover com segurança quando nenhum build estiver em execução; o Gradle as baixa e as recria, então o próximo build fica mais lento."
+    de: "Von Gradle geladene Bibliotheken und Build-Caches. Kann gefahrlos entfernt werden, wenn kein Build läuft; Gradle lädt und erstellt sie neu, daher dauert der nächste Build länger."
+  protect_if:
+    - process_running: java
+  action: quarantine
+  fixture: gradle-caches
+
+- id: cargo.registry-cache
+  category: dev
+  paths:
+    - "~/.cargo/registry/cache/*"
+    - "~/.cargo/registry/src/*"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Rust crates that Cargo downloaded and unpacked. Safe to remove; Cargo downloads them again at the next build that needs them."
+    zh: "Cargo 下载并解压的 Rust crate。可以放心删除；下次有构建需要它们时，Cargo 会重新下载。"
+    ja: "Cargoがダウンロードして展開したRustのcrateです。安全に削除できます。それらを必要とする次回のビルドで、Cargoが再ダウンロードします。"
+    id: "Crate Rust yang diunduh dan diekstrak Cargo. Aman dihapus; Cargo akan mengunduhnya lagi pada build berikutnya yang membutuhkannya."
+    es: "Crates de Rust que Cargo descargó y descomprimió. Es seguro eliminarlos; Cargo los vuelve a descargar en la próxima compilación que los necesite."
+    pt: "Crates do Rust que o Cargo baixou e descompactou. Pode remover com segurança; o Cargo os baixa de novo no próximo build que precisar deles."
+    de: "Rust-Crates, die Cargo geladen und entpackt hat. Kann gefahrlos entfernt werden; Cargo lädt sie beim nächsten Build, der sie braucht, erneut."
+  protect_if:
+    - process_running: cargo
+    - process_running: rustc
+  action: quarantine
+  fixture: cargo-registry-cache
+
+- id: cocoapods.cache
+  category: dev
+  paths:
+    - ~/Library/Caches/CocoaPods
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "CocoaPods' downloaded pod sources. Best cleared with `pod cache clean --all`; pods download again the next time you run `pod install`."
+    zh: "CocoaPods 下载的 pod 源码。最好用 `pod cache clean --all` 清理；下次运行 `pod install` 时会重新下载 pod。"
+    ja: "CocoaPodsがダウンロードしたpodのソースです。`pod cache clean --all`で消去するのが最適です。次に`pod install`を実行するとき、podは再ダウンロードされます。"
+    id: "Source pod yang diunduh CocoaPods. Sebaiknya dibersihkan dengan `pod cache clean --all`; pod akan diunduh lagi saat kamu menjalankan `pod install` berikutnya."
+    es: "Código fuente de pods que CocoaPods descargó. Lo mejor es limpiarlo con `pod cache clean --all`; los pods se descargan de nuevo la próxima vez que ejecutes `pod install`."
+    pt: "Fontes de pods baixadas pelo CocoaPods. O ideal é limpar com `pod cache clean --all`; os pods são baixados de novo na próxima vez que você executar `pod install`."
+    de: "Von CocoaPods geladene Pod-Quellen. Am besten mit `pod cache clean --all` leeren; Pods werden beim nächsten Ausführen von `pod install` erneut geladen."
+  action: official_command
+  command:
+    - "pod"
+    - "cache"
+    - "clean"
+    - "--all"
+  fixture: cocoapods-cache
+
+- id: bun.cache
+  category: dev
+  paths:
+    - "~/.bun/install/cache/*"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Bun's package download cache. Safe to remove; Bun downloads packages again on the next install."
+    zh: "Bun 的软件包下载缓存。可以放心删除；下次安装时 Bun 会重新下载软件包。"
+    ja: "Bunのパッケージダウンロードキャッシュです。安全に削除できます。次回のインストール時にBunがパッケージを再ダウンロードします。"
+    id: "Cache unduhan paket Bun. Aman dihapus; Bun akan mengunduh paket lagi saat install berikutnya."
+    es: "La caché de descargas de paquetes de Bun. Es seguro eliminarla; Bun vuelve a descargar los paquetes en la próxima instalación."
+    pt: "O cache de downloads de pacotes do Bun. Pode remover com segurança; o Bun baixa os pacotes de novo na próxima instalação."
+    de: "Der Paket-Download-Cache von Bun. Kann gefahrlos entfernt werden; Bun lädt Pakete bei der nächsten Installation erneut."
+  protect_if:
+    - process_running: bun
+  action: quarantine
+  fixture: bun-cache
+
+- id: deno.cache
+  category: dev
+  paths:
+    - "~/Library/Caches/deno/*"
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Deno's cached remote modules and compiled output. Safe to remove; Deno downloads and compiles them again the next time a script needs them."
+    zh: "Deno 缓存的远程模块和编译产物。可以放心删除；下次有脚本需要它们时，Deno 会重新下载并编译。"
+    ja: "Denoがキャッシュしたリモートモジュールとコンパイル結果です。安全に削除できます。次にスクリプトが必要としたとき、Denoが再ダウンロードして再コンパイルします。"
+    id: "Modul remote dan hasil kompilasi yang di-cache Deno. Aman dihapus; Deno akan mengunduh dan mengompilnya lagi saat skrip berikutnya membutuhkannya."
+    es: "Módulos remotos en caché y resultados compilados de Deno. Es seguro eliminarlos; Deno los descarga y los compila de nuevo la próxima vez que un script los necesite."
+    pt: "Módulos remotos em cache e saída compilada do Deno. Pode remover com segurança; o Deno os baixa e compila de novo na próxima vez que um script precisar deles."
+    de: "Von Deno zwischengespeicherte Remote-Module und kompilierte Ausgaben. Kann gefahrlos entfernt werden; Deno lädt und kompiliert sie beim nächsten Mal, wenn ein Skript sie braucht, erneut."
+  protect_if:
+    - process_running: deno
+  action: quarantine
+  fixture: deno-cache
+
+- id: vscode.cache
+  category: dev
+  app: com.microsoft.VSCode
+  paths:
+    - ~/Library/Application Support/Code/Cache
+    - ~/Library/Application Support/Code/CachedData
+    - ~/Library/Application Support/Code/Code Cache
+    - ~/Library/Application Support/Code/GPUCache
+    - ~/Library/Application Support/Code/CachedExtensionVSIXs
+  risk: safe
+  regenerates: true
+  explain:
+    en: "VS Code's web, compiled-script and graphics caches. Safe to remove; VS Code rebuilds them at the next start, which may feel slightly slower once. Settings, extensions and workspaces are stored elsewhere and are not touched."
+    zh: "VS Code 的网页、已编译脚本和图形缓存。可以放心删除；VS Code 下次启动时会重新生成，可能会有一次稍慢的感觉。设置、扩展和工作区保存在其他位置，不会被改动。"
+    ja: "VS Codeのウェブ、コンパイル済みスクリプト、グラフィックのキャッシュです。安全に削除できます。次回の起動時にVS Codeが再作成するため、一度だけ少し遅く感じることがあります。設定、拡張機能、ワークスペースは別の場所に保存されており、変更されません。"
+    id: "Cache web, skrip terkompilasi, dan grafis VS Code. Aman dihapus; VS Code akan membuatnya lagi saat dibuka berikutnya, jadi mungkin terasa sedikit lebih lambat sekali saja. Pengaturan, ekstensi, dan workspace disimpan di tempat lain dan tidak disentuh."
+    es: "Cachés web, de scripts compilados y de gráficos de VS Code. Es seguro eliminarlos; VS Code los recrea en el próximo inicio, lo que puede sentirse un poco más lento una sola vez. Los ajustes, las extensiones y los espacios de trabajo están guardados en otro lugar y no se tocan."
+    pt: "Caches web, de scripts compilados e de gráficos do VS Code. Pode remover com segurança; o VS Code os recria na próxima inicialização, o que pode parecer um pouco mais lento uma única vez. Configurações, extensões e workspaces ficam armazenados em outro lugar e não são tocados."
+    de: "Web-, Skript- (kompiliert) und Grafik-Caches von VS Code. Kann gefahrlos entfernt werden; VS Code erstellt sie beim nächsten Start neu, was sich einmalig etwas langsamer anfühlen kann. Einstellungen, Erweiterungen und Arbeitsbereiche sind an anderer Stelle gespeichert und werden nicht angetastet."
+  protect_if:
+    - process_running: Code
+    - process_running: Electron
+  action: quarantine
+  fixture: vscode-cache
+
+- id: android.sdk-cache
+  category: dev
+  paths:
+    - ~/.android/cache
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Android SDK Manager's download cache. Safe to remove; the SDK Manager downloads components again when you ask for them."
+    zh: "Android SDK Manager 的下载缓存。可以放心删除；你需要某个组件时，SDK Manager 会重新下载。"
+    ja: "Android SDK Managerのダウンロードキャッシュです。安全に削除できます。コンポーネントが必要になったとき、SDK Managerが再ダウンロードします。"
+    id: "Cache unduhan Android SDK Manager. Aman dihapus; SDK Manager akan mengunduh komponen lagi saat kamu memintanya."
+    es: "La caché de descargas de Android SDK Manager. Es seguro eliminarla; SDK Manager vuelve a descargar los componentes cuando los pides."
+    pt: "O cache de downloads do Android SDK Manager. Pode remover com segurança; o SDK Manager baixa os componentes de novo quando você pedir."
+    de: "Der Download-Cache des Android SDK Managers. Kann gefahrlos entfernt werden; der SDK Manager lädt Komponenten erneut, sobald sie angefordert werden."
+  protect_if:
+    - process_running: studio
+  action: quarantine
+  fixture: android-sdk-cache
+
+- id: electron.download-cache
+  category: dev
+  paths:
+    - ~/Library/Caches/electron
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Electron runtimes downloaded for building Electron apps. Safe to remove; the next build downloads the version it needs again."
+    zh: "为构建 Electron 应用而下载的 Electron 运行时。可以放心删除；下次构建时会重新下载所需的版本。"
+    ja: "ElectronアプリをビルドするためにダウンロードしたElectronランタイムです。安全に削除できます。次回のビルドで、必要なバージョンが再ダウンロードされます。"
+    id: "Runtime Electron yang diunduh untuk membangun aplikasi Electron. Aman dihapus; build berikutnya akan mengunduh lagi versi yang dibutuhkan."
+    es: "Runtimes de Electron descargados para compilar apps de Electron. Es seguro eliminarlos; la próxima compilación vuelve a descargar la versión que necesite."
+    pt: "Runtimes do Electron baixados para criar apps Electron. Pode remover com segurança; o próximo build baixa de novo a versão de que precisar."
+    de: "Für das Bauen von Electron-Apps geladene Electron-Laufzeiten. Kann gefahrlos entfernt werden; der nächste Build lädt die benötigte Version erneut."
+  action: quarantine
+  fixture: electron-download-cache
+
+- id: node-gyp.cache
+  category: dev
+  paths:
+    - ~/Library/Caches/node-gyp
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Node headers downloaded to compile native add-ons. Safe to remove; node-gyp downloads them again the next time an add-on is built."
+    zh: "为编译原生插件而下载的 Node 头文件。可以放心删除；下次编译插件时，node-gyp 会重新下载。"
+    ja: "ネイティブアドオンをコンパイルするためにダウンロードしたNodeのヘッダーです。安全に削除できます。次にアドオンをビルドするとき、node-gypが再ダウンロードします。"
+    id: "Header Node yang diunduh untuk mengompilasi add-on native. Aman dihapus; node-gyp akan mengunduhnya lagi saat add-on berikutnya dibuild."
+    es: "Cabeceras de Node descargadas para compilar complementos nativos. Es seguro eliminarlas; node-gyp las descarga de nuevo la próxima vez que se compile un complemento."
+    pt: "Cabeçalhos do Node baixados para compilar add-ons nativos. Pode remover com segurança; o node-gyp os baixa de novo na próxima vez que um add-on for compilado."
+    de: "Für das Kompilieren nativer Add-ons geladene Node-Header. Kann gefahrlos entfernt werden; node-gyp lädt sie beim nächsten Kompilieren eines Add-ons erneut."
+  action: quarantine
+  fixture: node-gyp-cache
+
+- id: typescript.cache
+  category: dev
+  paths:
+    - ~/Library/Caches/typescript
+  risk: safe
+  regenerates: true
+  explain:
+    en: "Type definitions that editors download for TypeScript's language service. Safe to remove; the editor fetches them again when you open a JavaScript or TypeScript project."
+    zh: "编辑器为 TypeScript 语言服务下载的类型定义。可以放心删除；你打开 JavaScript 或 TypeScript 项目时，编辑器会重新获取。"
+    ja: "エディタがTypeScriptの言語サービスのためにダウンロードした型定義です。安全に削除できます。JavaScriptまたはTypeScriptのプロジェクトを開くと、エディタが再取得します。"
+    id: "Definisi tipe yang diunduh editor untuk layanan bahasa TypeScript. Aman dihapus; editor akan mengambilnya lagi saat kamu membuka proyek JavaScript atau TypeScript."
+    es: "Definiciones de tipos que los editores descargan para el servicio de lenguaje de TypeScript. Es seguro eliminarlas; el editor las vuelve a obtener cuando abres un proyecto de JavaScript o TypeScript."
+    pt: "Definições de tipos que os editores baixam para o serviço de linguagem do TypeScript. Pode remover com segurança; o editor as busca de novo quando você abre um projeto JavaScript ou TypeScript."
+    de: "Typdefinitionen, die Editoren für den Sprachdienst von TypeScript laden. Kann gefahrlos entfernt werden; der Editor holt sie erneut, sobald ein JavaScript- oder TypeScript-Projekt geöffnet wird."
+  action: quarantine
+  fixture: typescript-cache
+
+- id: pre-commit.cache
+  category: dev
+  paths:
+    - ~/.cache/pre-commit
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "pre-commit's cloned hook repositories and their environments. Safe to remove; the next commit that runs hooks sets them up again, which takes a while."
+    zh: "pre-commit 克隆的钩子仓库及其环境。可以放心删除；下次运行钩子的提交会重新设置它们，这需要一些时间。"
+    ja: "pre-commitがクローンしたフックのリポジトリとその環境です。安全に削除できます。次にフックを実行するコミットで再セットアップされ、しばらく時間がかかります。"
+    id: "Repositori hook hasil clone pre-commit beserta environment-nya. Aman dihapus; commit berikutnya yang menjalankan hook akan menyiapkannya lagi, dan itu butuh waktu."
+    es: "Repositorios de hooks clonados por pre-commit y sus entornos. Es seguro eliminarlos; el próximo commit que ejecute hooks los configura de nuevo, lo que tarda un rato."
+    pt: "Repositórios de hooks clonados pelo pre-commit e seus ambientes. Pode remover com segurança; o próximo commit que executar hooks os configura de novo, o que leva um tempo."
+    de: "Von pre-commit geklonte Hook-Repositories und deren Umgebungen. Kann gefahrlos entfernt werden; der nächste Commit, der Hooks ausführt, richtet sie neu ein, was eine Weile dauert."
+  protect_if:
+    - process_running: pre-commit
+  action: quarantine
+  fixture: pre-commit-cache
+
+- id: uv.cache
+  category: dev
+  paths:
+    - ~/.cache/uv
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "uv's cache of Python packages and builds. Best cleared with `uv cache clean`; uv downloads packages again the next time you sync an environment."
+    zh: "uv 的 Python 软件包和构建缓存。最好用 `uv cache clean` 清理；下次同步环境时，uv 会重新下载软件包。"
+    ja: "uvのPythonパッケージとビルドのキャッシュです。`uv cache clean`で消去するのが最適です。次に環境を同期するとき、uvがパッケージを再ダウンロードします。"
+    id: "Cache paket dan build Python milik uv. Sebaiknya dibersihkan dengan `uv cache clean`; uv akan mengunduh paket lagi saat kamu menyinkronkan environment berikutnya."
+    es: "La caché de paquetes y compilaciones de Python de uv. Lo mejor es limpiarla con `uv cache clean`; uv vuelve a descargar los paquetes la próxima vez que sincronices un entorno."
+    pt: "O cache de pacotes e builds Python do uv. O ideal é limpar com `uv cache clean`; o uv baixa os pacotes de novo na próxima vez que você sincronizar um ambiente."
+    de: "Der Cache von uv für Python-Pakete und Builds. Am besten mit `uv cache clean` leeren; uv lädt Pakete beim nächsten Synchronisieren einer Umgebung erneut."
+  action: official_command
+  command:
+    - "uv"
+    - "cache"
+    - "clean"
+  fixture: uv-cache
+
+- id: poetry.cache
+  category: dev
+  paths:
+    - ~/Library/Caches/pypoetry/cache
+    - ~/Library/Caches/pypoetry/artifacts
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "Poetry's package metadata and downloaded archives. Safe to remove; Poetry downloads packages again on the next install. Your project virtual environments are kept."
+    zh: "Poetry 的软件包元数据和已下载的压缩包。可以放心删除；下次安装时 Poetry 会重新下载软件包。你项目的虚拟环境会保留。"
+    ja: "Poetryのパッケージメタデータとダウンロード済みのアーカイブです。安全に削除できます。次回のインストール時にPoetryがパッケージを再ダウンロードします。プロジェクトの仮想環境は残ります。"
+    id: "Metadata paket dan arsip unduhan Poetry. Aman dihapus; Poetry akan mengunduh paket lagi saat install berikutnya. Virtual environment proyek kamu tetap ada."
+    es: "Metadatos de paquetes y archivos descargados de Poetry. Es seguro eliminarlos; Poetry vuelve a descargar los paquetes en la próxima instalación. Los entornos virtuales de tus proyectos se conservan."
+    pt: "Metadados de pacotes e arquivos baixados do Poetry. Pode remover com segurança; o Poetry baixa os pacotes de novo na próxima instalação. Os ambientes virtuais dos seus projetos são mantidos."
+    de: "Paket-Metadaten und heruntergeladene Archive von Poetry. Kann gefahrlos entfernt werden; Poetry lädt Pakete bei der nächsten Installation erneut. Die virtuellen Umgebungen der Projekte bleiben erhalten."
+  action: quarantine
+  fixture: poetry-cache
+
+- id: sccache.cache
+  category: dev
+  paths:
+    - ~/Library/Caches/Mozilla.sccache
+  risk: moderate
+  regenerates: true
+  explain:
+    en: "sccache's cache of compiled objects. Safe to remove; the next builds that use sccache are slower while it fills again."
+    zh: "sccache 的已编译对象缓存。可以放心删除；缓存重新填充期间，下一批使用 sccache 的构建会更慢。"
+    ja: "sccacheのコンパイル済みオブジェクトのキャッシュです。安全に削除できます。キャッシュが再び貯まるまで、sccacheを使う次回以降のビルドは遅くなります。"
+    id: "Cache objek hasil kompilasi sccache. Aman dihapus; build berikutnya yang memakai sccache lebih lambat selama cache terisi lagi."
+    es: "La caché de objetos compilados de sccache. Es seguro eliminarla; las próximas compilaciones que usen sccache serán más lentas mientras se vuelve a llenar."
+    pt: "O cache de objetos compilados do sccache. Pode remover com segurança; os próximos builds que usarem o sccache ficam mais lentos enquanto o cache se enche de novo."
+    de: "Der Cache von sccache für kompilierte Objekte. Kann gefahrlos entfernt werden; die nächsten Builds mit sccache dauern länger, solange sich der Cache wieder füllt."
+  protect_if:
+    - process_running: sccache
+  action: quarantine
+  fixture: sccache-cache

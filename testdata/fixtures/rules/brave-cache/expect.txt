@@ -1,0 +1,8 @@
+Library/Application Support/BraveSoftware/Brave-Browser/Default/Code Cache
+Library/Application Support/BraveSoftware/Brave-Browser/Default/GPUCache
+Library/Application Support/BraveSoftware/Brave-Browser/GrShaderCache
+Library/Application Support/BraveSoftware/Brave-Browser/Profile 1/Code Cache
+Library/Application Support/BraveSoftware/Brave-Browser/Profile 1/GPUCache
+Library/Application Support/BraveSoftware/Brave-Browser/ShaderCache
+Library/Caches/BraveSoftware/Brave-Browser/Default/Cache
+Library/Caches/BraveSoftware/Brave-Browser/Profile 1/Cache

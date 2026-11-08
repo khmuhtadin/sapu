@@ -1,0 +1,2 @@
+Library/Logs/zoom.us/entry-a
+Library/Logs/zoom.us/entry-b.dat
